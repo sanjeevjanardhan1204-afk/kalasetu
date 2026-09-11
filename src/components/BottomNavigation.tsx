@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { Sparkles, ShoppingBag, Mic, Zap, User, RefreshCw } from 'lucide-react';
+import { Sparkles, ShoppingBag, Mic, Zap, User, RefreshCw, ClipboardList } from 'lucide-react';
 import { Language, NetworkSimulationMode } from '../types';
 import { playSyntheticChime } from '../data';
 
@@ -30,6 +30,7 @@ export interface BottomNavigationProps {
   onAccountClick?: () => void;
   openAccountModal?: () => void;
   openAccount?: () => void;
+  onOpenOrders?: () => void;
   outboxCount?: number;
   networkMode?: NetworkSimulationMode;
   isSyncing?: boolean;
@@ -56,6 +57,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   onAccountClick,
   openAccountModal,
   openAccount,
+  onOpenOrders,
   outboxCount = 0,
   networkMode = 'online',
   isSyncing = false
@@ -107,6 +109,10 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
     }
   };
 
+  const handleOpenOrders = () => {
+    if (typeof onOpenOrders === 'function') onOpenOrders();
+  };
+
   return (
     <nav
       id="taana-pwa-bottom-navigation"
@@ -114,6 +120,24 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
       className="fixed bottom-0 left-0 right-0 z-50 bg-[#FDF8F1]/95 backdrop-blur-md border-t border-cream-border/80 shadow-[0_-4px_20px_rgba(45,41,38,0.08)] pb-safe md:hidden"
     >
       <div className="max-w-md mx-auto px-2 py-1.5 flex items-center justify-around">
+
+        {activeRole === 'buyer' && (
+          <button
+            id="bottom-nav-orders-btn"
+            onClick={() => {
+              playSyntheticChime('click');
+              handleOpenOrders();
+            }}
+            className="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all text-gray-beige hover:text-charcoal cursor-pointer"
+          >
+            <div className="p-1 rounded-lg">
+              <ClipboardList className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">
+              {language === 'kn' ? 'ಆರ್ಡರ್‌ಗಳು' : language === 'hi' ? 'ऑर्डर' : 'Orders'}
+            </span>
+          </button>
+        )}
         
         {/* Center Prominent Voice AI Sahayak Button */}
         <div className="flex-1 flex justify-center -mt-4">

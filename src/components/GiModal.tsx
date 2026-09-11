@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ShieldCheck, Award, MapPin, Calendar, FileText, CheckCircle2, Clock, X, AlertTriangle, ExternalLink } from 'lucide-react';
 import { GiInfo, Product } from '../types';
 import { playSyntheticChime } from '../data';
+import { BackButton } from './BackButton';
 
 interface GiModalProps {
   product: Product;
@@ -70,6 +71,7 @@ export const GiModal: React.FC<GiModalProps> = ({
       <div className="fixed inset-0 bg-charcoal/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
         <div className="bg-cream border-2 border-terracotta rounded-3xl p-6 text-left max-w-md w-full shadow-2xl space-y-4">
           <div className="flex justify-between items-center">
+            <BackButton onBack={onClose} />
             <h3 className="font-serif text-lg font-bold text-charcoal flex items-center gap-2">
               <Award className="w-5 h-5 text-terracotta" />
               Geographical Indication (GI)
@@ -99,6 +101,7 @@ export const GiModal: React.FC<GiModalProps> = ({
         
         {/* Modal Header */}
         <div className="flex justify-between items-start border-b border-cream-border/60 pb-3">
+          <BackButton onBack={onClose} />
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-indigo-custom/10 text-indigo-custom flex items-center justify-center">

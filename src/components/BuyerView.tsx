@@ -12,6 +12,7 @@ import { OrderTrackingProgressBar } from './OrderTrackingProgressBar';
 import { GiModal } from './GiModal';
 import { PaymentProtectionTracker } from './PaymentProtectionTracker';
 import { DisputeModal } from './DisputeModal';
+import { BackButton } from './BackButton';
 
 interface BuyerViewProps {
   language: Language;
@@ -21,6 +22,7 @@ interface BuyerViewProps {
   profile: any;
   startListening?: (callback: (text: string) => void) => void;
   dataSaver: boolean;
+  openOrdersSignal?: number;
 }
 
 export const BuyerView: React.FC<BuyerViewProps> = ({
@@ -30,7 +32,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   setOrders,
   profile,
   startListening,
-  dataSaver
+  dataSaver,
+  openOrdersSignal = 0
 }) => {
   const t = TRANSLATIONS[language];
 
@@ -70,6 +73,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
   // Tab states
   const [activeTab, setActiveTab] = useState<'browse' | 'product-detail' | 'checkout' | 'orders'>('browse');
+
+  useEffect(() => {
+    if (openOrdersSignal > 0) setActiveTab('orders');
+  }, [openOrdersSignal]);
   
   // Selected Product
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -136,6 +143,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   const recentlyViewedProducts = recentlyViewedIds
     .map(id => products.find(p => p.id === id))
     .filter((p): p is Product => !!p);
+
+  const buyerOrders = profile?.name
+    ? orders.filter(order => order.buyerName === profile.name)
+    : orders;
 
   const craftFamilies: Record<string, string[]> = {
     textiles: ['saree', 'sari', 'mundu', 'textile', 'handloom', 'ikat', 'cotton', 'silk', 'fabric', 'shawl', 'dhoti', 'veshti', 'weave'],
@@ -753,6 +764,14 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               {/* Quick Filter Tabs for Saved Items */}
               <div className="flex items-center gap-2">
                 <button
+                  id="buyer-orders-desktop-btn"
+                  type="button"
+                  onClick={() => setActiveTab('orders')}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold transition flex items-center gap-1.5 bg-terracotta text-white shadow-xs"
+                >
+                  {language === 'kn' ? 'ನನ್ನ ಆರ್ಡರ್‌ಗಳು' : language === 'hi' ? 'मेरे ऑर्डर' : 'My Orders'}
+                </button>
+                <button
                   id="filter-all-crafts"
                   onClick={() => {
                     playSyntheticChime('click');
@@ -968,6 +987,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       {/* 2. PRODUCT DETAIL SCREEN */}
       {activeTab === 'product-detail' && selectedProduct && (
         <div className="space-y-5" id="product-detail-screen">
+          <BackButton language={language} onBack={() => setActiveTab('browse')} />
           
           {/* Header Navigation */}
           <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-30 flex items-center justify-between">
@@ -1202,6 +1222,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       {/* 3. TRANSPARENT CHECKOUT SCREEN */}
       {activeTab === 'checkout' && selectedProduct && (
         <div className="space-y-5" id="checkout-screen">
+          <BackButton language={language} onBack={() => setActiveTab('product-detail')} />
           
           {/* Header */}
           <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
@@ -1317,19 +1338,54 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       {/* 4. ORDERS STATUS TRACKER SCREEN */}
       {activeTab === 'orders' && (
         <div className="px-4 py-5 space-y-6" id="order-tracker-screen">
+          <BackButton language={language} onBack={() => setActiveTab('browse')} />
           
           <div>
             <h2 className="font-serif text-2xl font-bold text-charcoal">{t.orderConfirmed}</h2>
             <p className="text-xs text-gray-500">Track your order's direct loom dispatch lifecycle progress below.</p>
           </div>
 
-          {orders.length === 0 ? (
+          {buyerOrders.length > 0 && (
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3" id="buyer-orders-list">
+              <h3 className="font-serif text-base font-bold text-charcoal">
+                {language === 'kn' ? 'ನನ್ನ ಆರ್ಡರ್‌ಗಳು' : language === 'hi' ? 'मेरे ऑर्डर' : 'My Orders'}
+              </h3>
+              <div className="grid gap-2">
+                {buyerOrders.map(order => (
+                  <button
+                    key={order.id}
+                    type="button"
+                    onClick={() => setActiveOrder(order)}
+                    className={`w-full text-left rounded-xl border p-3 transition ${
+                      (activeOrder?.id || orders[0]?.id) === order.id
+                        ? 'border-terracotta bg-cream'
+                        : 'border-gray-200 hover:border-terracotta/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="font-bold text-xs text-charcoal truncate">{order.product.title}</span>
+                      <span className="text-[10px] font-mono text-gray-500 shrink-0">#{order.id}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-[10px] text-gray-500">
+                      <span>₹{order.product.price.toLocaleString('en-IN')}</span>
+                      <span>{order.status}</span>
+                      <span>{new Date(order.orderDate).toLocaleDateString('en-IN')}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {buyerOrders.length === 0 ? (
             <div className="text-center p-6 bg-white rounded-xl border border-gray-200">
-              <p className="text-sm font-semibold text-gray-500">No placed orders found yet.</p>
+              <p className="text-sm font-semibold text-gray-500">
+                {language === 'kn' ? 'ಇನ್ನೂ ಯಾವುದೇ ಆರ್ಡರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ.' : language === 'hi' ? 'अभी कोई ऑर्डर नहीं मिला।' : 'No placed orders found yet.'}
+              </p>
             </div>
           ) : (
             (() => {
-              const currentOrder = activeOrder || orders[0];
+              const currentOrder = activeOrder || buyerOrders[0];
               const steps = [
                 'Order Received',
                 'Accepted',

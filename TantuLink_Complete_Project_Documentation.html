@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TantuLink Complete Project Documentation</title>
+<style>
+@page { size: A4; margin: 18mm 15mm 18mm 15mm; }
+@page { @bottom-center { content: "TantuLink Current-State Documentation | Page " counter(page); font: 9px Arial, sans-serif; color: #68707a; } }
+* { box-sizing: border-box; }
+body { font-family: Arial, "Nirmala UI", "Noto Sans Devanagari", sans-serif; color:#20242a; font-size:10px; line-height:1.42; margin:0; }
+h1,h2,h3 { color:#223b59; page-break-after: avoid; }
+h1 { font-size:27px; margin:0 0 10px; }
+h2 { font-size:18px; border-bottom:2px solid #c25e44; padding-bottom:4px; margin-top:24px; }
+h3 { font-size:13px; margin:14px 0 5px; color:#354e6b; }
+p { margin:5px 0 8px; }
+ul,ol { margin-top:4px; }
+li { margin:2px 0; }
+.cover { min-height:250mm; display:flex; flex-direction:column; justify-content:center; padding:20mm 12mm; background:linear-gradient(135deg,#223b59 0%,#2f5574 60%,#c25e44 100%); color:white; page-break-after:always; }
+.cover h1,.cover h2 { color:white; border:0; }
+.cover .badge { display:inline-block; background:#e9b44c; color:#20242a; padding:6px 12px; border-radius:16px; font-weight:bold; width:max-content; margin-bottom:22px; }
+.cover .meta { margin-top:28px; border-top:1px solid rgba(255,255,255,.4); padding-top:12px; color:#eef2f5; }
+.toc { page-break-after:always; }
+.toc ol { columns:2; column-gap:35px; }
+.note { padding:8px 10px; border-left:4px solid #c25e44; background:#fff4ed; margin:8px 0; }
+.status { font-weight:bold; white-space:nowrap; }
+.working { color:#087443; }
+.partial { color:#a15c00; }
+.missing { color:#a91e2c; }
+.verified { color:#244e75; }
+table { width:100%; border-collapse:collapse; margin:8px 0 13px; font-size:8.5px; page-break-inside:auto; }
+thead { display:table-header-group; }
+tr { page-break-inside:avoid; }
+th { background:#223b59; color:white; text-align:left; padding:5px; }
+td { border:1px solid #cbd3dc; padding:4px 5px; vertical-align:top; }
+tr:nth-child(even) td { background:#f7f9fb; }
+code { font-family:Consolas, monospace; background:#eef1f4; padding:1px 3px; font-size:8.5px; }
+pre { background:#f1f4f7; border:1px solid #d5dce4; padding:8px; white-space:pre-wrap; font:8.5px Consolas, monospace; }
+.small { font-size:8.5px; color:#58636e; }
+.pagebreak { page-break-before:always; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.card { border:1px solid #ccd5df; padding:8px; background:#fbfcfd; }
+</style>
+</head>
+<body>
+<section class="cover">
+  <span class="badge">CURRENT-STATE AUDIT / DOCUMENTATION</span>
+  <h1>TantuLink Complete Project Documentation</h1>
+  <h2>Existing repository implementation report</h2>
+  <p>Evidence-based documentation of the current React/Vite/Express application, its UI flows, API routes, data model, demo behavior, storage boundaries, and verified limitations.</p>
+  <div class="meta"><b>Repository:</b> c:\Users\acer\tantulink<br><b>Audit basis:</b> current source files, configuration, mock data, API handlers, and component data flow<br><b>Generated:</b> 2026-09-11<br><b>Scope:</b> documentation only; application files were not modified</div>
+</section>
+
+<section class="toc"><h1>Table of Contents</h1><ol>
+<li>Project Overview</li><li>Application Flow</li><li>Onboarding</li><li>Buyer Experience</li><li>Artisan Experience</li><li>Product Categories</li><li>Product Listing / Upload</li><li>Search and Recommendations</li><li>AI Dynamic Fair Pricing</li><li>GI Verification</li><li>Payment Protection / Escrow</li><li>Buyer Disputes</li><li>Admin</li><li>Verifier</li><li>Voice Features</li><li>Localization</li><li>PWA / Offline</li><li>Backend / API</li><li>Data Storage / Database</li><li>Security</li><li>Complete Feature Status</li><li>File-to-Feature Map</li><li>Current Limitations</li><li>Hackathon Demo Flow</li><li>Final Summary</li>
+</ol></section>
+
+<h2>1. Project Overview</h2>
+<p>TantuLink, branded in the UI as Taana, is a multilingual voice-and-text marketplace demo connecting rural Indian craft producers with buyers. The current code is strongly centered on handloom/textile examples while the onboarding and visible terminology have been expanded to use Artisan/Producer language in selected areas.</p>
+<p><b>Target users:</b> an Artisan/Producer experience, a Buyer marketplace experience, and a hidden/internal Admin experience. A separate Verifier product or role is not implemented.</p>
+<p><b>Architecture:</b> React 19 client rendered by Vite, an Express server written in TypeScript, server-side in-memory seeded products/orders/transactions, client React state, localStorage caches, a service worker, offline outbox synchronization, and REST-style API endpoints. The database layer is represented by interfaces and SQL DDL in <code>src/db/schema.ts</code>, but no database driver or live database connection is present in the inspected code.</p>
+<p><b>Technologies:</b> React, TypeScript, Vite, Tailwind CSS v4 Vite plugin, Express, Motion, Lucide icons, Google Gemini package dependency, Web Speech API, Web Audio API, service worker APIs, and Unsplash image URLs. The pricing server route is implemented in <code>server.ts</code>; the inspected code does not establish a live external Gemini call for the pricing route.</p>
+
+<h2>2. Application Flow</h2>
+<ol><li><b>Open:</b> <code>src/main.tsx</code> registers <code>/service-worker.js</code> and renders <code>App.tsx</code>.</li><li><b>Initial state:</b> <code>App.tsx</code> reads <code>taana_onboarding_done</code>, <code>taana_profile</code>, cached products, cached orders, offline state, and URL query parameters.</li><li><b>Onboarding:</b> when onboarding is incomplete, <code>OnboardingFlow.tsx</code> presents language, account type, and dynamic profile forms.</li><li><b>Experience routing:</b> completed profiles are normalized to the legacy client roles <code>weaver</code>, <code>buyer</code>, or <code>admin</code>. App renders <code>WeaverView</code>, <code>BuyerView</code>, or <code>AdminDashboard</code>.</li><li><b>Marketplace:</b> Buyer browses seeded/local products, opens details, checkout, orders, payment protection, and disputes.</li><li><b>Artisan:</b> Artisan/legacy Weaver view lists products, uses the product wizard, sees incoming orders, QC, earnings, GI details, pricing, disputes, and payment protection.</li><li><b>Admin:</b> Admin mode exposes GI, dispute, and transaction tabs. The current URL query parameter <code>?role=admin</code> is accepted by the client.</li></ol>
+
+<h2>3. Onboarding</h2>
+<p>Implemented in <code>src/components/OnboardingFlow.tsx</code>. The current component keeps a three-step structure and uses one shared <code>values</code> object so fields persist when navigating back.</p>
+<table><tr><th>Step</th><th>Current UI</th><th>Navigation/state</th></tr><tr><td>1</td><td>Language buttons: English, ಕನ್ನಡ, हिन्दी. Welcome copy and language prompt change immediately through the <code>language</code> prop and <code>setLanguage</code>.</td><td>Continue advances to Step 2. Selected language is passed through subsequent steps.</td></tr><tr><td>2</td><td>Producer/Creator or Buyer/Market Partner. Producer subtypes: Individual Artisan, Co-operative Society, SHG/NGO. Buyer subtypes: Individual Consumer, Boutique Retailer, Institutional/Corporate, Wholesale Exporter.</td><td>Subtype is required before continuing. Back returns to Step 1.</td></tr><tr><td>3</td><td>Only the selected subtype form is rendered. Forms include required fields, select options, and conditional bank/UPI fields for individual artisans.</td><td>Validation runs on Create Account. Back returns to Step 2 without resetting values.</td></tr></table>
+<p>The completion payload preserves legacy fields used by the rest of the app: <code>role</code>, <code>region</code>, <code>experience</code>, <code>cooperative</code>, <code>shippingAddress</code>, <code>phone</code>, <code>weaverId</code>, and <code>buyerId</code>. It also adds <code>userType</code>, subtype fields, <code>accountType</code>, <code>artisanId</code>, and <code>onboardingData</code>.</p>
+<p><b>Verified validation:</b> required fields, Indian mobile format, email format, six-digit pincode, reasonable GSTIN pattern, and ten-character IEC pattern. This is registration validation, not KYC.</p>
+
+<h2>4. Buyer Experience</h2>
+<ul><li><b>Marketplace:</b> <code>BuyerView.tsx</code> lists available products and supports saved items.</li><li><b>Search:</b> conversational query parsing supports color, budget, material, occasion, and related filters via <code>parseConversationalSearch</code> in <code>data.ts</code>.</li><li><b>Product details:</b> images, price, origin/region, artisan story, specifications, dimensions, material, care instructions, GI status, and “Buy Right” review checkbox.</li><li><b>Recommendations:</b> a same-craft-family panel exists in product detail. It derives families from product title/material/description/GI category and shows a localized empty message when no same-family products exist.</li><li><b>Saved/recent items:</b> saved product IDs, recently viewed IDs, and search history use localStorage.</li><li><b>Checkout:</b> direct checkout shows product recap, price breakdown, logistics, platform fee, artisan direct amount, and simulated UPI completion.</li><li><b>Orders:</b> order tracking, status progression, payment protection, dispute area, and post-delivery issue reporting.</li><li><b>Voice:</b> voice search and story narration through <code>VoiceHelper.tsx</code>.</li><li><b>Profile:</b> <code>AccountModal.tsx</code> shows identity, receipts, cached order archive, data saver, and offline payment QR simulation.</li></ul>
+<p><b>Cart:</b> no multi-item cart state or cart endpoint was found. The current flow is product selection followed by direct checkout.</p>
+
+<h2>5. Artisan Experience</h2>
+<ul><li><b>Dashboard:</b> earnings, active orders, monthly sales visualization, listed products, success tips, and connection status.</li><li><b>Product creation:</b> photo/template selection, guided Q&amp;A, voice or typing input, review, publish, GI draft data, and AI pricing review.</li><li><b>Product management:</b> current products show price, listing status, GI badge, and GI modal access. Product edits beyond the wizard are limited/not comprehensively implemented.</li><li><b>Orders:</b> incoming orders, tracking, QC checklist, dispute response, and payment protection.</li><li><b>Earnings:</b> demo available/pending earnings and completed order statistics.</li><li><b>GI:</b> GI information can be entered during listing; status is locally represented as pending in the created product. The dedicated server GI submission route exists but is not called by the wizard.</li><li><b>AI pricing:</b> <code>AiDynamicPricingModal.tsx</code> sends pricing inputs to the server endpoint and has a deterministic client fallback.</li><li><b>Voice:</b> guided question narration, speech recognition/simulation, and speech synthesis.</li><li><b>Notifications:</b> visible success/error/status banners and toast-style feedback exist; no separate notification service or persisted notification entity was found.</li></ul>
+
+<h2>6. Product Categories</h2>
+<p>Onboarding currently lists these producer craft categories:</p><p>Handloom &amp; Textiles; Pottery &amp; Ceramics; Woodcraft; Metalcraft; Jewellery; Leathercraft; Bamboo &amp; Cane; Embroidery; Folk Painting; Traditional Toys; Other Handicrafts.</p>
+<p>Buyer preference categories include: Sarees &amp; Textiles; Pottery; Jewellery; Woodcraft; Metalcraft; Bamboo &amp; Cane; Embroidery; Folk Art; Home Decor; Other Handicrafts.</p>
+<p>Current seeded product data is primarily sarees, mundu, silk, cotton, Ikat, brocade, and handloom textiles. No seeded pottery, metalcraft, woodcraft, leathercraft, bamboo, toy, or painting product records were found in <code>data.ts</code> or the server seed.</p>
+
+<h2>7. Product Listing / Upload</h2>
+<p>The listing wizard is in <code>WeaverView.tsx</code>.</p>
+<ol><li><b>Photo step:</b> product photo upload/template selection is represented by selected photo state and sample images.</li><li><b>Guided Q&amp;A:</b> title/what made, material, length/width, special features, and price. Questions and hints are defined in <code>QA_QUESTIONS</code> in <code>data.ts</code>.</li><li><b>Input modes:</b> microphone or keyboard typing; simulator fallback can provide demo speech.</li><li><b>Review step:</b> read/listen to summary, edit, or publish.</li><li><b>Optional features:</b> GI draft panel and AI fair-wage pricing review.</li><li><b>Publish:</b> constructs a <code>Product</code>, prepends it to React product state, resets wizard state, and speaks a success message.</li></ol>
+<p>The inspected publish handler does not directly call <code>POST /api/products</code>; server synchronization is available through offline outbox mechanisms and server endpoints.</p>
+
+<h2>8. Search and Recommendations</h2>
+<p>Search is a client-side conversational parser, not an external search engine. <code>BuyerView.tsx</code> filters products by status, saved state, color, maximum budget, material, occasion, and parsed query values.</p>
+<p>Recommendations are not AI-generated. The current detail recommendation panel is deterministic and category-family based, using keyword matching over title, material, description, and GI category. It excludes unrelated families and displays a localized empty state when no matching products exist. The catalog itself remains mock/seeded and small.</p>
+
+<h2>9. AI Dynamic Fair Pricing</h2>
+<p>Implemented in <code>src/components/AiDynamicPricingModal.tsx</code> and <code>server.ts</code>.</p>
+<table><tr><th>Input/Output</th><th>Current implementation</th></tr><tr><td>Inputs</td><td>Raw material cost, artisan labour hours, craft complexity, production days, category, craft type, current/draft price.</td></tr><tr><td>Server endpoint</td><td><code>POST /api/pricing/recommend</code>.</td></tr><tr><td>Pricing logic</td><td>Server calculates material plus labour benchmark, applies complexity multiplier, rounds price, creates range, platform fee, other costs, and artisan earnings.</td></tr><tr><td>Client fallback</td><td>Same deterministic style of calculation runs when the server request fails.</td></tr><tr><td>Apply action</td><td>Explicit “Apply” updates product price or wizard draft price in React state.</td></tr><tr><td>Real AI status</td><td>UI calls the feature AI Dynamic Fair-Pricing, but the inspected route contains deterministic pricing calculations. A live Gemini call for this endpoint was not verified from current code.</td></tr></table>
+
+<h2>10. GI Verification</h2>
+<p>GI data is represented by <code>Product.giInfo</code> and <code>GiInfo</code>. Fields include product name, registration number, origin, state/region, category, status, date, source, verifier, submission time, and notes.</p>
+<p><b>Creation:</b> the artisan wizard creates pending GI data inside the new product object. The server also implements <code>PUT /api/products/:id/gi</code>, which validates product name, registration number, and origin and sets status to <code>PENDING</code>. The current wizard does not directly call this endpoint.</p>
+<p><b>Decision:</b> AdminDashboard and GiModal call <code>PUT /api/products/:id/gi/verify</code> with <code>VERIFIED</code> or <code>REJECTED</code>. There is no separate clarification status or dedicated verifier workflow.</p>
+<p><b>Storage:</b> server product memory, React product state, and local product cache depending on the path. A real GI database is not connected.</p>
+
+<h2>11. Payment Protection / Escrow</h2>
+<p>Payment protection is a demo/sandbox escrow model stored in <code>Order.paymentProtection</code>. Seeded and newly created orders use a 20/40/40 milestone structure:</p>
+<table><tr><th>Milestone</th><th>Share</th><th>Meaning</th></tr><tr><td>ORDER CONFIRMED</td><td>20%</td><td>Initial order confirmation/material advance.</td></tr><tr><td>CRAFTING / MAKING</td><td>40%</td><td>Craft completion/QC or logistics progression.</td></tr><tr><td>DELIVERED</td><td>40%</td><td>Final verified delivery.</td></tr></table>
+<p><code>POST /api/orders/:id/milestones/release</code> updates the server order, milestone status, released amount, pending amount, transaction ID, and transaction history. Active disputes with status OPEN or UNDER REVIEW reject release. Client fallback can update local React state and generate <code>TXN-LOC-...</code> identifiers when the endpoint is unreachable.</p>
+<p>This is not real payment processing. All transaction entries are marked demo/sandbox; no payment gateway, bank, or escrow provider is connected.</p>
+
+<h2>12. Buyer Disputes</h2>
+<p>Buyer disputes are raised in <code>DisputeModal.tsx</code> from the order view. The buyer supplies reason, detailed description, and an evidence URL/photo-notes text field. No binary photo upload was verified.</p>
+<p><code>POST /api/orders/:id/disputes</code> stores the dispute in the server-memory order with status <code>OPEN</code>. The client has a local fallback.</p>
+<p>Artisans can respond through <code>POST /api/orders/:id/disputes/respond</code>, which sets the dispute to <code>UNDER REVIEW</code>. Admin can use <code>POST /api/orders/:id/disputes/resolve</code> for:</p>
+<ul><li>Request more information</li><li>Release remaining escrow to artisan</li><li>Full refund of pending escrow</li><li>Partial refund from pending escrow</li></ul>
+<p>Resolution updates dispute status, escrow amounts, milestone state in the release-payment path, and transaction history. Local fallback resolution is less complete than the server path and may not update every escrow/transaction field.</p>
+
+<h2>13. Admin</h2>
+<p>Admin is implemented in <code>AdminDashboard.tsx</code>. The UI has GI Verification, Disputes, and Transactions tabs. It can view seeded products with GI data, associated artisan and buyer information, disputed orders, escrow summaries, and transaction records.</p>
+<p>Admin access is demo/client-side. <code>LoginModal.tsx</code> calls <code>POST /api/auth/login</code>, whose Admin branch recognizes a hardcoded demo identity. <code>App.tsx</code> also accepts <code>?role=admin</code> and trusts stored profile role data. No session/token or backend authorization middleware is present.</p>
+<p>Admin actions include GI verify/reject, dispute request-information, payment release, full refund, partial refund, and transaction refresh. Admin can switch internally to legacy Weaver or Buyer views and log out.</p>
+
+<h2>14. Verifier</h2>
+<p>A separate Verifier system is not implemented. No <code>VerifierDashboard.tsx</code>, verifier role, verifier API, verifier permissions, or verifier session was found. The word “Verifier” appears in labels and comments, including Admin-related wording, but it does not identify a separate executable workflow.</p>
+
+<h2>15. Voice Features</h2>
+<ul><li><b>Speech recognition:</b> <code>VoiceHelper.tsx</code> uses browser speech recognition where available, with simulator/manual fallback states.</li><li><b>Text-to-speech:</b> attempts <code>/api/tts</code> using Google Translate TTS, then falls back to browser Web Speech API.</li><li><b>Languages:</b> English, Kannada, Hindi; locale selection uses en-IN, kn-IN, and hi-IN where available.</li><li><b>Listing:</b> Artisan Q&amp;A can be voice guided and can use simulated transcript responses.</li><li><b>Buyer:</b> voice search and artisan-story narration are present.</li><li><b>Offline:</b> browser speech synthesis is used when offline or offline mode is selected.</li></ul>
+
+<h2>16. Localization</h2>
+<p>Primary shared translations are in <code>src/data.ts</code> for English, Kannada, and Hindi. Onboarding has its own localized copy in <code>OnboardingFlow.tsx</code>. Pricing and payment tracker components include localized copy.</p>
+<p>Localization is partial, not complete. Many public component strings remain hardcoded in English, including portions of BuyerView, WeaverView, AdminDashboard, DisputeModal, AccountModal, OfflineSimulationLab, OrderTrackingProgressBar, and LoginModal. Product names, descriptions, seed data, transaction descriptions, and some dynamic messages are not comprehensively translated. Complete Kannada/Hindi public UI coverage is therefore <span class="partial">not verified / not implemented uniformly</span>.</p>
+
+<h2>17. PWA / Offline</h2>
+<p><code>src/main.tsx</code> registers <code>public/service-worker.js</code>, with <code>public/sw.js</code> forwarding to it. The service worker uses cache-first behavior for static assets/media and network-first with cache fallback for navigation/API requests.</p>
+<p>Offline functionality includes:</p><ul><li>localStorage product/order/profile caches</li><li>offline/data-saver simulation modes</li><li>outbox items for new products, QC submits, new orders, and status updates</li><li>server batch sync at <code>POST /api/sync/batch</code></li><li>Last-Write-Wins timestamp comparison</li><li>conflict logs stored locally and server-side telemetry</li><li>background sync message forwarding</li></ul>
+<p>Limitations: the service worker precache list references source paths, not only production bundle assets; offline persistence is browser-local/process-local; server fallback data is not durable across restarts; and real multi-device conflict guarantees are not verified.</p>
+
+<h2>18. Backend / API</h2>
+<table><tr><th>Method</th><th>Endpoint</th><th>Purpose / caller</th><th>Data changed</th><th>Auth enforced?</th><th>Persistence</th></tr>
+<tr><td>GET</td><td><code>/api/health</code></td><td>Health/telemetry</td><td>None</td><td>No</td><td>None</td></tr>
+<tr><td>POST</td><td><code>/api/auth/login</code></td><td>LoginModal demo auth</td><td>None</td><td>Hardcoded credential branch</td><td>None/session absent</td></tr>
+<tr><td>GET</td><td><code>/api/schema</code></td><td>Returns SQL DDL</td><td>None</td><td>No</td><td>None</td></tr>
+<tr><td>GET/POST</td><td><code>/api/products</code></td><td>Catalog read/create/sync</td><td><code>serverProducts</code></td><td>No</td><td>Server memory</td></tr>
+<tr><td>GET/POST/PUT</td><td><code>/api/orders</code>, <code>/api/orders/:id/status</code></td><td>Orders and status/QC</td><td><code>serverOrders</code></td><td>No</td><td>Server memory</td></tr>
+<tr><td>PUT</td><td><code>/api/products/:id/gi</code></td><td>GI submission</td><td>Product <code>giInfo</code></td><td>No</td><td>Server memory</td></tr>
+<tr><td>PUT</td><td><code>/api/products/:id/gi/verify</code></td><td>GI verify/reject</td><td>Product <code>giInfo</code></td><td>No</td><td>Server memory</td></tr>
+<tr><td>POST</td><td><code>/api/pricing/recommend</code></td><td>Pricing recommendation</td><td>Response only</td><td>No</td><td>Not persisted by route</td></tr>
+<tr><td>POST</td><td><code>/api/orders/:id/milestones/release</code></td><td>Release escrow milestone</td><td>Order escrow + transactions</td><td>No</td><td>Server memory</td></tr>
+<tr><td>POST</td><td><code>/api/orders/:id/disputes</code></td><td>Buyer dispute</td><td>Order dispute</td><td>No</td><td>Server memory</td></tr>
+<tr><td>POST</td><td><code>/api/orders/:id/disputes/respond</code></td><td>Artisan response</td><td>Order dispute</td><td>No</td><td>Server memory</td></tr>
+<tr><td>POST</td><td><code>/api/orders/:id/disputes/resolve</code></td><td>Admin dispute resolution</td><td>Dispute, escrow, transactions</td><td>No</td><td>Server memory</td></tr>
+<tr><td>GET</td><td><code>/api/transactions</code></td><td>Admin transaction ledger</td><td>None</td><td>No</td><td>Server memory</td></tr>
+<tr><td>POST</td><td><code>/api/sync/batch</code></td><td>Offline outbox sync</td><td>Products/orders/conflict logs</td><td>No</td><td>Server memory</td></tr>
+<tr><td>GET</td><td><code>/api/sync/conflicts</code></td><td>Conflict telemetry</td><td>None</td><td>No</td><td>Server memory</td></tr>
+<tr><td>GET</td><td><code>/api/tts</code></td><td>Google Translate TTS proxy</td><td>None</td><td>No</td><td>None</td></tr>
+</table>
+
+<h2>19. Data Storage / Database</h2>
+<table><tr><th>Entity</th><th>Current implementation</th><th>Files</th></tr><tr><td>Products</td><td>Hardcoded mock seed; React state; localStorage cache; server memory.</td><td><code>data.ts</code>, <code>App.tsx</code>, <code>server.ts</code></td></tr><tr><td>Artisans</td><td>No separate active user table. Names/profile fields embedded in profiles/products/orders.</td><td><code>types.ts</code>, <code>data.ts</code>, <code>App.tsx</code></td></tr><tr><td>Buyers</td><td>No separate active user table. Buyer profile/order fields are client/server objects.</td><td><code>types.ts</code>, <code>App.tsx</code>, <code>server.ts</code></td></tr><tr><td>Orders</td><td>Mock seed, React state, localStorage, server memory.</td><td><code>data.ts</code>, <code>App.tsx</code>, <code>server.ts</code></td></tr><tr><td>GI requests</td><td>Embedded in Product.giInfo; no separate request store in active server.</td><td><code>types.ts</code>, <code>server.ts</code></td></tr><tr><td>Disputes</td><td>Embedded in Order.dispute; server memory/client fallback.</td><td><code>types.ts</code>, <code>DisputeModal.tsx</code>, <code>server.ts</code></td></tr><tr><td>Escrow</td><td>Embedded in Order.paymentProtection; demo amounts in mock/server data.</td><td><code>types.ts</code>, <code>PaymentProtectionTracker.tsx</code>, <code>server.ts</code></td></tr><tr><td>Transactions</td><td>serverTransactions plus order.transactionHistory; demo records.</td><td><code>server.ts</code>, <code>AdminDashboard.tsx</code></td></tr><tr><td>Profiles</td><td>React state and <code>taana_profile</code> localStorage.</td><td><code>App.tsx</code>, <code>OnboardingFlow.tsx</code></td></tr></table>
+<p><code>src/db/schema.ts</code> contains database interfaces and SQL DDL for weavers, products, orders, GI verification, milestones, disputes, transactions, outbox, and conflicts. The current server does not import a database driver or execute these tables.</p>
+
+<h2>20. Security</h2>
+<ul><li><b>Authentication:</b> demo hardcoded auth; no session/token issuance.</li><li><b>Authorization:</b> API routes do not verify caller identity or role.</li><li><b>Admin access:</b> client accepts <code>?role=admin</code> and stored role state.</li><li><b>Trusted fields:</b> verification identity and several role-related fields are client-controlled.</li><li><b>Evidence:</b> dispute evidence is a URL/text value; no upload/storage security was found.</li><li><b>Persistence:</b> server memory is lost on restart; localStorage is user-editable.</li><li><b>Public admin UI:</b> public GI modal includes an Admin Review Tool tab in the current component.</li><li><b>API exposure:</b> GI verify, dispute resolve, milestone release, and transaction routes lack authentication middleware.</li></ul>
+
+<h2>21. Complete Feature Status Table</h2>
+<table><tr><th>Feature</th><th>Exists?</th><th>Functional?</th><th>Real/Demo/Mock/Local</th><th>User access</th><th>Main files</th><th>Notes</th></tr>
+<tr><td>Buyer marketplace</td><td>✅</td><td>✅ Working</td><td>Mock catalog + React state</td><td>Buyer</td><td>BuyerView, data</td><td>Four seeded products.</td></tr>
+<tr><td>Artisan dashboard</td><td>✅</td><td>✅ Working demo</td><td>React state/mock</td><td>Artisan/legacy Weaver</td><td>WeaverView</td><td>File remains named WeaverView.</td></tr>
+<tr><td>Dynamic onboarding</td><td>✅</td><td>✅ Working</td><td>Local React state</td><td>Public</td><td>OnboardingFlow</td><td>Seven account subtype forms.</td></tr>
+<tr><td>Product upload</td><td>✅</td><td>⚠️ Partial/Demo</td><td>React state/local cache</td><td>Artisan</td><td>WeaverView</td><td>Direct server POST not used by wizard.</td></tr>
+<tr><td>Search</td><td>✅</td><td>✅ Working demo</td><td>Client parser/filter</td><td>Buyer</td><td>BuyerView, data</td><td>No external search service.</td></tr>
+<tr><td>Recommendations</td><td>✅</td><td>✅ Working demo</td><td>Keyword family filter</td><td>Buyer</td><td>BuyerView</td><td>Not AI-based.</td></tr>
+<tr><td>Checkout/payment</td><td>✅</td><td>⚠️ Demo</td><td>React simulation</td><td>Buyer</td><td>BuyerView</td><td>UPI completion is simulated.</td></tr>
+<tr><td>AI fair pricing</td><td>✅</td><td>⚠️ Demo/deterministic</td><td>Server + client fallback</td><td>Artisan</td><td>AiDynamicPricingModal, server</td><td>Live Gemini pricing not verified.</td></tr>
+<tr><td>GI submission</td><td>✅</td><td>⚠️ Partial</td><td>Product state/server endpoint</td><td>Artisan</td><td>WeaverView, server</td><td>Wizard does not directly call submission endpoint.</td></tr>
+<tr><td>GI approval/rejection</td><td>✅</td><td>⚠️ Demo/server-memory</td><td>Server memory + local fallback</td><td>Admin/public GI modal</td><td>AdminDashboard, GiModal, server</td><td>No Verifier role.</td></tr>
+<tr><td>Verifier dashboard</td><td>❌</td><td>❌ Not implemented</td><td>None</td><td>None</td><td>Not found</td><td>No VerifierDashboard.tsx.</td></tr>
+<tr><td>Disputes</td><td>✅</td><td>✅ Demo functional</td><td>Server memory + fallback</td><td>Buyer/Artisan/Admin</td><td>DisputeModal, AdminDashboard, server</td><td>Evidence URL only.</td></tr>
+<tr><td>Escrow</td><td>✅</td><td>⚠️ Demo/sandbox</td><td>Order state/server memory</td><td>Buyer/Artisan/Admin</td><td>PaymentProtectionTracker, server</td><td>No real payment processor.</td></tr>
+<tr><td>Transaction ledger</td><td>✅</td><td>⚠️ Demo</td><td>Server memory/order history</td><td>Admin</td><td>AdminDashboard, server</td><td>Records marked demo.</td></tr>
+<tr><td>Voice assistant</td><td>✅</td><td>⚠️ Browser/service dependent</td><td>Web Speech/TTS fallback</td><td>Buyer/Artisan</td><td>VoiceHelper</td><td>Google TTS proxy with local fallback.</td></tr>
+<tr><td>PWA/offline</td><td>✅</td><td>⚠️ Demo/partial</td><td>Service worker/localStorage</td><td>Public</td><td>main, service-worker, syncManager</td><td>Last-Write-Wins demo.</td></tr>
+<tr><td>Real database</td><td>❌</td><td>❌ Not verified/implemented</td><td>DDL only</td><td>None</td><td>db/schema.ts</td><td>No DB connection found.</td></tr>
+</table>
+
+<h2>22. File-to-Feature Map</h2>
+<table><tr><th>Feature</th><th>File</th><th>What it does</th></tr>
+<tr><td>Application shell/state</td><td><code>src/App.tsx</code></td><td>Role routing, profile/order/product state, caches, offline mode, modals, global header/footer.</td></tr>
+<tr><td>Onboarding</td><td><code>src/components/OnboardingFlow.tsx</code></td><td>Three-step language, account type, and dynamic profile forms.</td></tr>
+<tr><td>Buyer marketplace</td><td><code>src/components/BuyerView.tsx</code></td><td>Search, catalog, details, checkout, orders, disputes, payment protection.</td></tr>
+<tr><td>Artisan dashboard</td><td><code>src/components/WeaverView.tsx</code></td><td>Listing wizard, orders, QC, earnings, GI, pricing, disputes.</td></tr>
+<tr><td>Admin</td><td><code>src/components/AdminDashboard.tsx</code></td><td>GI, disputes, transaction tabs and actions.</td></tr>
+<tr><td>Login</td><td><code>src/components/LoginModal.tsx</code></td><td>Demo API login and offline fallback.</td></tr>
+<tr><td>Account/profile</td><td><code>src/components/AccountModal.tsx</code></td><td>Profile identity, receipts, archive, data saver, QR simulation.</td></tr>
+<tr><td>GI detail/review</td><td><code>src/components/GiModal.tsx</code></td><td>GI status/details and Admin Review Tool.</td></tr>
+<tr><td>Disputes</td><td><code>src/components/DisputeModal.tsx</code></td><td>Buyer raise, artisan respond, admin resolution forms.</td></tr>
+<tr><td>Escrow</td><td><code>src/components/PaymentProtectionTracker.tsx</code></td><td>20/40/40 milestones, freeze, release calls, local fallback.</td></tr>
+<tr><td>Pricing</td><td><code>src/components/AiDynamicPricingModal.tsx</code></td><td>Pricing inputs, recommendation, apply action, fallback calculation.</td></tr>
+<tr><td>Voice</td><td><code>src/components/VoiceHelper.tsx</code></td><td>Speech recognition, TTS, subtitles, offline fallback.</td></tr>
+<tr><td>Offline lab</td><td><code>src/components/OfflineSimulationLab.tsx</code></td><td>Network simulation, outbox, conflict demonstration, diagnostics.</td></tr>
+<tr><td>Data/mock seed</td><td><code>src/data.ts</code></td><td>Products, orders, translations, Q&amp;A, search parser, sound helpers.</td></tr>
+<tr><td>Types</td><td><code>src/types.ts</code></td><td>Product, Order, GI, dispute, payment, profile, translation contracts.</td></tr>
+<tr><td>Server/API</td><td><code>server.ts</code></td><td>Express routes, in-memory products/orders/transactions, pricing, GI, disputes, escrow, sync, TTS.</td></tr>
+<tr><td>Offline sync</td><td><code>src/utils/syncManager.ts</code></td><td>Outbox, local conflict logs, LWW merge, batch sync.</td></tr>
+<tr><td>Database specification</td><td><code>src/db/schema.ts</code></td><td>Interfaces and SQL DDL; not an active connection.</td></tr>
+<tr><td>PWA bootstrap</td><td><code>src/main.tsx</code>, <code>public/service-worker.js</code>, <code>public/manifest.json</code></td><td>Service worker registration, cache/offline behavior, install metadata.</td></tr>
+</table>
+
+<h2>23. Current Limitations</h2>
+<ul><li>No real database connection; server mutations are process-memory only.</li><li>No server sessions, tokens, or role authorization.</li><li>Admin mode can be activated through client URL/state handling.</li><li>No separate Verifier dashboard or role.</li><li>GI wizard data is local product data; direct GI submission endpoint use is not verified.</li><li>GI clarification workflow is not implemented as a dedicated action/status.</li><li>Evidence is a URL/text field, not a stored upload.</li><li>Checkout and UPI are simulations.</li><li>Escrow is sandbox/demo logic, not real custodial escrow.</li><li>Client fallback paths can diverge from server-side financial updates.</li><li>Localization remains incomplete; English strings remain in Kannada/Hindi experiences.</li><li>Catalog data is primarily handloom/textile seed data despite broader onboarding categories.</li><li>No multi-item cart was found; checkout is product-centric.</li><li>Product upload wizard does not directly call the product POST route.</li><li>Milestone sequencing is not fully enforced server-side.</li><li>Some public components expose Admin review language/tools.</li></ul>
+
+<h2>24. What Can Be Shown in a Hackathon Demo</h2>
+<ol><li>Open the app and complete English/Kannada/Hindi onboarding.</li><li>Select Producer/Creator or Buyer/Market Partner and demonstrate subtype-specific forms.</li><li>Open Buyer marketplace, use conversational search, save an item, view product details and same-craft recommendations.</li><li>Run direct checkout and show simulated UPI/order confirmation.</li><li>Show order tracking and 20/40/40 payment protection with demo amounts.</li><li>Raise a buyer dispute with description/evidence URL, then show active dispute freeze.</li><li>Use the internal Admin route/login to show GI verification, dispute actions, and transaction ledger.</li><li>Open Artisan listing wizard, use voice/simulator input, run AI fair pricing, add GI draft data, and publish a product locally.</li><li>Open Offline Simulation Lab to demonstrate offline mode, outbox, and Last-Write-Wins conflict telemetry.</li></ol>
+<p>Demo claims should be framed as sandbox behavior. Do not present the current system as production payments, production authentication, durable database storage, or a separate Verifier platform.</p>
+
+<h2>25. Final Summary</h2>
+<p>TantuLink currently provides a polished, feature-rich marketplace demonstration with Buyer and Artisan-facing flows, dynamic onboarding, seeded product/order data, client-side search and recommendations, a deterministic fair-pricing service with fallback, GI status workflows, dispute and escrow simulations, voice features, PWA caching, and offline synchronization demonstrations.</p>
+<p>The strongest implemented areas are the integrated UI flows, the shared order/payment/dispute data model, the server-memory endpoints for GI/disputes/milestones/transactions, and the offline outbox/LWW demonstration.</p>
+<p>The system remains a demo architecture. The largest production gaps are real authentication/authorization, database persistence, real payment processing, a separate Verifier role if required, secure evidence uploads, complete localization, and consistent server/client transaction handling.</p>
+<div class="note"><b>Audit conclusion:</b> statements in this report are based on the current inspected source/configuration/data files. Any behavior not directly represented by those files is marked as not verified or not implemented.</div>
+</body></html>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sparkles, IndianRupee, HelpCircle, ArrowRight, Check, X, RefreshCw, BarChart2, ShieldCheck, Info } from 'lucide-react';
 import { Language, PricingRecommendation } from '../types';
 import { playSyntheticChime } from '../data';
+import { BackButton } from './BackButton';
 
 interface AiDynamicPricingModalProps {
   currentPrice: number;
@@ -123,6 +124,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
         
         {/* Modal Header */}
         <div className="flex justify-between items-start border-b border-cream-border/60 pb-3">
+          <BackButton language={language} onBack={onClose} />
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-terracotta/10 text-terracotta flex items-center justify-center shrink-0">
               <Sparkles className="w-5 h-5 text-terracotta" />

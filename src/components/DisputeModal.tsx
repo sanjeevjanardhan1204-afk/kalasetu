@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Order, OrderDispute, DisputeStatus } from '../types';
 import { playSyntheticChime } from '../data';
+import { BackButton } from './BackButton';
 
 interface DisputeModalProps {
   order: Order;
@@ -243,6 +244,7 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
         
         {/* Header */}
         <div className="flex justify-between items-start border-b border-cream-border/60 pb-3">
+          <BackButton onBack={onClose} />
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
               <ShieldAlert className="w-5 h-5" />

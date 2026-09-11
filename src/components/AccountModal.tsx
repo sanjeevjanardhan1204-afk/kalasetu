@@ -10,6 +10,7 @@ import {
 import { Language, Order } from '../types';
 import { playSyntheticChime } from '../data';
 import { OrderTrackingProgressBar } from './OrderTrackingProgressBar';
+import { BackButton } from './BackButton';
 
 interface AccountModalProps {
   language: Language;
@@ -286,6 +287,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       >
         {/* Header Close Trigger */}
         <div className="flex justify-between items-start">
+          <BackButton language={language} onBack={onClose} />
           <div>
             <h3 className="font-serif text-lg font-bold text-charcoal">{t.title}</h3>
             <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{t.subtitle}</p>

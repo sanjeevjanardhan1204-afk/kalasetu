@@ -18,6 +18,7 @@ import { PaymentProtectionTracker } from './PaymentProtectionTracker';
 import { DisputeModal } from './DisputeModal';
 import { AiDynamicPricingModal } from './AiDynamicPricingModal';
 import { motion, AnimatePresence } from 'motion/react';
+import { BackButton } from './BackButton';
 
 interface WeaverViewProps {
   language: Language;
@@ -75,6 +76,15 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   }, [dataSaver]);
 
   const lastSyncText = lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  const artisanProductIds = new Set(
+    products
+      .filter(product => product.weaverName === profile?.name)
+      .map(product => product.id)
+  );
+  const artisanOrders = orders.filter(order =>
+    artisanProductIds.has(order.product.id) || order.product.weaverName === profile?.name
+  );
 
   const [activeSubTab, setActiveSubTab] = useState<'dashboard' | 'list-wizard'>('dashboard');
 
@@ -601,18 +611,18 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               <Clock className="w-5 h-5 text-terracotta" />
               {t.incomingOrders}
               <span className="bg-terracotta text-cream text-xs px-2 py-0.5 rounded-full font-sans">
-                {orders.filter(o => o.status === 'Order Received' || o.status === 'Accepted').length}
+                {artisanOrders.filter(o => o.status === 'Order Received' || o.status === 'Accepted').length}
               </span>
             </h3>
 
-            {orders.filter(o => o.status === 'Order Received' || o.status === 'Accepted').length === 0 ? (
+            {artisanOrders.filter(o => o.status === 'Order Received' || o.status === 'Accepted').length === 0 ? (
               <div className="bg-cream-dark/50 border border-gray-200 rounded-xl p-6 text-center">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
                 <p className="text-sm font-medium text-gray-700">All orders dispatched securely!</p>
                 <p className="text-xs text-gray-500 mt-1">Excellent job keeping rural artisans active.</p>
               </div>
             ) : (
-              orders
+              artisanOrders
                 .filter(o => o.status === 'Order Received' || o.status === 'Accepted')
                 .map(order => (
                   <div 
@@ -793,6 +803,9 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       ) : (
         /* Flow 1: Add New Product conversational wizard */
         <div className="bg-cream min-h-screen">
+          <div className="px-4 pt-4">
+            <BackButton language={language} onBack={() => setActiveSubTab('dashboard')} />
+          </div>
           
           {/* Stepper Header */}
           <div className="bg-white border-b border-cream-border px-4 py-4 sticky top-0 z-30 flex items-center gap-3">

@@ -7,6 +7,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, NetworkSimulationMode, OfflineOutboxItem } from '../types';
 import { playSyntheticChime } from '../data';
+import { BackButton } from './BackButton';
 
 interface OfflineSimulationLabProps {
   language: Language;
@@ -78,6 +79,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
         
         {/* Header */}
         <div className="bg-indigo-custom text-cream p-4 sm:p-5 flex items-start justify-between relative overflow-hidden">
+          <BackButton language={language} onBack={onClose} className="text-cream hover:text-mustard relative z-10" />
           <div className="relative z-10">
             <div className="flex items-center gap-2">
               <span className="bg-amber-400 text-charcoal text-[10px] font-black uppercase px-2 py-0.5 rounded-full tracking-wider">
