@@ -163,6 +163,136 @@ export const MOCK_PRODUCTS: Product[] = [
   }
 ];
 
+const CATEGORY_IMAGE_SETS: Record<string, string[]> = {
+  'Sarees & Textiles': [
+    'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&q=80&w=600'
+  ],
+  'Pottery & Ceramics': [
+    'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?auto=format&fit=crop&q=80&w=600'
+  ],
+  Jewellery: [
+    'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=600'
+  ],
+  Woodcraft: [
+    'https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1601058268499-e52658b8bb88?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1599696848652-f0ff23bc911f?auto=format&fit=crop&q=80&w=600'
+  ],
+  'Bamboo & Cane': [
+    'https://images.unsplash.com/photo-1594620302200-9a762244a156?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1603787081207-362bcef7c144?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1610701596061-2ecf227e85b2?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&q=80&w=600'
+  ],
+  Embroidery: [
+    'https://images.unsplash.com/photo-1598731252951-3c0fce0c4d1d?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1604176354204-9268737828e4?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1583845112203-454c7b0b9b2a?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1595341888016-a392ef81b7de?auto=format&fit=crop&q=80&w=600'
+  ],
+  Metalcraft: [
+    'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1547887538-e3a2f32cb1cc?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1581783898377-1c85bf937427?auto=format&fit=crop&q=80&w=600'
+  ],
+  'Paintings & Folk Art': [
+    'https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&q=80&w=600'
+  ],
+  Leathercraft: [
+    'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1559563458-527698bf5295?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&q=80&w=600'
+  ],
+  Handicrafts: [
+    'https://images.unsplash.com/photo-1606722590583-6951b5ea92ad?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1602523961358-f9f03dd557db?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1580136579312-94651dfd596d?auto=format&fit=crop&q=80&w=600'
+  ],
+  'Home Décor': [
+    'https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=600'
+  ],
+  'Other Traditional Crafts': [
+    'https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1544413164-5f1b0f1b0f1b?auto=format&fit=crop&q=80&w=600',
+    'https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=600'
+  ]
+};
+
+const CATEGORY_PRODUCT_NAMES: Record<string, string[]> = {
+  'Sarees & Textiles': ['Handwoven Chanderi Cotton Saree', 'Natural Indigo Ajrakh Textile', 'Kalamkari Handloom Dupatta', 'Kutch Handwoven Shawl'],
+  'Pottery & Ceramics': ['Blue Pottery Serving Bowl', 'Terracotta Water Pot', 'Hand-thrown Ceramic Vase', 'Black Clay Dinner Set'],
+  Jewellery: ['Dhokra Brass Necklace', 'Silver Filigree Earrings', 'Kundan Craft Pendant', 'Terracotta Bead Jewellery Set'],
+  Woodcraft: ['Sandalwood Carved Box', 'Kashmir Walnut Tray', 'Hand-carved Wooden Elephant', 'Rosewood Utility Stand'],
+  'Bamboo & Cane': ['Bamboo Storage Basket', 'Cane Lounge Chair', 'Bamboo Woven Lamp', 'Cane Picnic Hamper'],
+  Embroidery: ['Kasuti Embroidered Wall Hanging', 'Phulkari Embroidered Dupatta', 'Kantha Stitch Cushion Cover', 'Chikankari Embroidered Kurta'],
+  Metalcraft: ['Bell Metal Serving Thali', 'Bidri Metal Trinket Box', 'Copper Hand-hammered Pot', 'Brass Oil Lamp Set'],
+  'Paintings & Folk Art': ['Madhubani Folk Painting', 'Warli Village Scene Painting', 'Pattachitra Story Panel', 'Gond Tree of Life Painting'],
+  Leathercraft: ['Vegetable-tanned Leather Journal', 'Kolhapuri Leather Sandals', 'Leather Tool Roll', 'Hand-stitched Leather Sling Bag'],
+  Handicrafts: ['Handmade Palm Leaf Sculpture', 'Traditional Paper Mache Mask', 'Clay Festival Figurine', 'Handcrafted Folk Toy Set'],
+  'Home Décor': ['Handwoven Wall Basket', 'Traditional Textile Cushion', 'Crafted Brass Candle Holder', 'Block-print Table Runner'],
+  'Other Traditional Crafts': ['Lacquered Wooden Toy Set', 'Traditional Hand Fan', 'Stone Carved Figurine', 'Natural Fibre Craft Basket']
+};
+
+const CATEGORY_MATERIALS: Record<string, string> = {
+  'Sarees & Textiles': 'Handspun cotton and natural dyes',
+  'Pottery & Ceramics': 'Local clay and food-safe glaze',
+  Jewellery: 'Brass, silver and natural beads',
+  Woodcraft: 'Seasoned native hardwood',
+  'Bamboo & Cane': 'Sustainably harvested bamboo and cane',
+  Embroidery: 'Cotton fabric and silk thread',
+  Metalcraft: 'Hand-hammered brass and copper',
+  'Paintings & Folk Art': 'Natural pigments on handmade paper',
+  Leathercraft: 'Vegetable-tanned leather',
+  Handicrafts: 'Natural fibres and locally sourced materials',
+  'Home Décor': 'Handwoven cotton and traditional craft materials',
+  'Other Traditional Crafts': 'Locally sourced natural craft materials'
+};
+
+const CATEGORY_PRODUCT_CATALOG: Product[] = Object.entries(CATEGORY_PRODUCT_NAMES).flatMap(([category, names]) => {
+  const images = CATEGORY_IMAGE_SETS[category];
+  return names.map((title, index) => ({
+    id: `catalog-${category.toLowerCase().replace(/[^a-z]+/g, '-')}-${index + 1}`,
+    title,
+    category,
+    weaverName: `${category} Artisan ${index + 1}`,
+    weaverBio: `An independent Indian artisan preserving traditional ${category.toLowerCase()} techniques.`,
+    weaverRegion: ['Karnataka', 'Rajasthan', 'Odisha', 'West Bengal'][index],
+    weaverImage: MOCK_WEAVER_IMAGES[index % MOCK_WEAVER_IMAGES.length],
+    material: CATEGORY_MATERIALS[category],
+    price: 1200 + index * 650,
+    dimensions: { length: '30 cm', width: '20 cm' },
+    specialFeatures: `Handmade ${category.toLowerCase()} with regional motifs and traditional finishing.`,
+    description: `A distinctive ${category.toLowerCase()} piece made by hand in small batches for authentic craft lovers.`,
+    images: [images[index], images[(index + 1) % images.length]],
+    careInstructions: 'Keep dry and store away from direct sunlight. Follow the artisan care instructions supplied with the product.',
+    dateAdded: '2026-09-11T10:00:00Z',
+    status: 'Listed' as const,
+    languageCreated: 'en' as Language
+  }));
+});
+
+MOCK_PRODUCTS.push(...CATEGORY_PRODUCT_CATALOG);
+
 export const MOCK_ORDERS: Order[] = [
   {
     id: 'o1',

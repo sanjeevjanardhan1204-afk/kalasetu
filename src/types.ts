@@ -34,6 +34,7 @@ export interface Dimensions {
 export interface Product {
   id: string;
   title: string;
+  category?: string;
   weaverName: string;
   weaverBio: string;
   weaverRegion: string;

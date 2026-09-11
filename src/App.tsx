@@ -173,6 +173,7 @@ export default function App() {
     return localStorage.getItem('taana_data_saver') === 'true' ? 'data-saver' : !navigator.onLine ? 'offline' : 'online';
   });
   const [showOfflineLab, setShowOfflineLab] = useState<boolean>(false);
+  const [buyerOrdersRequest, setBuyerOrdersRequest] = useState(0);
   const [outbox, setOutbox] = useState<OfflineOutboxItem[]>(() => {
     const saved = localStorage.getItem('taana_offline_outbox');
     if (saved) {
@@ -823,6 +824,7 @@ export default function App() {
                       profile={profile}
                       startListening={startListening}
                       dataSaver={dataSaver}
+                      openOrdersSignal={buyerOrdersRequest}
                     />
                   </motion.div>
                 ) : (
@@ -917,6 +919,7 @@ export default function App() {
               networkMode={networkMode}
               isSyncing={isSyncing}
               language={language}
+              onOpenOrders={() => setBuyerOrdersRequest(previous => previous + 1)}
             />
 
             {/* Global Floating Offline Mode Trial Quick Access Button for Desktop */}
