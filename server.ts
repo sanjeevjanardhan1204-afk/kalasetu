@@ -14,6 +14,7 @@ import {
 interface ServerProduct {
   id: string;
   title: string;
+  category?: string;
   weaverName: string;
   weaverBio: string;
   weaverRegion: string;
@@ -645,6 +646,7 @@ async function startServer() {
       const newProduct: ServerProduct = {
         id: productData.id || `prod-${Date.now()}`,
         title: productData.title || "Handloom Saree",
+        category: productData.category,
         weaverName: productData.weaverName || "Master Weaver",
         weaverBio: productData.weaverBio || "Artisan",
         weaverRegion: productData.weaverRegion || "Karnataka",

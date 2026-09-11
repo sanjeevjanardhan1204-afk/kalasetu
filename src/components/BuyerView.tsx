@@ -156,10 +156,28 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
     woodcraft: ['woodcraft', 'wooden', 'wood carving', 'carved wood'],
     bamboo: ['bamboo', 'cane', 'basket'],
     painting: ['painting', 'folk art', 'madhubani', 'pattachitra', 'warli'],
-    embroidery: ['embroidery', 'kasuti', 'needlework', 'stitched']
+    embroidery: ['embroidery', 'kasuti', 'needlework', 'stitched', 'phulkari', 'kantha', 'chikankari'],
+    leathercraft: ['leathercraft', 'leather', 'kolhapuri'],
+    handicrafts: ['handicraft', 'folk toy', 'palm leaf', 'paper mache'],
+    homeDecor: ['home decor', 'home décor', 'cushion', 'lamp', 'candle holder', 'table runner', 'wall basket'],
+    otherTraditionalCrafts: ['traditional craft', 'traditional toy', 'hand fan', 'stone carved', 'lacquered']
   };
 
   const getCraftFamily = (product: Product | string) => {
+    if (typeof product !== 'string' && product.category) {
+      if (product.category === 'Sarees & Textiles') return 'textiles';
+      if (product.category === 'Pottery & Ceramics') return 'pottery';
+      if (product.category === 'Jewellery') return 'jewellery';
+      if (product.category === 'Woodcraft') return 'woodcraft';
+      if (product.category === 'Bamboo & Cane') return 'bamboo';
+      if (product.category === 'Embroidery') return 'embroidery';
+      if (product.category === 'Metalcraft') return 'metalcraft';
+      if (product.category === 'Paintings & Folk Art') return 'painting';
+      if (product.category === 'Leathercraft') return 'leathercraft';
+      if (product.category === 'Handicrafts') return 'handicrafts';
+      if (product.category === 'Home Décor') return 'homeDecor';
+      if (product.category === 'Other Traditional Crafts') return 'otherTraditionalCrafts';
+    }
     const text = typeof product === 'string'
       ? product
       : [product.title, product.material, product.description, product.giInfo?.category || ''].join(' ');
