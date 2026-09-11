@@ -68,7 +68,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         playSyntheticChime('success');
         onLoginSuccess({
           id: 'admin-1',
-          name: 'TantuLink Administrator',
+          name: 'KalaSetu Administrator',
           email: 'admin@tantulink.demo',
           role: 'admin',
           region: 'National Handloom Registry Center, New Delhi'
@@ -133,7 +133,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             </div>
             <div>
               <h3 className="font-serif font-bold text-lg text-charcoal">
-                Sign In to TantuLink
+                Sign In to KalaSetu
               </h3>
               <p className="text-xs text-gray-500">
                 Access Admin Dashboard, Weaver Portal, or Buyer Mode

@@ -1574,6 +1574,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
           onClose={() => setShowWizardPricingModal(false)}
           onApplyPrice={(newPrice) => {
             setQaAnswers(prev => ({ ...prev, price: String(newPrice) }));
+            setCurrentInputText(String(newPrice));
             setShowWizardPricingModal(false);
           }}
         />

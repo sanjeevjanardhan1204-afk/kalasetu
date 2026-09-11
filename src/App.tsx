@@ -481,7 +481,7 @@ export default function App() {
       } else if (language === 'hi') {
         welcomeText = `स्वागत है ${profile?.name || ''}। ताना डायरेक्ट मार्केटप्लेस में आपका धन्यवाद।`;
       } else {
-        welcomeText = `Welcome back ${profile?.name || ''}. Thank you for connecting with Taana.`;
+        welcomeText = `Welcome back ${profile?.name || ''}. Thank you for connecting with KalaSetu.`;
       }
       speakText(welcomeText, language);
     }, 1200);
@@ -504,7 +504,7 @@ export default function App() {
     } else if (language === 'hi') {
       testMsg = "नमस्ते, ताना आवाज सहायक सक्रिय है और ठीक से काम कर रहा है।";
     } else {
-      testMsg = "Hello, the Taana voice assistant is active and working correctly.";
+      testMsg = "Hello, the KalaSetu voice assistant is active and working correctly.";
     }
     speakText(testMsg, language);
   };
@@ -665,7 +665,7 @@ export default function App() {
                     <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full animate-pulse"></span>
                   </button>
                   <div>
-                    <h1 className="text-lg sm:text-xl font-bold tracking-tight text-terracotta leading-none">Taana</h1>
+                    <h1 className="text-lg sm:text-xl font-bold tracking-tight text-terracotta leading-none">KalaSetu</h1>
                     <p className="text-[8px] sm:text-[9px] text-indigo-custom font-extrabold uppercase tracking-widest mt-0.5">
                       {t.logoSub}
                     </p>
@@ -880,7 +880,7 @@ export default function App() {
                   </button>
                 )}
               </div>
-              <span>Taana Handloom Direct Marketplace © 2026</span>
+              <span>KalaSetu Handloom Direct Marketplace © 2026</span>
               <span className="flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 inline" />
                 Rural Offline Resilient

@@ -75,7 +75,7 @@ const ORDER_STEPS: StepMeta[] = [
     kn: 'ಪಿಕಪ್ ನಿಯೋಜಿಸಲಾಗಿದೆ',
     hi: 'पिकअप निर्धारित',
     icon: Package,
-    defaultDescEn: 'TantuLink Rural Logistics box packaged for direct artisan doorstep collection.',
+    defaultDescEn: 'KalaSetu Rural Logistics box packaged for direct artisan doorstep collection.',
     defaultDescKn: 'ನೇಕಾರರ ಮನೆಯಿಂದ ಪಾರ್ಸೆಲ್ ಸಂಗ್ರಹಿಸಲು ಬಾಕ್ಸ್ ಸಿದ್ಧಪಡಿಸಲಾಗಿದೆ.',
     defaultDescHi: 'बुनकर के घर से सुरक्षित पार्सल पिकअप तय किया गया।',
     stageTag: 'Packaging'

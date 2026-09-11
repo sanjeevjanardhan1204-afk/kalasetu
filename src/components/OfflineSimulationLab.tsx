@@ -89,7 +89,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
               <span>Offline Mode Trial & Demonstration</span>
             </h2>
             <p className="text-xs text-indigo-100/90 mt-0.5 leading-relaxed">
-              Test how Taana empowers weavers and buyers in rural handloom sheds with 0 kbps connectivity.
+              Test how KalaSetu empowers weavers and buyers in rural handloom sheds with 0 kbps connectivity.
             </p>
           </div>
 
@@ -246,7 +246,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
               <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-3.5 text-xs text-amber-950 space-y-1">
                 <p className="font-bold flex items-center gap-1.5 text-amber-900">
                   <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span>How to demonstrate Taana's offline resilience:</span>
+                  <span>How to demonstrate KalaSetu's offline resilience:</span>
                 </p>
                 <p className="text-[11px] text-amber-800 leading-relaxed">
                   Follow these 4 interactive steps to show how local IndexedDB/localStorage outbox queues capture listings and QC checks without internet!
@@ -429,7 +429,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
                       ? 'ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲದಿದ್ದರೂ (0 kbps), ಟಾಣಾ ಆನ್‌-ಡಿವೈಸ್ ವೆಬ್ ಸ್ಪೀಚ್ ಎಂಜಿನ್ ಮತ್ತು ಲೋಕಲ್ ಧ್ವನಿ ತರಂಗಗಳ ಮೂಲಕ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.'
                       : language === 'hi'
                       ? 'इंटरनेट कनेक्शन न होने पर भी (0 kbps), ताना ऑन-डिवाइस वेब स्पीच और लोकल ऑडियो तरंगों द्वारा तुरंत काम करता है।'
-                      : 'Even when completely offline (0 kbps), Taana executes speech synthesis, local acoustic wave detection, and instant handloom speech capture directly on the device!'}
+                      : 'Even when completely offline (0 kbps), KalaSetu executes speech synthesis, local acoustic wave detection, and instant handloom speech capture directly on the device!'}
                   </p>
                   <div className="flex flex-wrap gap-2 pt-1">
                     {onTestVoiceOffline && (
@@ -543,7 +543,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
                   </span>
                 </div>
                 <p className="text-[11px] text-gray-700 leading-relaxed">
-                  When offline outbox mutations are flushed to the cloud, Taana compares the client local timestamp (<code className="font-mono text-terracotta bg-white px-1 py-0.5 rounded">T_client</code>) against the existing server record timestamp (<code className="font-mono text-indigo-custom bg-white px-1 py-0.5 rounded">T_server</code>).
+                  When offline outbox mutations are flushed to the cloud, KalaSetu compares the client local timestamp (<code className="font-mono text-terracotta bg-white px-1 py-0.5 rounded">T_client</code>) against the existing server record timestamp (<code className="font-mono text-indigo-custom bg-white px-1 py-0.5 rounded">T_server</code>).
                 </p>
                 <div className="bg-white/80 p-2.5 rounded-xl border border-gray-200 font-mono text-[10px] space-y-1">
                   <div className="text-emerald-700 font-bold">✓ IF T_client ≥ T_server: Client mutation applied (Version incremented)</div>
