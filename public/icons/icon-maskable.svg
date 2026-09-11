@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGradMask" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C25E44"/>
+      <stop offset="100%" stop-color="#A3432C"/>
+    </linearGradient>
+    <linearGradient id="goldGradMask" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F2C264"/>
+      <stop offset="100%" stop-color="#E9B44C"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Solid Background for Maskable Icon (safe zone is inner 80%) -->
+  <rect width="512" height="512" fill="url(#bgGradMask)"/>
+  
+  <!-- Loom Thread grid inside safe zone -->
+  <g stroke="#FDF8F1" stroke-opacity="0.3" stroke-width="3" stroke-linecap="round">
+    <line x1="180" y1="140" x2="180" y2="370"/>
+    <line x1="220" y1="130" x2="220" y2="380"/>
+    <line x1="256" y1="120" x2="256" y2="390"/>
+    <line x1="292" y1="130" x2="292" y2="380"/>
+    <line x1="332" y1="140" x2="332" y2="370"/>
+  </g>
+  
+  <!-- Shuttle inside safe zone -->
+  <path d="M140 256 C140 234 196 214 256 214 C316 214 372 234 372 256 C372 278 316 298 256 298 C196 298 140 278 140 256 Z" fill="#FDF8F1"/>
+  
+  <!-- Inner shuttle cavity -->
+  <ellipse cx="256" cy="256" rx="54" ry="20" fill="#2E4057"/>
+  <rect x="220" y="244" width="72" height="24" rx="6" fill="url(#goldGradMask)"/>
+  
+  <!-- Flowing golden thread -->
+  <path d="M292 256 Q350 276 400 226 Q420 200 380 170" fill="none" stroke="url(#goldGradMask)" stroke-width="6" stroke-linecap="round"/>
+  
+  <text x="256" y="420" text-anchor="middle" font-family="'Outfit', sans-serif" font-weight="900" font-size="38" fill="#FDF8F1" letter-spacing="5">TAANA</text>
+</svg>

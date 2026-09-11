@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C25E44"/>
+      <stop offset="100%" stop-color="#A3432C"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F2C264"/>
+      <stop offset="100%" stop-color="#E9B44C"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#2D2926" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- App Icon Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  
+  <!-- Inner circular loom ring -->
+  <circle cx="256" cy="256" r="190" fill="none" stroke="#FDF8F1" stroke-opacity="0.2" stroke-width="4" stroke-dasharray="12 8"/>
+  
+  <!-- Warp & Weft Grid lines (The Loom Taana-Baana) -->
+  <g stroke="#FDF8F1" stroke-opacity="0.25" stroke-width="3" stroke-linecap="round">
+    <line x1="160" y1="120" x2="160" y2="392"/>
+    <line x1="208" y1="110" x2="208" y2="402"/>
+    <line x1="256" y1="100" x2="256" y2="412"/>
+    <line x1="304" y1="110" x2="304" y2="402"/>
+    <line x1="352" y1="120" x2="352" y2="392"/>
+  </g>
+  
+  <!-- Traditional Handloom Shuttle (Taana Kaadi) -->
+  <g filter="url(#shadow)">
+    <!-- Shuttle Body -->
+    <path d="M120 256 C120 230 190 206 256 206 C322 206 392 230 392 256 C392 282 322 306 256 306 C190 306 120 282 120 256 Z" fill="#FDF8F1"/>
+    
+    <!-- Shuttle Golden Bobbin Cavity -->
+    <ellipse cx="256" cy="256" rx="64" ry="24" fill="#2E4057"/>
+    
+    <!-- Golden Silk Thread Bobbin -->
+    <rect x="216" y="242" width="80" height="28" rx="8" fill="url(#goldGrad)"/>
+    <path d="M226 244 L286 268 M236 244 L296 268 M216 250 L276 270" stroke="#C25E44" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Silk Weaving Flow Thread -->
+    <path d="M296 256 Q370 280 430 220 Q460 190 410 150 Q360 110 300 170" fill="none" stroke="url(#goldGrad)" stroke-width="7" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Brand text lettermark -->
+  <text x="256" y="440" text-anchor="middle" font-family="'Outfit', sans-serif" font-weight="900" font-size="44" fill="#FDF8F1" letter-spacing="6">TAANA</text>
+</svg>

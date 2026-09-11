@@ -1,0 +1,75 @@
+{
+  "name": "Taana - Handloom Heritage Direct",
+  "short_name": "Taana",
+  "description": "Multilingual voice-first marketplace connecting rural Indian handloom weavers directly with conscious buyers.",
+  "id": "/?source=pwa",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#C25E44",
+  "background_color": "#FDF8F1",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "shopping",
+    "business",
+    "lifestyle",
+    "social"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "192x192 256x256 384x384 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "192x192 256x256 384x384 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Weaver Studio",
+      "short_name": "Weaver",
+      "description": "Add handloom sarees and manage rural dispatch orders",
+      "url": "/?role=weaver",
+      "icons": [
+        {
+          "src": "/icons/icon.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Artisan Catalog",
+      "short_name": "Marketplace",
+      "description": "Browse GI-tagged authentic sarees directly from weavers",
+      "url": "/?role=buyer",
+      "icons": [
+        {
+          "src": "/icons/icon.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Offline Resilience Lab",
+      "short_name": "Offline Lab",
+      "description": "Test local queueing, voice mode, and Last-Write-Wins sync",
+      "url": "/?tab=offline-lab",
+      "icons": [
+        {
+          "src": "/icons/icon.svg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
