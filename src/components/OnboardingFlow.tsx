@@ -1,594 +1,114 @@
-import React, { useState } from 'react';
-import { Sparkles, User, ArrowRight, ShieldCheck, Check, Info, ShoppingBag, Layers, Landmark, Lock, Mail } from 'lucide-react';
-import { Language, UserProfile } from '../types';
+import React, { useMemo, useState } from 'react';
+import { ArrowRight, Check, Info, Layers, ShoppingBag } from 'lucide-react';
+import { Language } from '../types';
 import { playSyntheticChime } from '../data';
 import { speakText } from './VoiceHelper';
-import { LoginModal } from './LoginModal';
 
-interface OnboardingFlowProps {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  onComplete: (profile: any) => void;
-}
+type UserType = 'producer' | 'buyer';
+type ProducerType = 'individual_artisan' | 'cooperative_society' | 'shg_ngo';
+type BuyerType = 'individual_consumer' | 'boutique_retailer' | 'institutional_corporate' | 'wholesale_exporter';
+type AccountType = ProducerType | BuyerType;
+type FieldType = 'text' | 'textarea' | 'email' | 'tel' | 'number' | 'select';
 
-export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
-  language,
-  setLanguage,
-  onComplete
-}) => {
-  const [step, setStep] = useState(1); // 1: Language, 2: Role, 3: Profile Details
-  const [role, setRole] = useState<'weaver' | 'buyer' | 'admin'>('weaver');
-  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
-  
-  // Profile Form States
-  const [name, setName] = useState('');
-  const [region, setRegion] = useState('');
-  const [experience, setExperience] = useState('10');
-  const [cooperative, setCooperative] = useState('');
-  
-  const [shippingAddress, setShippingAddress] = useState('');
-  const [phone, setPhone] = useState('');
+interface FormField { key: string; label: string; type?: FieldType; required?: boolean; options?: string[]; condition?: (values: Record<string, string>) => boolean; }
+interface OnboardingFlowProps { language: Language; setLanguage: (lang: Language) => void; onComplete: (profile: any) => void; }
 
-  // Admin credentials state
-  const [adminEmail, setAdminEmail] = useState('admin@tantulink.demo');
-  const [adminPassword, setAdminPassword] = useState('Admin@123');
-  const [adminError, setAdminError] = useState<string | null>(null);
+const optionSets = {
+  en: { crafts: ['Handloom & Textiles', 'Pottery & Ceramics', 'Woodcraft', 'Metalcraft', 'Jewellery', 'Leathercraft', 'Bamboo & Cane', 'Embroidery', 'Folk Painting', 'Traditional Toys', 'Other Handicrafts'], buyerCrafts: ['Sarees & Textiles', 'Pottery', 'Jewellery', 'Woodcraft', 'Metalcraft', 'Bamboo & Cane', 'Embroidery', 'Folk Art', 'Home Decor', 'Other Handicrafts'], payout: ['Bank Account', 'UPI'], counts: ['Under 50', '50-200', '200-500', '500+'], organization: ['Self-Help Group', 'NGO', 'Community Organization', 'Artisan Cluster'], assistance: ['Digital Cataloguing', 'Voice-Based Product Listing', 'Digital Payments', 'Market Access', 'Training & Support', 'Multiple Services'], shopping: ['Personal Use', 'Gifts', 'Home Decor', 'Cultural / Traditional Products'], volume: ['Small Bulk Orders', 'Medium Bulk Orders', 'Large Bulk Orders'], frequency: ['Monthly', 'Quarterly', 'Seasonal', 'As Required'], institution: ['Corporate', 'Hotel / Hospitality', 'Educational Institution', 'Government Organization', 'NGO', 'Other Institution'], purpose: ['Corporate Gifting', 'Events', 'Interior / Hospitality Decor', 'Uniforms', 'Institutional Requirements', 'Other'], payment: ['Advance Payment', 'Purchase Order', 'Bank Transfer', 'Other Approved Method'], markets: ['North America', 'Europe', 'Middle East', 'Asia-Pacific', 'Africa', 'Other Markets'], certifications: ['Handloom Mark', 'Silk Mark', 'GI Certification', 'Fair Trade', 'Other', 'None'], yesNo: ['Yes', 'No'] },
+  kn: { crafts: ['ಕೈಮಗ್ಗ ಮತ್ತು ಜವಳಿ', 'ಮಣ್ಣಿನ ಪಾತ್ರೆ ಮತ್ತು ಸೆರಾಮಿಕ್', 'ಮರದ ಕಲೆ', 'ಲೋಹದ ಕಲೆ', 'ಆಭರಣ', 'ಚರ್ಮದ ಕಲೆ', 'ಬಿದಿರು ಮತ್ತು ಕೇನ್', 'ಕಸೂತಿ', 'ಜನಪದ ಚಿತ್ರಕಲೆ', 'ಸಾಂಪ್ರದಾಯಿಕ ಆಟಿಕೆಗಳು', 'ಇತರ ಕರಕುಶಲಗಳು'], buyerCrafts: ['ಸೀರೆ ಮತ್ತು ಜವಳಿ', 'ಮಣ್ಣಿನ ಕಲೆ', 'ಆಭರಣ', 'ಮರದ ಕಲೆ', 'ಲೋಹದ ಕಲೆ', 'ಬಿದಿರು ಮತ್ತು ಕೇನ್', 'ಕಸೂತಿ', 'ಜನಪದ ಕಲೆ', 'ಮನೆಯ ಅಲಂಕಾರ', 'ಇತರ ಕರಕುಶಲಗಳು'], payout: ['ಬ್ಯಾಂಕ್ ಖಾತೆ', 'ಯುಪಿಐ'], counts: ['೫೦ ಕ್ಕಿಂತ ಕಡಿಮೆ', '೫೦-೨೦೦', '೨೦೦-೫೦೦', '೫೦೦+'], organization: ['ಸ್ವಸಹಾಯ ಗುಂಪು', 'ಎನ್‌ಜಿಒ', 'ಸಮುದಾಯ ಸಂಸ್ಥೆ', 'ಕುಶಲಕರ್ಮಿ ಕ್ಲಸ್ಟರ್'], assistance: ['ಡಿಜಿಟಲ್ ಪಟ್ಟಿಮಾಡುವಿಕೆ', 'ಧ್ವನಿ ಆಧಾರಿತ ಉತ್ಪನ್ನ ಪಟ್ಟಿ', 'ಡಿಜಿಟಲ್ ಪಾವತಿಗಳು', 'ಮಾರುಕಟ್ಟೆ ಸಂಪರ್ಕ', 'ತರಬೇತಿ ಮತ್ತು ಬೆಂಬಲ', 'ಹಲವು ಸೇವೆಗಳು'], shopping: ['ವೈಯಕ್ತಿಕ ಬಳಕೆ', 'ಉಡುಗೊರೆಗಳು', 'ಮನೆಯ ಅಲಂಕಾರ', 'ಸಾಂಸ್ಕೃತಿಕ / ಸಾಂಪ್ರದಾಯಿಕ ಉತ್ಪನ್ನಗಳು'], volume: ['ಸಣ್ಣ ಪ್ರಮಾಣದ ಸಗಟು ಆರ್ಡರ್', 'ಮಧ್ಯಮ ಪ್ರಮಾಣದ ಸಗಟು ಆರ್ಡರ್', 'ದೊಡ್ಡ ಪ್ರಮಾಣದ ಸಗಟು ಆರ್ಡರ್'], frequency: ['ತಿಂಗಳಿಗೆ', 'ತ್ರೈಮಾಸಿಕವಾಗಿ', 'ಋತುವಿನಂತೆ', 'ಅಗತ್ಯವಿದ್ದಾಗ'], institution: ['ಕಂಪನಿ', 'ಹೋಟೆಲ್ / ಆತಿಥ್ಯ', 'ಶೈಕ್ಷಣಿಕ ಸಂಸ್ಥೆ', 'ಸರ್ಕಾರಿ ಸಂಸ್ಥೆ', 'ಎನ್‌ಜಿಒ', 'ಇತರ ಸಂಸ್ಥೆ'], purpose: ['ಕಂಪನಿ ಉಡುಗೊರೆಗಳು', 'ಕಾರ್ಯಕ್ರಮಗಳು', 'ಒಳಾಂಗಣ / ಆತಿಥ್ಯ ಅಲಂಕಾರ', 'ಸಮವಸ್ತ್ರಗಳು', 'ಸಂಸ್ಥೆಯ ಅಗತ್ಯಗಳು', 'ಇತರೆ'], payment: ['ಮುಂಗಡ ಪಾವತಿ', 'ಖರೀದಿ ಆದೇಶ', 'ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆ', 'ಇತರ ಅನುಮೋದಿತ ವಿಧಾನ'], markets: ['ಉತ್ತರ ಅಮೆರಿಕಾ', 'ಯುರೋಪ್', 'ಮಧ್ಯಪ್ರಾಚ್ಯ', 'ಏಷ್ಯಾ-ಪೆಸಿಫಿಕ್', 'ಆಫ್ರಿಕಾ', 'ಇತರ ಮಾರುಕಟ್ಟೆಗಳು'], certifications: ['ಕೈಮಗ್ಗ ಗುರುತು', 'ರೇಷ್ಮೆ ಗುರುತು', 'ಜಿಐ ಪ್ರಮಾಣೀಕರಣ', 'ನ್ಯಾಯಯುತ ವ್ಯಾಪಾರ', 'ಇತರೆ', 'ಯಾವುದೂ ಇಲ್ಲ'], yesNo: ['ಹೌದು', 'ಇಲ್ಲ'] },
+  hi: { crafts: ['हथकरघा और वस्त्र', 'मिट्टी के बर्तन और सिरेमिक', 'लकड़ी का शिल्प', 'धातु शिल्प', 'आभूषण', 'चमड़े का शिल्प', 'बांस और बेंत', 'कढ़ाई', 'लोक चित्रकला', 'पारंपरिक खिलौने', 'अन्य हस्तशिल्प'], buyerCrafts: ['साड़ी और वस्त्र', 'मिट्टी का शिल्प', 'आभूषण', 'लकड़ी का शिल्प', 'धातु शिल्प', 'बांस और बेंत', 'कढ़ाई', 'लोक कला', 'घर की सजावट', 'अन्य हस्तशिल्प'], payout: ['बैंक खाता', 'यूपीआई'], counts: ['50 से कम', '50-200', '200-500', '500+'], organization: ['स्वयं सहायता समूह', 'एनजीओ', 'सामुदायिक संगठन', 'कारीगर क्लस्टर'], assistance: ['डिजिटल सूची बनाना', 'वॉयस आधारित उत्पाद सूची', 'डिजिटल भुगतान', 'बाजार संपर्क', 'प्रशिक्षण और सहायता', 'कई सेवाएं'], shopping: ['व्यक्तिगत उपयोग', 'उपहार', 'घर की सजावट', 'सांस्कृतिक / पारंपरिक उत्पाद'], volume: ['छोटे थोक ऑर्डर', 'मध्यम थोक ऑर्डर', 'बड़े थोक ऑर्डर'], frequency: ['मासिक', 'त्रैमासिक', 'मौसमी', 'आवश्यकतानुसार'], institution: ['कंपनी', 'होटल / आतिथ्य', 'शैक्षणिक संस्था', 'सरकारी संस्था', 'एनजीओ', 'अन्य संस्था'], purpose: ['कॉर्पोरेट उपहार', 'कार्यक्रम', 'इंटीरियर / आतिथ्य सजावट', 'वर्दी', 'संस्थागत आवश्यकताएं', 'अन्य'], payment: ['अग्रिम भुगतान', 'खरीद आदेश', 'बैंक ट्रांसफर', 'अन्य स्वीकृत तरीका'], markets: ['उत्तरी अमेरिका', 'यूरोप', 'मध्य पूर्व', 'एशिया-प्रशांत', 'अफ्रीका', 'अन्य बाजार'], certifications: ['हथकरघा मार्क', 'सिल्क मार्क', 'जीआई प्रमाणन', 'अन्य', 'कोई नहीं'], yesNo: ['हाँ', 'नहीं'] }
+} as const;
 
-  // Translations for Onboarding Screen
-  const onboardingTranslations = {
-    en: {
-      welcome: "Welcome to TantuLink",
-      tagline: "Connecting authentic rural weavers directly with global buyers with voice-guided transparency.",
-      chooseLang: "Choose your comfortable language",
-      selectRole: "Who are you?",
-      weaverTitle: "I am a Handloom Weaver",
-      weaverDesc: "I weave pure sarees, mundus, and traditional fabrics on manual looms.",
-      buyerTitle: "I am an Appreciative Buyer",
-      buyerDesc: "I want to purchase verified authentic handloom textiles directly from creators.",
-      detailsTitle: "Set Up Your Digital Identity",
-      detailsDesc: "This creates your verified TantuLink profile card used to secure payments and trace loom-origins.",
-      weaverName: "Your Full Name",
-      weaverRegion: "Loom Location (Village, State)",
-      weaverExp: "Years of Weaving Experience",
-      weaverCoop: "Co-operative Society (Optional)",
-      buyerName: "Your Full Name",
-      buyerAddress: "Default Shipping Address",
-      buyerPhone: "Mobile Number for Delivery",
-      letsBegin: "Create My Digital Account",
-      next: "Continue",
-      back: "Go Back",
-      stepIndicator: "Step"
-    },
-    kn: {
-      welcome: "ತಂತುಲಿಂಕ್ ಗೆ ಸುಸ್ವಾಗತ",
-      tagline: "ಧ್ವನಿ ಮಾರ್ಗದರ್ಶನದ ಮೂಲಕ ಗ್ರಾಮೀಣ ನೇಕಾರರನ್ನು ನೇರವಾಗಿ ಖರೀದಿದಾರರೊಂದಿಗೆ ಜೋಡಿಸುವುದು.",
-      chooseLang: "ನಿಮ್ಮ ಆರಾಮದಾಯಕ ಭಾಷೆಯನ್ನು ಆರಿಸಿ",
-      selectRole: "ನೀವು ಯಾರು?",
-      weaverTitle: "ನಾನು ಕೈಮಗ್ಗ ನೇಕಾರ",
-      weaverDesc: "ನಾನು ಹ್ಯಾಂಡ್ಲೂಮ್ ಮೂಲಕ ಶುದ್ಧ ಸೀರೆಗಳು, ಮುಂಡುಗಳು ಮತ್ತು ಇತರ ಸಾಂಪ್ರದಾಯಿಕ ಬಟ್ಟೆಗಳನ್ನು ನೇಯುತ್ತೇನೆ.",
-      buyerTitle: "ನಾನು ಖರೀದಿದಾರ",
-      buyerDesc: "ನಾನು ನೇರವಾಗಿ ನೇಕಾರರಿಂದ ಧೃಡೀಕೃತ ಕೈಮಗ್ಗ ಬಟ್ಟೆಗಳನ್ನು ಖರೀದಿಸಲು ಬಯಸುತ್ತೇನೆ.",
-      detailsTitle: "ನಿಮ್ಮ ಡಿಜಿಟಲ್ ಗುರುತನ್ನು ನಿರ್ಮಿಸಿ",
-      detailsDesc: "ಇದು ನಿಮ್ಮ ಧೃಡೀಕೃತ ತಂತುಲಿಂಕ್ ಪ್ರೊಫೈಲ್ ಕಾರ್ಡ್ ಅನ್ನು ರಚಿಸುತ್ತದೆ, ಇದನ್ನು ಪಾವತಿಗಳನ್ನು ಸುರಕ್ಷಿತಗೊಳಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ.",
-      weaverName: "ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರು",
-      weaverRegion: "ನೇಯ್ಗೆ ಸ್ಥಳ (ಗ್ರಾಮ, ರಾಜ್ಯ)",
-      weaverExp: "ನೇಯ್ಗೆ ಅನುಭವ (ವರ್ಷಗಳು)",
-      weaverCoop: "ಸಹಕಾರ ಸಂಘದ ಹೆಸರು (ಐಚ್ಛಿಕ)",
-      buyerName: "ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರು",
-      buyerAddress: "ನಿಮ್ಮ ವಿಳಾಸ (ಡೆಲಿವರಿಗಾಗಿ)",
-      buyerPhone: "ಮೊಬೈಲ್ ಸಂಖ್ಯೆ",
-      letsBegin: "ಖಾತೆಯನ್ನು ರಚಿಸಿ",
-      next: "ಮುಂದೆ",
-      back: "ಹಿಂದೆ",
-      stepIndicator: "ಹಂತ"
-    },
-    hi: {
-      welcome: "तंतुलिंक में आपका स्वागत है",
-      tagline: "ग्रामीण बुनकरों को सीधे खरीदारों से जोड़ने वाला वॉयस-गाइडेड डायरेक्ट मार्केटप्लेस।",
-      chooseLang: "अपनी आरामदायक भाषा चुनें",
-      selectRole: "आप कौन हैं?",
-      weaverTitle: "मैं एक हथकरघा बुनकर हूँ",
-      weaverDesc: "मैं पारंपरिक करघे पर शुद्ध साड़ियां, मुंडू और कपड़े बुनता हूँ।",
-      buyerTitle: "मैं एक खरीदार हूँ",
-      buyerDesc: "मैं सीधे बुनकरों से प्रामाणिक हस्तनिर्मित कपड़े खरीदना चाहता हूँ।",
-      detailsTitle: "अपनी डिजिटल पहचान बनाएं",
-      detailsDesc: "यह आपका सत्यापित तंतुलिंक प्रोफ़ाइल कार्ड बनाता है जो भुगतान सुरक्षा और ट्रेसबिलिटी सुनिश्चित करता है।",
-      weaverName: "आपका पूरा नाम",
-      weaverRegion: "करघा क्षेत्र (गांव, राज्य)",
-      weaverExp: "बुनाई का अनुभव (वर्ष)",
-      weaverCoop: "सहकारी समिति का नाम (वैकल्पिक)",
-      buyerName: "आपका पूरा नाम",
-      buyerAddress: "आपका पता (वितरण के लिए)",
-      buyerPhone: "मोबाइल नंबर",
-      letsBegin: "खाता बनाएँ",
-      next: "आगे",
-      back: "पीछे",
-      stepIndicator: "चरण"
-    }
+const copy = {
+  en: { welcome: 'Welcome to TantuLink', tagline: 'A direct marketplace for authentic Indian artisans, creators, and buyers.', language: 'Choose your comfortable language', account: 'Choose your account type', producer: 'I am a Producer / Creator', producerDesc: 'List authentic crafts, manage orders, and receive direct payments.', buyer: 'I am a Buyer / Market Partner', buyerDesc: 'Discover verified Indian crafts for personal, retail, institutional, or export buying.', producerChoice: 'Choose your producer type', buyerChoice: 'Choose your buyer type', details: 'Complete your profile', detailsDesc: 'Only the fields needed for your selected account type are shown.', continue: 'Continue', back: 'Go Back', create: 'Create Account', step: 'Step', select: 'Select', required: 'Please complete the required fields.', mobile: 'Enter a valid Indian mobile number.', email: 'Enter a valid email address.', pincode: 'Enter a valid 6-digit pincode.', gstin: 'Enter a valid GSTIN.', iec: 'Enter a valid IEC.', options: { individual_artisan: 'Individual Artisan / Independent Creator', cooperative_society: 'Co-operative Society / Aggregator', shg_ngo: 'Artisan Self-Help Group (SHG) / NGO', individual_consumer: 'Individual Consumer / Retail Buyer', boutique_retailer: 'Boutique Retailer / B2B Bulk Buyer', institutional_corporate: 'Institutional & Corporate Buyer', wholesale_exporter: 'Wholesale Exporter / Global Distributor' }, titles: { individual_artisan: 'Create Your Artisan Profile', cooperative_society: 'Register Your Co-operative Society', shg_ngo: 'Set Up Your Artisan Group', individual_consumer: 'Create Your Buyer Profile', boutique_retailer: 'Set Up Your Business Buying Profile', institutional_corporate: 'Create Your Institutional Procurement Profile', wholesale_exporter: 'Set Up Your Global Distribution Profile' } },
+  kn: { welcome: 'ತಂತುಲಿಂಕ್‌ಗೆ ಸ್ವಾಗತ', tagline: 'ಭಾರತೀಯ ಕುಶಲಕರ್ಮಿಗಳು, ಸೃಜನಶೀಲರು ಮತ್ತು ಖರೀದಿದಾರರಿಗೆ ನೇರ ಮಾರುಕಟ್ಟೆ.', language: 'ನಿಮಗೆ ಅನುಕೂಲವಾದ ಭಾಷೆಯನ್ನು ಆರಿಸಿ', account: 'ನಿಮ್ಮ ಖಾತೆಯ ಪ್ರಕಾರವನ್ನು ಆರಿಸಿ', producer: 'ನಾನು ಉತ್ಪಾದಕ / ಸೃಜನಶೀಲ', producerDesc: 'ನಿಮ್ಮ ಕರಕುಶಲ ಉತ್ಪನ್ನಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡಿ, ಆರ್ಡರ್ ನಿರ್ವಹಿಸಿ ಮತ್ತು ನೇರ ಪಾವತಿ ಪಡೆಯಿರಿ.', buyer: 'ನಾನು ಖರೀದಿದಾರ / ಮಾರುಕಟ್ಟೆ ಪಾಲುದಾರ', buyerDesc: 'ವೈಯಕ್ತಿಕ, ಚಿಲ್ಲರೆ, ಸಂಸ್ಥೆ ಅಥವಾ ರಫ್ತು ಖರೀದಿಗಾಗಿ ಪರಿಶೀಲಿತ ಭಾರತೀಯ ಕರಕುಶಲಗಳನ್ನು ಕಂಡುಕೊಳ್ಳಿ.', producerChoice: 'ಉತ್ಪಾದಕರ ಪ್ರಕಾರವನ್ನು ಆರಿಸಿ', buyerChoice: 'ಖರೀದಿದಾರರ ಪ್ರಕಾರವನ್ನು ಆರಿಸಿ', details: 'ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಪೂರ್ಣಗೊಳಿಸಿ', detailsDesc: 'ನಿಮ್ಮ ಆಯ್ಕೆಯ ಖಾತೆಗೆ ಅಗತ್ಯವಿರುವ ಕ್ಷೇತ್ರಗಳನ್ನು ಮಾತ್ರ ತೋರಿಸಲಾಗುತ್ತದೆ.', continue: 'ಮುಂದೆ', back: 'ಹಿಂದೆ', create: 'ಖಾತೆ ರಚಿಸಿ', step: 'ಹಂತ', select: 'ಆಯ್ಕೆಮಾಡಿ', required: 'ಅಗತ್ಯವಿರುವ ಕ್ಷೇತ್ರಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.', mobile: 'ಮಾನ್ಯವಾದ ಭಾರತೀಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.', email: 'ಮಾನ್ಯವಾದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.', pincode: 'ಮಾನ್ಯವಾದ ೬ ಅಂಕಿಯ ಪಿನ್‌ಕೋಡ್ ನಮೂದಿಸಿ.', gstin: 'ಮಾನ್ಯವಾದ ಜಿಎಸ್‌ಟಿಐಎನ್ ನಮೂದಿಸಿ.', iec: 'ಮಾನ್ಯವಾದ ಐಇಸಿ ನಮೂದಿಸಿ.', options: { individual_artisan: 'ವೈಯಕ್ತಿಕ ಕುಶಲಕರ್ಮಿ / ಸ್ವತಂತ್ರ ಸೃಜನಶೀಲ', cooperative_society: 'ಸಹಕಾರ ಸಂಘ / ಸಂಗ್ರಾಹಕ', shg_ngo: 'ಕುಶಲಕರ್ಮಿ ಸ್ವಸಹಾಯ ಗುಂಪು (SHG) / NGO', individual_consumer: 'ವೈಯಕ್ತಿಕ ಗ್ರಾಹಕ / ಚಿಲ್ಲರೆ ಖರೀದಿದಾರ', boutique_retailer: 'ಬುಟಿಕ್ ಚಿಲ್ಲರೆ ವ್ಯಾಪಾರಿ / B2B ಸಗಟು ಖರೀದಿದಾರ', institutional_corporate: 'ಸಂಸ್ಥೆ ಮತ್ತು ಕಂಪನಿ ಖರೀದಿದಾರ', wholesale_exporter: 'ಸಗಟು ರಫ್ತುದಾರ / ಜಾಗತಿಕ ವಿತರಕ' }, titles: { individual_artisan: 'ನಿಮ್ಮ ಕುಶಲಕರ್ಮಿ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ', cooperative_society: 'ನಿಮ್ಮ ಸಹಕಾರ ಸಂಘವನ್ನು ನೋಂದಾಯಿಸಿ', shg_ngo: 'ನಿಮ್ಮ ಕುಶಲಕರ್ಮಿ ಗುಂಪನ್ನು ಸಿದ್ಧಪಡಿಸಿ', individual_consumer: 'ನಿಮ್ಮ ಖರೀದಿದಾರರ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ', boutique_retailer: 'ನಿಮ್ಮ ವ್ಯಾಪಾರ ಖರೀದಿ ಪ್ರೊಫೈಲ್ ಸಿದ್ಧಪಡಿಸಿ', institutional_corporate: 'ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಖರೀದಿ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ', wholesale_exporter: 'ನಿಮ್ಮ ಜಾಗತಿಕ ವಿತರಣಾ ಪ್ರೊಫೈಲ್ ಸಿದ್ಧಪಡಿಸಿ' } },
+  hi: { welcome: 'तंतुलिंक में आपका स्वागत है', tagline: 'भारतीय कारीगरों, रचनाकारों और खरीदारों के लिए सीधा बाजार।', language: 'अपनी सुविधाजनक भाषा चुनें', account: 'अपना खाता प्रकार चुनें', producer: 'मैं एक उत्पादक / रचनाकार हूँ', producerDesc: 'अपने हस्तशिल्प सूचीबद्ध करें, ऑर्डर संभालें और सीधे भुगतान पाएं।', buyer: 'मैं एक खरीदार / बाजार भागीदार हूँ', buyerDesc: 'व्यक्तिगत, खुदरा, संस्थागत या निर्यात खरीद के लिए प्रमाणित भारतीय शिल्प खोजें।', producerChoice: 'उत्पादक का प्रकार चुनें', buyerChoice: 'खरीदार का प्रकार चुनें', details: 'अपना प्रोफाइल पूरा करें', detailsDesc: 'आपके चुने हुए खाते के लिए जरूरी फ़ील्ड ही दिखाए गए हैं।', continue: 'आगे', back: 'पीछे', create: 'खाता बनाएं', step: 'चरण', select: 'चुनें', required: 'कृपया जरूरी फ़ील्ड भरें।', mobile: 'मान्य भारतीय मोबाइल नंबर दर्ज करें।', email: 'मान्य ईमेल पता दर्ज करें।', pincode: 'मान्य 6 अंकों का पिनकोड दर्ज करें।', gstin: 'मान्य जीएसटीआईएन दर्ज करें।', iec: 'मान्य आईईसी दर्ज करें।', options: { individual_artisan: 'व्यक्तिगत कारीगर / स्वतंत्र रचनाकार', cooperative_society: 'सहकारी समिति / संग्रहकर्ता', shg_ngo: 'कारीगर स्वयं सहायता समूह (SHG) / NGO', individual_consumer: 'व्यक्तिगत उपभोक्ता / खुदरा खरीदार', boutique_retailer: 'बुटीक खुदरा विक्रेता / B2B थोक खरीदार', institutional_corporate: 'संस्थागत और कॉर्पोरेट खरीदार', wholesale_exporter: 'थोक निर्यातक / वैश्विक वितरक' }, titles: { individual_artisan: 'अपना कारीगर प्रोफाइल बनाएं', cooperative_society: 'अपनी सहकारी समिति पंजीकृत करें', shg_ngo: 'अपना कारीगर समूह बनाएं', individual_consumer: 'अपना खरीदार प्रोफाइल बनाएं', boutique_retailer: 'अपना व्यापारिक खरीद प्रोफाइल बनाएं', institutional_corporate: 'अपना संस्थागत खरीद प्रोफाइल बनाएं', wholesale_exporter: 'अपना वैश्विक वितरण प्रोफाइल बनाएं' } }
+} as const;
+
+const languageSelectionCopy = {
+  en: {
+    welcome: 'Welcome to TantuLink',
+    tagline: 'A direct marketplace for authentic Indian artisans, creators, and buyers.',
+    language: 'CHOOSE YOUR COMFORTABLE LANGUAGE',
+    continue: 'Continue'
+  },
+  kn: {
+    welcome: 'TantuLink ಗೆ ಸುಸ್ವಾಗತ',
+    tagline: 'ಅಧಿಕೃತ ಭಾರತೀಯ ಕುಶಲಕರ್ಮಿಗಳು, ಸೃಷ್ಟಿಕರ್ತರು ಮತ್ತು ಖರೀದಿದಾರರಿಗಾಗಿ ನೇರ ಮಾರುಕಟ್ಟೆ.',
+    language: 'ನಿಮಗೆ ಅನುಕೂಲವಾದ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+    continue: 'ಮುಂದುವರಿಸಿ'
+  },
+  hi: {
+    welcome: 'TantuLink में आपका स्वागत है',
+    tagline: 'प्रामाणिक भारतीय कारीगरों, रचनाकारों और खरीदारों के लिए एक सीधा बाज़ार।',
+    language: 'अपनी सुविधाजनक भाषा चुनें',
+    continue: 'जारी रखें'
+  }
+} as const;
+
+type FieldKey = 'fullName' | 'craftName' | 'primaryCraft' | 'specialty' | 'experience' | 'village' | 'district' | 'state' | 'mobile' | 'payoutMethod' | 'holderName' | 'accountNumber' | 'ifsc' | 'upi' | 'societyName' | 'registrationNumber' | 'licenseDetails' | 'headOffice' | 'artisanCount' | 'primaryCategories' | 'representative' | 'representativeMobile' | 'officialEmail' | 'bankAccount' | 'signatory' | 'groupName' | 'organizationType' | 'manager' | 'email' | 'baseLocation' | 'supportedArtisans' | 'clusters' | 'mainCategories' | 'organizationId' | 'assistance' | 'deliveryAddress' | 'city' | 'pincode' | 'preferredCategories' | 'shopping' | 'businessName' | 'owner' | 'gstin' | 'businessAddress' | 'businessEmail' | 'contact' | 'orderVolume' | 'preferredCrafts' | 'frequency' | 'resale' | 'companyName' | 'registeredAddress' | 'procurementOfficer' | 'procurementEmail' | 'officialContact' | 'purpose' | 'purchaseVolume' | 'payment' | 'tradingName' | 'authorizedRepresentative' | 'iec' | 'internationalContact' | 'markets' | 'port' | 'compliance' | 'logisticsSupport';
+
+const fieldLabels: Record<Language, Record<FieldKey, string>> = {
+  en: { fullName: 'Full Name', craftName: 'Artisan / Craft Name', primaryCraft: 'Primary Craft Category', specialty: 'Craft / Product Specialty', experience: 'Years of Craft Experience', village: 'Village / Town', district: 'District', state: 'State', mobile: 'Mobile Number', payoutMethod: 'Preferred Payout Method', holderName: 'Account Holder Name', accountNumber: 'Account Number', ifsc: 'IFSC', upi: 'UPI ID', societyName: 'Registered Society Name', registrationNumber: 'Registration Number', licenseDetails: 'Government Registration / License Details', headOffice: 'Head Office Address', artisanCount: 'Number of Artisans Represented', primaryCategories: 'Primary Craft Categories', representative: 'Society Representative Name', representativeMobile: 'Representative Mobile Number', officialEmail: 'Official Email', bankAccount: 'Centralized Bank Account', signatory: 'Authorized Signatory Name', groupName: 'SHG / NGO Name', organizationType: 'Organization Type', manager: 'Group Representative / Field Manager Name', email: 'Email', baseLocation: 'Base Village / Location', supportedArtisans: 'Number of Artisans Supported', clusters: 'Number of Clusters Managed', mainCategories: 'Main Craft Categories', organizationId: 'Registration / Organization ID', assistance: 'Assistance Required', deliveryAddress: 'Delivery Address', city: 'City / Town', pincode: 'Pincode', preferredCategories: 'Preferred Product Categories', shopping: 'Shopping Preference', businessName: 'Boutique / Business Name', owner: 'Owner / Buyer Name', gstin: 'GSTIN', businessAddress: 'Business Address', businessEmail: 'Business Email', contact: 'Contact Number', orderVolume: 'Expected Order Volume', preferredCrafts: 'Preferred Craft Categories', frequency: 'Typical Order Frequency', resale: 'Do you purchase for resale?', companyName: 'Organization / Company Name', registeredAddress: 'Registered Office Address', procurementOfficer: 'Procurement Officer Name', procurementEmail: 'Official Procurement Email', officialContact: 'Official Contact Number', purpose: 'Procurement Purpose', purchaseVolume: 'Expected Purchase Volume', payment: 'Preferred Payment Method', tradingName: 'Export / Trading Company Name', authorizedRepresentative: 'Authorized Representative Name', iec: 'Import Export Code (IEC)', internationalContact: 'International Contact Number', markets: 'Export / Distribution Markets', port: 'Primary Port / Logistics Hub', compliance: 'Required Compliance / Certification', logisticsSupport: 'Customs / Logistics Support Required?' },
+  kn: { fullName: 'ಪೂರ್ಣ ಹೆಸರು', craftName: 'ಕುಶಲಕರ್ಮಿ / ಕರಕುಶಲ ಹೆಸರು', primaryCraft: 'ಮುಖ್ಯ ಕರಕುಶಲ ವರ್ಗ', specialty: 'ಕರಕುಶಲ / ಉತ್ಪನ್ನ ವಿಶೇಷತೆ', experience: 'ಕರಕುಶಲ ಅನುಭವದ ವರ್ಷಗಳು', village: 'ಗ್ರಾಮ / ಪಟ್ಟಣ', district: 'ಜಿಲ್ಲೆ', state: 'ರಾಜ್ಯ', mobile: 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ', payoutMethod: 'ಆದ್ಯತೆಯ ಪಾವತಿ ವಿಧಾನ', holderName: 'ಖಾತೆದಾರರ ಹೆಸರು', accountNumber: 'ಖಾತೆ ಸಂಖ್ಯೆ', ifsc: 'ಐಎಫ್‌ಎಸ್‌ಸಿ', upi: 'ಯುಪಿಐ ಐಡಿ', societyName: 'ನೋಂದಾಯಿತ ಸಂಘದ ಹೆಸರು', registrationNumber: 'ನೋಂದಣಿ ಸಂಖ್ಯೆ', licenseDetails: 'ಸರ್ಕಾರಿ ನೋಂದಣಿ / ಪರವಾನಗಿ ವಿವರಗಳು', headOffice: 'ಮುಖ್ಯ ಕಚೇರಿ ವಿಳಾಸ', artisanCount: 'ಪ್ರತಿನಿಧಿಸುವ ಕುಶಲಕರ್ಮಿಗಳ ಸಂಖ್ಯೆ', primaryCategories: 'ಮುಖ್ಯ ಕರಕುಶಲ ವರ್ಗಗಳು', representative: 'ಸಂಘದ ಪ್ರತಿನಿಧಿಯ ಹೆಸರು', representativeMobile: 'ಪ್ರತಿನಿಧಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ', officialEmail: 'ಅಧಿಕೃತ ಇಮೇಲ್', bankAccount: 'ಕೇಂದ್ರಿಕೃತ ಬ್ಯಾಂಕ್ ಖಾತೆ', signatory: 'ಅಧಿಕೃತ ಸಹಿದಾರರ ಹೆಸರು', groupName: 'SHG / NGO ಹೆಸರು', organizationType: 'ಸಂಸ್ಥೆಯ ಪ್ರಕಾರ', manager: 'ಗುಂಪಿನ ಪ್ರತಿನಿಧಿ / ಕ್ಷೇತ್ರ ವ್ಯವಸ್ಥಾಪಕರ ಹೆಸರು', email: 'ಇಮೇಲ್', baseLocation: 'ಮೂಲ ಗ್ರಾಮ / ಸ್ಥಳ', supportedArtisans: 'ಬೆಂಬಲಿಸುವ ಕುಶಲಕರ್ಮಿಗಳ ಸಂಖ್ಯೆ', clusters: 'ನಿರ್ವಹಿಸುವ ಕ್ಲಸ್ಟರ್‌ಗಳ ಸಂಖ್ಯೆ', mainCategories: 'ಮುಖ್ಯ ಕರಕುಶಲ ವರ್ಗಗಳು', organizationId: 'ನೋಂದಣಿ / ಸಂಸ್ಥೆ ಐಡಿ', assistance: 'ಅಗತ್ಯವಿರುವ ಸಹಾಯ', deliveryAddress: 'ವಿತರಣಾ ವಿಳಾಸ', city: 'ನಗರ / ಪಟ್ಟಣ', pincode: 'ಪಿನ್‌ಕೋಡ್', preferredCategories: 'ಆದ್ಯತೆಯ ಉತ್ಪನ್ನ ವರ್ಗಗಳು', shopping: 'ಖರೀದಿ ಆದ್ಯತೆ', businessName: 'ಬುಟಿಕ್ / ವ್ಯಾಪಾರದ ಹೆಸರು', owner: 'ಮಾಲೀಕ / ಖರೀದಿ ಅಧಿಕಾರಿಯ ಹೆಸರು', gstin: 'ಜಿಎಸ್‌ಟಿಐಎನ್', businessAddress: 'ವ್ಯಾಪಾರದ ವಿಳಾಸ', businessEmail: 'ವ್ಯಾಪಾರ ಇಮೇಲ್', contact: 'ಸಂಪರ್ಕ ಸಂಖ್ಯೆ', orderVolume: 'ನಿರೀಕ್ಷಿತ ಆರ್ಡರ್ ಪ್ರಮಾಣ', preferredCrafts: 'ಆದ್ಯತೆಯ ಕರಕುಶಲ ವರ್ಗಗಳು', frequency: 'ಸಾಮಾನ್ಯ ಆರ್ಡರ್ ಅವಧಿ', resale: 'ನೀವು ಮರುಮಾರಾಟಕ್ಕಾಗಿ ಖರೀದಿಸುತ್ತೀರಾ?', companyName: 'ಸಂಸ್ಥೆ / ಕಂಪನಿ ಹೆಸರು', registeredAddress: 'ನೋಂದಾಯಿತ ಕಚೇರಿ ವಿಳಾಸ', procurementOfficer: 'ಖರೀದಿ ಅಧಿಕಾರಿಯ ಹೆಸರು', procurementEmail: 'ಅಧಿಕೃತ ಖರೀದಿ ಇಮೇಲ್', officialContact: 'ಅಧಿಕೃತ ಸಂಪರ್ಕ ಸಂಖ್ಯೆ', purpose: 'ಖರೀದಿ ಉದ್ದೇಶ', purchaseVolume: 'ನಿರೀಕ್ಷಿತ ಖರೀದಿ ಪ್ರಮಾಣ', payment: 'ಆದ್ಯತೆಯ ಪಾವತಿ ವಿಧಾನ', tradingName: 'ರಫ್ತು / ವ್ಯಾಪಾರ ಕಂಪನಿ ಹೆಸರು', authorizedRepresentative: 'ಅಧಿಕೃತ ಪ್ರತಿನಿಧಿಯ ಹೆಸರು', iec: 'ಆಮದು ರಫ್ತು ಕೋಡ್ (IEC)', internationalContact: 'ಅಂತರರಾಷ್ಟ್ರೀಯ ಸಂಪರ್ಕ ಸಂಖ್ಯೆ', markets: 'ರಫ್ತು / ವಿತರಣಾ ಮಾರುಕಟ್ಟೆಗಳು', port: 'ಮುಖ್ಯ ಬಂದರು / ಲಾಜಿಸ್ಟಿಕ್ಸ್ ಕೇಂದ್ರ', compliance: 'ಅಗತ್ಯವಿರುವ ಅನುಸರಣೆ / ಪ್ರಮಾಣೀಕರಣ', logisticsSupport: 'ಕಸ್ಟಮ್ಸ್ / ಲಾಜಿಸ್ಟಿಕ್ಸ್ ಸಹಾಯ ಬೇಕೇ?' },
+  hi: { fullName: 'पूरा नाम', craftName: 'कारीगर / शिल्प का नाम', primaryCraft: 'मुख्य शिल्प श्रेणी', specialty: 'शिल्प / उत्पाद विशेषता', experience: 'शिल्प अनुभव के वर्ष', village: 'गांव / शहर', district: 'जिला', state: 'राज्य', mobile: 'मोबाइल नंबर', payoutMethod: 'पसंदीदा भुगतान तरीका', holderName: 'खाता धारक का नाम', accountNumber: 'खाता नंबर', ifsc: 'आईएफएससी', upi: 'यूपीआई आईडी', societyName: 'पंजीकृत समिति का नाम', registrationNumber: 'पंजीकरण नंबर', licenseDetails: 'सरकारी पंजीकरण / लाइसेंस विवरण', headOffice: 'मुख्य कार्यालय का पता', artisanCount: 'प्रतिनिधित्व किए गए कारीगरों की संख्या', primaryCategories: 'मुख्य शिल्प श्रेणियां', representative: 'समिति प्रतिनिधि का नाम', representativeMobile: 'प्रतिनिधि का मोबाइल नंबर', officialEmail: 'आधिकारिक ईमेल', bankAccount: 'केंद्रीय बैंक खाता', signatory: 'अधिकृत हस्ताक्षरकर्ता का नाम', groupName: 'SHG / NGO का नाम', organizationType: 'संगठन का प्रकार', manager: 'समूह प्रतिनिधि / क्षेत्र प्रबंधक का नाम', email: 'ईमेल', baseLocation: 'आधार गांव / स्थान', supportedArtisans: 'समर्थित कारीगरों की संख्या', clusters: 'प्रबंधित क्लस्टर की संख्या', mainCategories: 'मुख्य शिल्प श्रेणियां', organizationId: 'पंजीकरण / संगठन आईडी', assistance: 'आवश्यक सहायता', deliveryAddress: 'डिलीवरी का पता', city: 'शहर / कस्बा', pincode: 'पिनकोड', preferredCategories: 'पसंदीदा उत्पाद श्रेणियां', shopping: 'खरीदारी की पसंद', businessName: 'बुटीक / व्यापार का नाम', owner: 'मालिक / खरीदार का नाम', gstin: 'जीएसटीआईएन', businessAddress: 'व्यवसाय का पता', businessEmail: 'व्यावसायिक ईमेल', contact: 'संपर्क नंबर', orderVolume: 'अपेक्षित ऑर्डर मात्रा', preferredCrafts: 'पसंदीदा शिल्प श्रेणियां', frequency: 'सामान्य ऑर्डर अवधि', resale: 'क्या आप पुनर्विक्रय के लिए खरीदते हैं?', companyName: 'संगठन / कंपनी का नाम', registeredAddress: 'पंजीकृत कार्यालय का पता', procurementOfficer: 'खरीद अधिकारी का नाम', procurementEmail: 'आधिकारिक खरीद ईमेल', officialContact: 'आधिकारिक संपर्क नंबर', purpose: 'खरीद का उद्देश्य', purchaseVolume: 'अपेक्षित खरीद मात्रा', payment: 'पसंदीदा भुगतान तरीका', tradingName: 'निर्यात / व्यापार कंपनी का नाम', authorizedRepresentative: 'अधिकृत प्रतिनिधि का नाम', iec: 'आयात निर्यात कोड (IEC)', internationalContact: 'अंतरराष्ट्रीय संपर्क नंबर', markets: 'निर्यात / वितरण बाजार', port: 'मुख्य बंदरगाह / लॉजिस्टिक्स केंद्र', compliance: 'आवश्यक अनुपालन / प्रमाणन', logisticsSupport: 'क्या कस्टम्स / लॉजिस्टिक्स सहायता चाहिए?' }
+};
+
+const getFields = (language: Language, accountType: AccountType | null): FormField[] => {
+  if (!accountType) return [];
+  const label = (key: FieldKey) => fieldLabels[language][key];
+  const data = optionSets[language];
+  const text = (key: FieldKey, type: FieldType = 'text', required = true): FormField => ({ key, label: label(key), type, required });
+  const select = (key: FieldKey, options: readonly string[], required = true): FormField => ({ key, label: label(key), type: 'select', options: [...options], required });
+  if (accountType === 'individual_artisan') return [text('fullName'), text('craftName'), select('primaryCraft', data.crafts), text('specialty'), text('experience', 'number'), text('village'), text('district'), text('state'), text('mobile', 'tel'), select('payoutMethod', data.payout), { ...text('holderName'), condition: values => values.payoutMethod === data.payout[0] }, { ...text('accountNumber'), condition: values => values.payoutMethod === data.payout[0] }, { ...text('ifsc'), condition: values => values.payoutMethod === data.payout[0] }, { ...text('upi'), condition: values => values.payoutMethod === data.payout[1] }];
+  if (accountType === 'cooperative_society') return [text('societyName'), text('registrationNumber'), text('licenseDetails', 'textarea'), text('headOffice', 'textarea'), text('district'), text('state'), select('artisanCount', data.counts), select('primaryCategories', data.crafts), text('representative'), text('representativeMobile', 'tel'), text('officialEmail', 'email'), text('bankAccount'), text('ifsc'), text('signatory')];
+  if (accountType === 'shg_ngo') return [text('groupName'), select('organizationType', data.organization), text('manager'), text('mobile', 'tel'), text('email', 'email'), text('baseLocation'), text('district'), text('state'), text('supportedArtisans', 'number'), text('clusters', 'number'), select('mainCategories', data.crafts), text('organizationId'), select('assistance', data.assistance)];
+  if (accountType === 'individual_consumer') return [text('fullName'), text('mobile', 'tel'), text('email', 'email'), text('deliveryAddress', 'textarea'), text('city'), text('state'), text('pincode'), select('preferredCategories', data.buyerCrafts), select('shopping', data.shopping)];
+  if (accountType === 'boutique_retailer') return [text('businessName'), text('owner'), text('gstin'), text('businessAddress', 'textarea'), text('city'), text('state'), text('pincode'), text('businessEmail', 'email'), text('contact', 'tel'), select('orderVolume', data.volume), select('preferredCrafts', data.crafts), select('frequency', data.frequency), select('resale', data.yesNo)];
+  if (accountType === 'institutional_corporate') return [text('companyName'), select('organizationType', data.institution), text('gstin'), text('registeredAddress', 'textarea'), text('city'), text('state'), text('pincode'), text('procurementOfficer'), text('procurementEmail', 'email'), text('officialContact', 'tel'), select('purpose', data.purpose), select('purchaseVolume', data.volume), select('payment', data.payment)];
+  return [text('tradingName'), text('authorizedRepresentative'), text('gstin'), text('iec'), text('registeredAddress', 'textarea'), text('city'), text('state'), text('pincode'), text('businessEmail', 'email'), text('internationalContact', 'tel'), select('markets', data.markets), text('port'), select('orderVolume', data.volume), select('preferredCrafts', data.crafts), select('compliance', data.certifications), select('logisticsSupport', data.yesNo)];
+};
+
+export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ language, setLanguage, onComplete }) => {
+  const [step, setStep] = useState(1);
+  const [userType, setUserType] = useState<UserType | null>(null);
+  const [accountType, setAccountType] = useState<AccountType | null>(null);
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [error, setError] = useState('');
+  const t = { ...copy[language], ...languageSelectionCopy[language] };
+  const data = optionSets[language];
+  const fields = useMemo(() => getFields(language, accountType), [language, accountType]);
+  const update = (key: string, value: string) => { setValues(previous => ({ ...previous, [key]: value })); setError(''); };
+  const chooseUserType = (next: UserType) => { setUserType(next); setAccountType(null); setError(''); };
+  const validate = () => {
+    if (fields.some(field => (!field.condition || field.condition(values)) && field.required && !values[field.key]?.trim())) return t.required;
+    const mobile = values.mobile || values.representativeMobile || values.contact || values.internationalContact;
+    if (mobile && !/^(\+91[-\s]?)?[6-9]\d{9}$/.test(mobile.replace(/[()]/g, ''))) return t.mobile;
+    const email = values.email || values.officialEmail || values.businessEmail || values.procurementEmail;
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return t.email;
+    if (values.pincode && !/^\d{6}$/.test(values.pincode)) return t.pincode;
+    if (values.gstin && !/^\d{2}[A-Z0-9]{13}$/.test(values.gstin.toUpperCase())) return t.gstin;
+    if (values.iec && !/^[A-Z0-9]{10}$/.test(values.iec.toUpperCase())) return t.iec;
+    return '';
   };
-
-  const ot = onboardingTranslations[language] || onboardingTranslations.en;
-
-  const handleNextStep = () => {
-    playSyntheticChime('click');
-    if (step < 3) {
-      setStep(step + 1);
-    } else {
-      if (role === 'admin') {
-        if (adminPassword !== 'Admin@123') {
-          setAdminError('Invalid password. Demo admin password is: Admin@123');
-          return;
-        }
-        const adminProfile = {
-          name: 'TantuLink Administrator',
-          role: 'admin',
-          email: adminEmail.trim() || 'admin@tantulink.demo',
-          language,
-          region: 'National Handloom Registry Center, New Delhi',
-          experience: '15',
-          cooperative: 'Office of the Development Commissioner for Handlooms, Govt. of India',
-          shippingAddress: 'Udyog Bhawan, New Delhi - 110011',
-          phone: '+91 11 2306 1234',
-          weaverId: 'ADM-1001',
-          buyerId: 'ADM-1001'
-        };
-        speakText('Welcome Administrator. Opening TantuLink Admin Dashboard.', language);
-        onComplete(adminProfile);
-        return;
-      }
-
-      const finalProfile = {
-        name: name.trim() || (role === 'weaver' ? 'Annaiah Devanga' : 'Jagadish B.'),
-        role,
-        language,
-        region: region.trim() || 'Gudikal, Bagalkot, Karnataka',
-        experience,
-        cooperative: cooperative.trim() || 'Gudikal Weaver Co-op Society',
-        shippingAddress: shippingAddress.trim() || 'Indiranagar, Bengaluru, Karnataka - 560038',
-        phone: phone.trim() || '+91 98765 43210',
-        weaverId: 'WEV-' + Math.floor(1000 + Math.random() * 9000),
-        buyerId: 'BYR-' + Math.floor(1000 + Math.random() * 9000)
-      };
-
-      // Sound welcome announcement using text to speech
-      let welcomeSpeech = '';
-      if (language === 'kn') {
-        welcomeSpeech = `ಧನ್ಯವಾದಗಳು ${finalProfile.name}. ನಿಮ್ಮ ತಂತುಲಿಂಕ್ ಡಿಜಿಟಲ್ ಗುರುತಿನ ಪತ್ರ ಸಿದ್ಧವಾಗಿದೆ.`;
-      } else if (language === 'hi') {
-        welcomeSpeech = `धन्यवाद ${finalProfile.name}। आपका तंतुलिंक डिजिटल पहचान पत्र तैयार है।`;
-      } else {
-        welcomeSpeech = `Thank you ${finalProfile.name}. Your verified TantuLink profile identity is now ready.`;
-      }
-      speakText(welcomeSpeech, language);
-
-      onComplete(finalProfile);
-    }
+  const complete = () => {
+    const name = values.fullName || values.representative || values.manager || values.owner || values.procurementOfficer || values.authorizedRepresentative || values.societyName || values.groupName || values.businessName || values.companyName || values.tradingName || 'TantuLink Member';
+    const producer = userType === 'producer';
+    const region = [values.village || values.baseLocation || values.city, values.district, values.state].filter(Boolean).join(', ');
+    const profile = { name, role: producer ? 'weaver' : 'buyer', userType, ...(producer ? { producerType: accountType } : { buyerType: accountType }), accountType, language, email: values.email || values.officialEmail || values.businessEmail || values.procurementEmail, phone: values.mobile || values.representativeMobile || values.contact || values.internationalContact, region: region || values.headOffice || values.businessAddress || values.registeredAddress || 'India', experience: values.experience || '', cooperative: values.societyName || values.groupName || '', shippingAddress: values.deliveryAddress || values.headOffice || values.businessAddress || values.registeredAddress || '', artisanId: producer ? `ART-${Math.floor(1000 + Math.random() * 9000)}` : undefined, weaverId: producer ? `WEV-${Math.floor(1000 + Math.random() * 9000)}` : undefined, buyerId: !producer ? `BYR-${Math.floor(1000 + Math.random() * 9000)}` : undefined, onboardingData: values };
+    const speech = language === 'kn' ? `ಧನ್ಯವಾದಗಳು ${name}. ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಸಿದ್ಧವಾಗಿದೆ.` : language === 'hi' ? `धन्यवाद ${name}। आपका प्रोफाइल तैयार है।` : `Thank you ${name}. Your profile is ready.`;
+    speakText(speech, language);
+    onComplete(profile);
   };
-
-  const handlePrevStep = () => {
-    playSyntheticChime('click');
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 bg-[#FDF8F1] flex flex-col items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      
-      {/* Container with responsive split-screen layout */}
-      <div className="w-full max-w-4xl bg-white rounded-3xl border-4 border-[#2D2926] shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-0 md:min-h-[600px] max-h-[95vh] md:max-h-[90vh] relative my-auto">
-        
-        {/* Desktop Decorative Sidebar */}
-        <div className="hidden md:flex md:w-5/12 bg-[#2E4057] text-[#FDF8F1] p-8 flex-col justify-between relative overflow-hidden shrink-0 border-r border-[#2D2926]">
-          <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
-            backgroundImage: `radial-gradient(circle, #fff 10%, transparent 11%), radial-gradient(circle, #fff 10%, transparent 11%)`,
-            backgroundSize: '12px 12px',
-            backgroundPosition: '0 0, 6px 6px'
-          }}></div>
-          
-          <div className="space-y-4 relative z-10">
-            <span className="bg-[#E9B44C] text-[#2D2926] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest">
-              Direct Link
-            </span>
-            <h3 className="font-serif text-2xl font-bold text-[#E9B44C] leading-tight">TantuLink Network</h3>
-            <p className="text-xs text-[#FDF8F1]/80 leading-relaxed font-medium">
-              Empowering local master weavers across India with voice-driven cataloging and secure direct payments. Zero middleman fees.
-            </p>
-          </div>
-
-          <div className="space-y-4 relative z-10 border-t border-[#FDF8F1]/10 pt-6">
-            <div className="flex items-center gap-2 text-xs font-semibold">
-              <span className="text-emerald-400">✓</span>
-              <span>Voice-to-Text Multi-lingual Catalog</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-semibold">
-              <span className="text-emerald-400">✓</span>
-              <span>Weaver Pre-Dispatch Quality Check</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-semibold">
-              <span className="text-emerald-400">✓</span>
-              <span>100% Protected Escrow Trust</span>
-            </div>
-          </div>
-          
-          <p className="text-[10px] text-[#FDF8F1]/50 font-mono tracking-widest">v1.0 CO-OP ALLIANCE</p>
-        </div>
-
-        {/* Right Form side */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Progress header bar */}
-          <div className="bg-[#2D2926] px-6 py-3 flex justify-between items-center text-white text-[10px] uppercase font-mono tracking-wider shrink-0">
-            <div className="flex items-center gap-2">
-              <span>{ot.stepIndicator} {step} of 3</span>
-              <div className="flex gap-1.5 ml-2">
-                <div className={`w-5 h-1 rounded-full transition ${step >= 1 ? 'bg-[#C25E44]' : 'bg-gray-600'}`}></div>
-                <div className={`w-5 h-1 rounded-full transition ${step >= 2 ? 'bg-[#C25E44]' : 'bg-gray-600'}`}></div>
-                <div className={`w-5 h-1 rounded-full transition ${step >= 3 ? 'bg-[#C25E44]' : 'bg-gray-600'}`}></div>
-              </div>
-            </div>
-
-            {/* Quick Sign In / Admin Login Trigger */}
-            <button
-              id="onboarding-open-login-btn"
-              onClick={() => {
-                playSyntheticChime('click');
-                setShowLoginModal(true);
-              }}
-              className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-amber-300 rounded-lg text-[10px] font-bold transition flex items-center gap-1 border border-white/15"
-            >
-              <Lock className="w-3 h-3 text-amber-300" />
-              <span>Sign In / Admin</span>
-            </button>
-          </div>
-
-          {/* Form Body scrollable area */}
-          <div className="flex-1 p-6 sm:p-8 space-y-6 overflow-y-auto flex flex-col justify-between">
-            
-            {/* STEP 1: Language Selection */}
-            {step === 1 && (
-              <div className="space-y-6 my-auto">
-                <div className="text-center space-y-3">
-                  <div className="w-16 h-16 bg-[#C25E44] rounded-2xl flex items-center justify-center text-white text-3xl font-bold mx-auto shadow-lg">
-                    T
-                  </div>
-                  <h1 className="font-serif text-3xl font-black text-[#C25E44] tracking-tight">{ot.welcome}</h1>
-                  <p className="text-sm text-[#5A524A] font-medium px-4 leading-relaxed">
-                    {ot.tagline}
-                  </p>
-                </div>
-
-                <div className="space-y-3.5 pt-4">
-                  <label className="text-xs font-bold text-[#2E4057] uppercase tracking-wider block text-center">
-                    {ot.chooseLang}
-                  </label>
-                  
-                  <div className="grid grid-cols-1 gap-2.5">
-                    {[
-                      { code: 'en', label: 'English (Standard)', sub: 'Voice & text instruction' },
-                      { code: 'kn', label: 'ಕನ್ನಡ (ಮೂಲ)', sub: 'ಧ್ವನಿ ಮತ್ತು ನೇರ ಕನ್ನಡ ಬಳಕೆ' },
-                      { code: 'hi', label: 'हिन्दी (सरल)', sub: 'आवाज़ और सरल हिंदी मार्गदर्शन' }
-                    ].map((item) => (
-                      <button
-                        key={item.code}
-                        onClick={() => {
-                          playSyntheticChime('click');
-                          setLanguage(item.code as Language);
-                        }}
-                        className={`p-4 rounded-2xl border-2 text-left transition duration-200 flex justify-between items-center ${
-                          language === item.code 
-                            ? 'border-[#C25E44] bg-[#FDF8F1] shadow-sm' 
-                            : 'border-[#E5E1DA] hover:border-[#8C8379] bg-white'
-                        }`}
-                      >
-                        <div>
-                          <p className="font-bold text-sm text-[#2D2926]">{item.label}</p>
-                          <p className="text-[10px] text-[#8C8379] mt-0.5">{item.sub}</p>
-                        </div>
-                        {language === item.code && (
-                          <div className="w-5 h-5 rounded-full bg-[#C25E44] flex items-center justify-center text-white">
-                            <Check className="w-3 h-3 stroke-[3]" />
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 2: Role Selection */}
-            {step === 2 && (
-              <div className="space-y-5 my-auto">
-                <div className="text-center space-y-1.5">
-                  <span className="text-[10px] text-[#C25E44] font-extrabold uppercase tracking-widest">Digital Entry</span>
-                  <h2 className="font-serif text-2xl font-bold text-[#2D2926]">{ot.selectRole}</h2>
-                </div>
-
-                <div className="space-y-3">
-                  {/* Weaver Card */}
-                  <button
-                    onClick={() => {
-                      playSyntheticChime('click');
-                      setRole('weaver');
-                    }}
-                    className={`w-full p-5 rounded-2xl border-2 text-left transition duration-200 flex gap-4 items-start ${
-                      role === 'weaver' 
-                        ? 'border-[#2E4057] bg-[#FDF8F1] shadow-md' 
-                        : 'border-[#E5E1DA] hover:border-[#8C8379] bg-white'
-                    }`}
-                  >
-                    <div className="p-3 bg-[#2E4057] text-white rounded-xl shrink-0">
-                      <Layers className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="space-y-1 text-xs">
-                      <h3 className="font-bold text-sm text-[#2D2926] flex items-center gap-1.5">
-                        {ot.weaverTitle}
-                      </h3>
-                      <p className="text-[#5A524A] leading-relaxed font-medium">
-                        {ot.weaverDesc}
-                      </p>
-                    </div>
-                  </button>
-
-                  {/* Buyer Card */}
-                  <button
-                    onClick={() => {
-                      playSyntheticChime('click');
-                      setRole('buyer');
-                    }}
-                    className={`w-full p-4 sm:p-5 rounded-2xl border-2 text-left transition duration-200 flex gap-4 items-start ${
-                      role === 'buyer' 
-                        ? 'border-[#C25E44] bg-[#FDF8F1] shadow-md' 
-                        : 'border-[#E5E1DA] hover:border-[#8C8379] bg-white'
-                    }`}
-                  >
-                    <div className="p-3 bg-[#C25E44] text-white rounded-xl shrink-0">
-                      <ShoppingBag className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="space-y-1 text-xs">
-                      <h3 className="font-bold text-sm text-[#2D2926] flex items-center gap-1.5">
-                        {ot.buyerTitle}
-                      </h3>
-                      <p className="text-[#5A524A] leading-relaxed font-medium">
-                        {ot.buyerDesc}
-                      </p>
-                    </div>
-                  </button>
-
-                  {/* ADMIN ACCESS option section below the Weaver and Buyer roles */}
-                  <div className="pt-3 mt-1 border-t border-[#E5E1DA] space-y-1.5 text-center" id="admin-verifier-portal-section">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#8C8379] block">
-                      ADMIN ACCESS
-                    </span>
-                    <button
-                      type="button"
-                      id="onboarding-admin-verifier-login-btn"
-                      onClick={() => {
-                        playSyntheticChime('click');
-                        setShowLoginModal(true);
-                      }}
-                      className="w-full py-2.5 px-4 rounded-xl border border-[#E5E1DA] hover:border-[#2D2926] bg-[#FDF8F1] hover:bg-[#F4EDE4] transition duration-200 flex items-center justify-center gap-2 text-xs font-bold text-[#2D2926] shadow-2xs cursor-pointer min-h-[44px]"
-                    >
-                      <span>🔐 Admin / Verifier Login →</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-[#2E4057]/5 border border-[#2E4057]/10 p-3.5 rounded-xl text-[11px] text-[#2E4057] font-medium leading-relaxed flex gap-2">
-                  <Info className="w-4 h-4 text-[#C25E44] shrink-0 mt-0.5" />
-                  <span>
-                    {language === 'kn' 
-                      ? 'ಚಿಂತಿಸಬೇಡಿ, ನೀವು ಅಪ್ಲಿಕೇಶನ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ವೀವರ್ ಮತ್ತು ಬೈಯರ್ ನಡುವೆ ಬದಲಾಯಿಸಬಹುದು.' 
-                      : language === 'hi' 
-                      ? 'चिंता न करें, आप ऐप के शीर्ष पर किसी भी समय बुनकर और खरीदार के बीच स्विच कर सकते हैं।' 
-                      : 'Do not worry, you can easily switch between Weaver and Buyer modes at any time in the app header.'}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 3: Form Inputs */}
-            {step === 3 && (
-              <div className="space-y-5 my-auto">
-                <div className="text-center space-y-1">
-                  <h2 className="font-serif text-xl font-bold text-[#2D2926]">{ot.detailsTitle}</h2>
-                  <p className="text-[11px] text-[#8C8379] font-medium leading-relaxed px-2">
-                    {ot.detailsDesc}
-                  </p>
-                </div>
-
-                <div className="bg-white rounded-2xl border border-[#E5E1DA] p-4 space-y-3.5 text-xs">
-                  {role === 'weaver' ? (
-                    <>
-                      {/* Weaver fields */}
-                      <div className="space-y-1">
-                        <label className="font-bold text-[#5A524A] block">{ot.weaverName}</label>
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="e.g. Annaiah Devanga"
-                          className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44]"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="font-bold text-[#5A524A] block">{ot.weaverRegion}</label>
-                        <input
-                          type="text"
-                          value={region}
-                          onChange={(e) => setRegion(e.target.value)}
-                          placeholder="e.g. Gudikal, Bagalkot, Karnataka"
-                          className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44]"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <label className="font-bold text-[#5A524A] block">{ot.weaverExp}</label>
-                          <select
-                            value={experience}
-                            onChange={(e) => setExperience(e.target.value)}
-                            className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44] text-xs font-semibold"
-                          >
-                            <option value="5">5+ Years</option>
-                            <option value="10">10+ Years</option>
-                            <option value="20">20+ Years</option>
-                            <option value="30">30+ Master Weaver</option>
-                          </select>
-                        </div>
-                        <div className="space-y-1">
-                          <label className="font-bold text-[#5A524A] block">Loom Type</label>
-                          <select
-                            className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44] text-xs font-semibold"
-                          >
-                            <option>Traditional Pit Loom</option>
-                            <option>Frame Handloom</option>
-                            <option>Pedal Jacquard Loom</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <label className="font-bold text-[#5A524A] block">{ot.weaverCoop}</label>
-                        <input
-                          type="text"
-                          value={cooperative}
-                          onChange={(e) => setCooperative(e.target.value)}
-                          placeholder="e.g. Gudikal Weaver Co-op Society"
-                          className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44]"
-                        />
-                      </div>
-                    </>
-                  ) : role === 'admin' ? (
-                    <>
-                      {/* Admin fields */}
-                      <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl text-amber-900 text-xs">
-                        <div className="font-bold flex items-center gap-1.5 text-amber-950">
-                          <Landmark className="w-3.5 h-3.5" />
-                          <span>Administrative & GI Registry Credentials</span>
-                        </div>
-                        <p className="text-[11px] text-amber-800 mt-1">
-                          Log in with pre-authorized government verifier credentials or proceed with default demo credentials.
-                        </p>
-                      </div>
-
-                      {adminError && (
-                        <div className="bg-rose-50 border border-rose-200 text-rose-700 p-2.5 rounded-xl text-xs font-semibold">
-                          {adminError}
-                        </div>
-                      )}
-
-                      <div className="space-y-1">
-                        <label className="font-bold text-[#5A524A] block">Admin Email Address</label>
-                        <input
-                          id="onboarding-admin-email-input"
-                          type="email"
-                          value={adminEmail}
-                          onChange={(e) => {
-                            setAdminEmail(e.target.value);
-                            setAdminError(null);
-                          }}
-                          placeholder="admin@tantulink.demo"
-                          className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-charcoal font-mono text-xs"
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="font-bold text-[#5A524A] block">Admin Password</label>
-                        <input
-                          id="onboarding-admin-password-input"
-                          type="password"
-                          value={adminPassword}
-                          onChange={(e) => {
-                            setAdminPassword(e.target.value);
-                            setAdminError(null);
-                          }}
-                          placeholder="Admin@123"
-                          className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-charcoal font-mono text-xs"
-                        />
-                        <p className="text-[10px] text-gray-500 font-mono">Demo Password: Admin@123</p>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="font-bold text-[#5A524A] block">Registry Department</label>
-                        <input
-                          type="text"
-                          disabled
-                          value="National GI Registry & Cooperative Verification Cell"
-                          className="w-full bg-cream-dark/60 p-3 rounded-xl border border-[#E5E1DA] text-[#5A524A] text-xs font-medium cursor-not-allowed"
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {/* Buyer fields */}
-                      <div className="space-y-1">
-                        <label className="font-bold text-[#5A524A] block">{ot.buyerName}</label>
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="e.g. Jagadish B."
-                          className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44]"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="font-bold text-[#5A524A] block">{ot.buyerAddress}</label>
-                        <textarea
-                          value={shippingAddress}
-                          onChange={(e) => setShippingAddress(e.target.value)}
-                          placeholder="e.g. Indiranagar, Bengaluru, Karnataka - 560038"
-                          className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44] h-20 resize-none"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="font-bold text-[#5A524A] block">{ot.buyerPhone}</label>
-                        <input
-                          type="text"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          placeholder="e.g. +91 98765 43210"
-                          className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44]"
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Bottom Action buttons */}
-            <div className="flex gap-3 pt-4 border-t border-[#F4EDE4] mt-auto">
-              {step > 1 && (
-                <button
-                  onClick={handlePrevStep}
-                  className="flex-1 border border-[#E5E1DA] hover:bg-[#FDF8F1] text-[#8C8379] font-bold py-3.5 px-4 rounded-2xl text-xs transition"
-                >
-                  {ot.back}
-                </button>
-              )}
-              <button
-                onClick={handleNextStep}
-                className="flex-[2] bg-[#C25E44] hover:bg-[#A3432C] text-white font-bold py-3.5 px-4 rounded-2xl text-xs shadow-lg shadow-[#C25E44]/20 flex items-center justify-center gap-1.5 transition transform active:scale-95"
-              >
-                <span>{step === 3 ? (role === 'admin' ? 'Open Admin Dashboard' : ot.letsBegin) : ot.next}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-
-      {/* Login / Auth Modal overlay */}
-      <LoginModal 
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        language={language}
-        onLoginSuccess={(profile) => {
-          setShowLoginModal(false);
-          onComplete(profile);
-        }}
-      />
-    </div>
-  );
+  const next = () => { playSyntheticChime('click'); if (step === 1) return setStep(2); if (step === 2) { if (!userType || !accountType) return setError(t.required); return setStep(3); } const message = validate(); if (message) return setError(message); complete(); };
+  const back = () => { playSyntheticChime('click'); setError(''); setStep(current => Math.max(1, current - 1)); };
+  const renderField = (field: FormField) => { if (field.condition && !field.condition(values)) return null; const common = { value: values[field.key] || '', onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => update(field.key, event.target.value), className: 'w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44] text-xs' }; return <div key={field.key} className="space-y-1"><label className="font-bold text-[#5A524A] block">{field.label}{field.required ? ' *' : ''}</label>{field.type === 'select' ? <select {...common}><option value="">{t.select}</option>{field.options?.map(option => <option key={option} value={option}>{option}</option>)}</select> : field.type === 'textarea' ? <textarea {...common} rows={3} /> : <input {...common} type={field.type || 'text'} />}</div>; };
+  const accountOptions = userType === 'producer' ? (['individual_artisan', 'cooperative_society', 'shg_ngo'] as ProducerType[]) : (['individual_consumer', 'boutique_retailer', 'institutional_corporate', 'wholesale_exporter'] as BuyerType[]);
+  const labels = ['English', 'ಕನ್ನಡ', 'हिन्दी'];
+  return <div className="fixed inset-0 z-50 bg-[#FDF8F1] flex flex-col items-center justify-center p-3 sm:p-4 overflow-y-auto"><div className="w-full max-w-4xl bg-white rounded-3xl border-4 border-[#2D2926] shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-0 md:min-h-[600px] max-h-[95vh] md:max-h-[90vh] relative my-auto"><div className="hidden md:flex md:w-5/12 bg-[#2E4057] text-[#FDF8F1] p-8 flex-col justify-between relative overflow-hidden shrink-0 border-r border-[#2D2926]"><div className="space-y-4 relative z-10"><span className="bg-[#E9B44C] text-[#2D2926] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest">Direct Link</span><h3 className="font-serif text-2xl font-bold text-[#E9B44C] leading-tight">TantuLink Network</h3><p className="text-xs text-[#FDF8F1]/80 leading-relaxed font-medium">{t.tagline}</p></div><div className="space-y-4 relative z-10 border-t border-[#FDF8F1]/10 pt-6 text-xs font-semibold"><div>✓ {language === 'kn' ? 'ಧ್ವನಿ ಆಧಾರಿತ ಉತ್ಪನ್ನ ಪಟ್ಟಿ' : language === 'hi' ? 'वॉयस आधारित उत्पाद सूची' : 'Voice-to-text product listing'}</div><div>✓ {language === 'kn' ? 'ಕುಶಲಕರ್ಮಿ ಗುಣಮಟ್ಟ ಪರಿಶೀಲನೆ' : language === 'hi' ? 'कारीगर गुणवत्ता जांच' : 'Artisan quality checks'}</div><div>✓ {language === 'kn' ? 'ಸುರಕ್ಷಿತ ಎಸ್ಕ್ರೋ ಪಾವತಿ' : language === 'hi' ? 'सुरक्षित एस्क्रो भुगतान' : 'Protected escrow payments'}</div></div><p className="text-[10px] text-[#FDF8F1]/50 font-mono tracking-widest">v1.0 CO-OP ALLIANCE</p></div><div className="flex-1 flex flex-col overflow-hidden"><div className="bg-[#2D2926] px-6 py-3 flex items-center text-white text-[10px] uppercase font-mono tracking-wider shrink-0"><span>{t.step} {step} / 3</span><div className="flex gap-1.5 ml-3">{[1, 2, 3].map(index => <div key={index} className={`w-8 h-1 rounded-full ${step >= index ? 'bg-[#C25E44]' : 'bg-gray-600'}`} />)}</div></div><div className="flex-1 p-6 sm:p-8 space-y-6 overflow-y-auto flex flex-col">
+    {step === 1 && <div className="space-y-6 my-auto"><div className="text-center space-y-3"><div className="w-16 h-16 bg-[#C25E44] rounded-2xl flex items-center justify-center text-white text-3xl font-bold mx-auto shadow-lg">T</div><h1 className="font-serif text-3xl font-black text-[#C25E44] tracking-tight">{t.welcome}</h1><p className="text-sm text-[#5A524A] font-medium px-4 leading-relaxed">{t.tagline}</p></div><div className="space-y-3.5 pt-4"><label className="text-xs font-bold text-[#2E4057] uppercase tracking-wider block text-center">{t.language}</label><div className="grid grid-cols-1 gap-2.5">{(['en', 'kn', 'hi'] as Language[]).map((code, index) => <button key={code} onClick={() => setLanguage(code)} className={`p-4 rounded-2xl border-2 text-left transition flex justify-between items-center ${language === code ? 'border-[#C25E44] bg-[#FDF8F1] shadow-sm' : 'border-[#E5E1DA] hover:border-[#8C8379] bg-white'}`}><span className="font-bold text-sm text-[#2D2926]">{labels[index]}</span>{language === code && <span className="w-5 h-5 rounded-full bg-[#C25E44] flex items-center justify-center text-white"><Check className="w-3 h-3" /></span>}</button>)}</div></div></div>}
+    {step === 2 && <div className="space-y-5 my-auto"><div className="text-center space-y-1.5"><span className="text-[10px] text-[#C25E44] font-extrabold uppercase tracking-widest">{t.account}</span><h2 className="font-serif text-2xl font-bold text-[#2D2926]">{t.account}</h2></div><div className="grid gap-3 md:grid-cols-2"><button onClick={() => chooseUserType('producer')} className={`p-5 rounded-2xl border-2 text-left transition flex gap-4 items-start ${userType === 'producer' ? 'border-[#2E4057] bg-[#FDF8F1] shadow-md' : 'border-[#E5E1DA]'}`}><div className="p-3 bg-[#2E4057] text-white rounded-xl"><Layers className="w-6 h-6" /></div><div><h3 className="font-bold text-sm text-[#2D2926]">{t.producer}</h3><p className="text-xs text-[#5A524A] leading-relaxed mt-1">{t.producerDesc}</p></div></button><button onClick={() => chooseUserType('buyer')} className={`p-5 rounded-2xl border-2 text-left transition flex gap-4 items-start ${userType === 'buyer' ? 'border-[#C25E44] bg-[#FDF8F1] shadow-md' : 'border-[#E5E1DA]'}`}><div className="p-3 bg-[#C25E44] text-white rounded-xl"><ShoppingBag className="w-6 h-6" /></div><div><h3 className="font-bold text-sm text-[#2D2926]">{t.buyer}</h3><p className="text-xs text-[#5A524A] leading-relaxed mt-1">{t.buyerDesc}</p></div></button></div>{userType && <div className="space-y-2"><label className="font-bold text-[#5A524A] block">{userType === 'producer' ? t.producerChoice : t.buyerChoice}</label><select value={accountType || ''} onChange={event => { setAccountType(event.target.value as AccountType); setError(''); }} className="w-full bg-[#FDF8F1] p-3 rounded-xl border border-[#E5E1DA] focus:outline-none focus:border-[#C25E44] text-xs"><option value="">{t.select}</option>{accountOptions.map(option => <option key={option} value={option}>{t.options[option]}</option>)}</select></div>}{error && <div className="bg-rose-50 border border-rose-200 text-rose-700 p-2.5 rounded-xl text-xs font-semibold flex gap-2"><Info className="w-4 h-4 shrink-0" />{error}</div>}</div>}
+    {step === 3 && accountType && <div className="space-y-5"><div className="text-center space-y-1"><h2 className="font-serif text-xl font-bold text-[#2D2926]">{t.titles[accountType]}</h2><p className="text-[11px] text-[#8C8379] font-medium leading-relaxed px-2">{t.detailsDesc}</p></div><div className="bg-white rounded-2xl border border-[#E5E1DA] p-4 grid gap-3.5 sm:grid-cols-2 text-xs">{fields.map(renderField)}</div>{error && <div className="bg-rose-50 border border-rose-200 text-rose-700 p-2.5 rounded-xl text-xs font-semibold">{error}</div>}</div>}
+    <div className="flex gap-3 pt-4 border-t border-[#F4EDE4] mt-auto"><button onClick={back} disabled={step === 1} className={`flex-1 border border-[#E5E1DA] text-[#8C8379] font-bold py-3.5 px-4 rounded-2xl text-xs transition ${step === 1 ? 'invisible' : ''}`}>{t.back}</button><button onClick={next} className="flex-[2] bg-[#C25E44] hover:bg-[#A3432C] text-white font-bold py-3.5 px-4 rounded-2xl text-xs shadow-lg flex items-center justify-center gap-1.5 transition"><span>{step === 3 ? t.create : t.continue}</span><ArrowRight className="w-4 h-4" /></button></div>
+  </div></div></div></div>;
 };

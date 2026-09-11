@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, IndianRupee, HelpCircle, ArrowRight, Check, X, RefreshCw, BarChart2, ShieldCheck, Info } from 'lucide-react';
-import { PricingRecommendation } from '../types';
+import { Language, PricingRecommendation } from '../types';
 import { playSyntheticChime } from '../data';
 
 interface AiDynamicPricingModalProps {
@@ -10,6 +10,7 @@ interface AiDynamicPricingModalProps {
   initialComplexity?: 'Standard' | 'Medium' | 'Masterpiece';
   category?: string;
   craftType?: string;
+  language?: Language;
   onApplyPrice: (newPrice: number, recommendation?: PricingRecommendation) => void;
   onClose: () => void;
 }
@@ -21,9 +22,15 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
   initialComplexity = 'Medium',
   category = 'Sarees',
   craftType = 'Pit-loom Weaving',
+  language = 'en',
   onApplyPrice,
   onClose
 }) => {
+  const copy = {
+    en: { title: 'AI Dynamic Fair-Pricing', subtitle: 'Cost-Plus Heritage Valuation Engine', inputs: 'Craft Costing Inputs:', material: 'Raw Material Cost (₹):', labour: 'Artisan Labor Hours:', complexity: 'Craft Complexity:', current: 'Current / Draft Price:', calculate: 'Calculate Fair Price Recommendation', loading: 'Analyzing Craft Cost Benchmarks...', recommendation: 'Recommended Fair Valuation:', range: 'Fair Market Range:', earnings: 'Artisan Net (92%)', logic: 'Economic Logic & Wage Benchmark:', apply: 'Apply', keep: 'Keep', notice: 'Recommendation does not change the price automatically. Tap below to accept or keep your original price.' },
+    kn: { title: 'ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆಯ ನ್ಯಾಯಯುತ ಬೆಲೆ', subtitle: 'ವೆಚ್ಚ ಮತ್ತು ಪರಂಪರೆ ಮೌಲ್ಯಮಾಪನ', inputs: 'ಕರಕುಶಲ ವೆಚ್ಚದ ವಿವರಗಳು:', material: 'ಕಚ್ಚಾ ವಸ್ತು ವೆಚ್ಚ (₹):', labour: 'ಕುಶಲಕರ್ಮಿಯ ಕೆಲಸದ ಗಂಟೆಗಳು:', complexity: 'ಕರಕುಶಲ ಸಂಕೀರ್ಣತೆ:', current: 'ಪ್ರಸ್ತುತ / ಕರಡು ಬೆಲೆ:', calculate: 'ನ್ಯಾಯಯುತ ಬೆಲೆ ಶಿಫಾರಸು ಲೆಕ್ಕಿಸಿ', loading: 'ಕರಕುಶಲ ವೆಚ್ಚದ ಮಾನದಂಡಗಳನ್ನು ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...', recommendation: 'ಶಿಫಾರಸು ಮಾಡಿದ ನ್ಯಾಯಯುತ ಮೌಲ್ಯ:', range: 'ನ್ಯಾಯಯುತ ಮಾರುಕಟ್ಟೆ ವ್ಯಾಪ್ತಿ:', earnings: 'ಕುಶಲಕರ್ಮಿಯ ನಿವ್ವಳ ಆದಾಯ (೯೨%)', logic: 'ಆರ್ಥಿಕ ಲೆಕ್ಕಾಚಾರ ಮತ್ತು ವೇತನ ಮಾನದಂಡ:', apply: 'ಉತ್ಪನ್ನಕ್ಕೆ ಅನ್ವಯಿಸಿ', keep: 'ಉಳಿಸಿ', notice: 'ಶಿಫಾರಸು ಬೆಲೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬದಲಾಯಿಸುವುದಿಲ್ಲ. ಕೆಳಗಿನ ಆಯ್ಕೆಯಿಂದ ಒಪ್ಪಿಕೊಳ್ಳಿ ಅಥವಾ ಮೂಲ ಬೆಲೆ ಉಳಿಸಿ.' },
+    hi: { title: 'एआई उचित मूल्य निर्धारण', subtitle: 'लागत और विरासत मूल्यांकन इंजन', inputs: 'शिल्प लागत विवरण:', material: 'कच्ची सामग्री लागत (₹):', labour: 'कारीगर के श्रम घंटे:', complexity: 'शिल्प जटिलता:', current: 'वर्तमान / ड्राफ्ट मूल्य:', calculate: 'उचित मूल्य सुझाव की गणना करें', loading: 'शिल्प लागत मानकों का विश्लेषण हो रहा है...', recommendation: 'सुझाया गया उचित मूल्य:', range: 'उचित बाजार सीमा:', earnings: 'कारीगर की शुद्ध कमाई (92%)', logic: 'आर्थिक गणना और मजदूरी मानक:', apply: 'उत्पाद पर लागू करें', keep: 'रखें', notice: 'सुझाव से मूल्य अपने आप नहीं बदलेगा। नीचे स्वीकार करें या मूल मूल्य रखें।' }
+  }[language];
   // Input parameters
   const [materialCost, setMaterialCost] = useState<number>(initialMaterialCost);
   const [labourHours, setLabourHours] = useState<number>(initialLabourHours);
@@ -122,10 +129,10 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
             </div>
             <div>
               <h3 className="font-serif text-lg font-bold text-charcoal flex items-center gap-2">
-                <span>AI Dynamic Fair-Pricing</span>
+                <span>{copy.title}</span>
               </h3>
               <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">
-                Cost-Plus Heritage Valuation Engine
+                {copy.subtitle}
               </p>
             </div>
           </div>
@@ -147,13 +154,13 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
         {/* Input Parameters Section */}
         <div className="bg-white p-4 rounded-2xl border border-cream-border space-y-3.5 text-xs">
           <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">
-            Craft Costing Inputs:
+            {copy.inputs}
           </span>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">
-                Raw Material Cost (₹):
+                {copy.material}
               </label>
               <input
                 type="number"
@@ -161,12 +168,12 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
                 onChange={(e) => setMaterialCost(Math.max(0, Number(e.target.value)))}
                 className="w-full bg-cream border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-terracotta"
               />
-              <span className="text-[9px] text-gray-400 mt-0.5 block">Zari, silk/cotton yarns, dyes</span>
+              <span className="text-[9px] text-gray-400 mt-0.5 block">{language === 'kn' ? 'ಜರಿ, ರೇಷ್ಮೆ/ಹತ್ತಿ ದಾರ, ಬಣ್ಣಗಳು' : language === 'hi' ? 'जरी, रेशम/कपास के धागे, रंग' : 'Zari, silk/cotton yarns, dyes'}</span>
             </div>
 
             <div>
               <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">
-                Artisan Labor Hours:
+                {copy.labour}
               </label>
               <input
                 type="number"
@@ -174,14 +181,14 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
                 onChange={(e) => setLabourHours(Math.max(1, Number(e.target.value)))}
                 className="w-full bg-cream border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-terracotta"
               />
-              <span className="text-[9px] text-gray-400 mt-0.5 block">Total loom hours dedicated</span>
+              <span className="text-[9px] text-gray-400 mt-0.5 block">{language === 'kn' ? 'ಒಟ್ಟು ಕೆಲಸದ ಗಂಟೆಗಳು' : language === 'hi' ? 'कुल श्रम घंटे' : 'Total craft hours dedicated'}</span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">
-                Craft Complexity:
+                {copy.complexity}
               </label>
               <select
                 value={craftComplexity}
@@ -196,7 +203,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
 
             <div>
               <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">
-                Current / Draft Price:
+                {copy.current}
               </label>
               <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-gray-700">
                 ₹{(currentPrice ?? 0).toLocaleString()}
@@ -213,12 +220,12 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
             {isLoading ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin text-mustard" />
-                <span>Analyzing Handloom Cost Benchmarks...</span>
+                <span>{copy.loading}</span>
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4 text-mustard" />
-                <span>Calculate Fair Price Recommendation</span>
+                <span>{copy.calculate}</span>
               </>
             )}
           </button>
@@ -231,7 +238,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <div>
                 <span className="text-[10px] text-terracotta font-black uppercase tracking-wider block">
-                  Recommended Fair Valuation:
+                  {copy.recommendation}
                 </span>
                 <p className="text-2xl font-serif font-bold text-charcoal mt-0.5">
                   ₹{(recommendation.recommendedPrice ?? 0).toLocaleString()}
@@ -240,7 +247,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
 
               <div className="text-right">
                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">
-                  Fair Market Range:
+                  {copy.range}
                 </span>
                 <p className="text-xs font-mono font-bold text-indigo-custom mt-0.5">
                   ₹{(recommendation.rangeMin ?? 0).toLocaleString()} – ₹{(recommendation.rangeMax ?? 0).toLocaleString()}
@@ -257,7 +264,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
                   <span className="text-[9px] text-emerald-800 font-bold uppercase tracking-wider block">
-                    Weaver Net (92%)
+                    {copy.earnings}
                   </span>
                   <p className="font-serif font-bold text-emerald-900 text-sm mt-0.5">
                     ₹{(recommendation.estimatedArtisanEarnings ?? 0).toLocaleString()}
@@ -287,7 +294,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
             {/* Plain Language Cost-Plus Rationale */}
             <div className="bg-cream/60 p-3 rounded-xl border border-cream-border text-[11px] text-charcoal leading-relaxed font-serif">
               <span className="font-bold text-indigo-custom block font-sans text-[10px] uppercase tracking-wider mb-1">
-                Economic Logic & Wage Benchmark:
+                {copy.logic}
               </span>
               "{recommendation.explanation}"
             </div>
@@ -296,7 +303,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
             <div className="flex items-center gap-2 text-[10px] text-gray-500 italic">
               <Info className="w-3.5 h-3.5 text-gray-400 shrink-0" />
               <span>
-                Recommendation does not change the price automatically. Tap below to accept or keep your original price.
+                {copy.notice}
               </span>
             </div>
 
@@ -309,7 +316,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
                 className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-cream font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition"
               >
                 <Check className="w-4 h-4 stroke-[3]" />
-                <span>Apply ₹{(recommendation.recommendedPrice ?? 0).toLocaleString()} to Product</span>
+                <span>{copy.apply} ₹{(recommendation.recommendedPrice ?? 0).toLocaleString()}</span>
               </button>
 
               <button
@@ -317,7 +324,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
                 onClick={onClose}
                 className="bg-white hover:bg-cream-dark text-gray-600 border border-gray-300 font-bold py-3 px-4 rounded-xl text-xs transition"
               >
-                Keep ₹{(currentPrice ?? 0).toLocaleString()}
+                {copy.keep} ₹{(currentPrice ?? 0).toLocaleString()}
               </button>
             </div>
 

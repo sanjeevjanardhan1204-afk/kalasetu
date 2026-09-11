@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
 import { ShieldCheck, CheckCircle2, Clock, IndianRupee, AlertCircle, ArrowRight, Lock, ExternalLink, Zap } from 'lucide-react';
-import { Order, PaymentProtection, OrderMilestone } from '../types';
+import { Language, Order, PaymentProtection, OrderMilestone } from '../types';
 import { playSyntheticChime } from '../data';
 
 interface PaymentProtectionTrackerProps {
   order: Order;
   onUpdateOrder?: (updatedOrder: Order) => void;
   userRole?: 'artisan' | 'buyer' | 'admin';
+  language?: Language;
 }
 
 export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> = ({
   order,
   onUpdateOrder,
-  userRole = 'buyer'
+  userRole = 'buyer',
+  language = 'en'
 }) => {
+  const copy = {
+    en: { title: 'TantuLink Payment Protection', subtitle: 'Smart Milestone Escrow Protocol', total: 'Order Total', released: 'Released to Artisan', held: 'Held in Escrow', locked: 'Escrow Payouts Locked', lockedText: 'Active dispute on this order. All milestone releases are frozen until admin resolution.', schedule: '3-Stage Milestone Payout Schedule:', confirmed: 'Released upon order confirmation', making: 'Released when making begins & QC passes', delivered: 'Released upon final verified delivery', release: 'Release', releasing: 'Releasing...', guarantee: 'Artisan & Buyer Protection Guarantee:', guaranteeText: 'Funds are held in neutral escrow. 20% advances materials to the artisan upfront, 40% releases on craft completion, and 40% releases on verified delivery.', blocked: 'Cannot release funds: This order has an active dispute. All payouts are paused.', failed: 'Failed to release milestone' },
+    kn: { title: 'ತಂತುಲಿಂಕ್ ಪಾವತಿ ರಕ್ಷಣೆ', subtitle: 'ಸ್ಮಾರ್ಟ್ ಹಂತದ ಎಸ್ಕ್ರೋ ವ್ಯವಸ್ಥೆ', total: 'ಆರ್ಡರ್ ಒಟ್ಟು', released: 'ಕುಶಲಕರ್ಮಿಗೆ ಬಿಡುಗಡೆ', held: 'ಎಸ್ಕ್ರೋದಲ್ಲಿ ಹಿಡಿದಿರುವುದು', locked: 'ಎಸ್ಕ್ರೋ ಪಾವತಿಗಳು ಲಾಕ್ ಆಗಿವೆ', lockedText: 'ಈ ಆರ್ಡರ್‌ನಲ್ಲಿ ಸಕ್ರಿಯ ವಿವಾದವಿದೆ. ನಿರ್ವಾಹಕರ ಪರಿಹಾರವಾಗುವವರೆಗೆ ಎಲ್ಲಾ ಹಂತದ ಬಿಡುಗಡೆಗಳು ನಿಲ್ಲುತ್ತವೆ.', schedule: '೩ ಹಂತದ ಪಾವತಿ ವೇಳಾಪಟ್ಟಿ:', confirmed: 'ಆರ್ಡರ್ ದೃಢೀಕರಣದ ನಂತರ ಬಿಡುಗಡೆ', making: 'ತಯಾರಿಕೆ ಮತ್ತು ಗುಣಮಟ್ಟ ಪರಿಶೀಲನೆಯ ನಂತರ ಬಿಡುಗಡೆ', delivered: 'ಅಂತಿಮ ಪರಿಶೀಲಿತ ವಿತರಣೆಯ ನಂತರ ಬಿಡುಗಡೆ', release: 'ಬಿಡುಗಡೆ', releasing: 'ಬಿಡುಗಡೆಯಾಗುತ್ತಿದೆ...', guarantee: 'ಕುಶಲಕರ್ಮಿ ಮತ್ತು ಖರೀದಿದಾರರ ರಕ್ಷಣೆ:', guaranteeText: 'ಹಣವನ್ನು ತಟಸ್ಥ ಎಸ್ಕ್ರೋದಲ್ಲಿ ಇರಿಸಲಾಗುತ್ತದೆ. ೨೦% ಸಾಮಗ್ರಿಗಳಿಗೆ ಮುಂಗಡ, ೪೦% ಕರಕುಶಲ ಪೂರ್ಣಗೊಂಡಾಗ ಮತ್ತು ೪೦% ಪರಿಶೀಲಿತ ವಿತರಣೆಯ ನಂತರ ಬಿಡುಗಡೆಯಾಗುತ್ತದೆ.', blocked: 'ಹಣ ಬಿಡುಗಡೆ ಸಾಧ್ಯವಿಲ್ಲ: ಈ ಆರ್ಡರ್‌ನಲ್ಲಿ ಸಕ್ರಿಯ ವಿವಾದವಿದೆ. ಎಲ್ಲಾ ಪಾವತಿಗಳನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ.', failed: 'ಹಂತ ಬಿಡುಗಡೆ ವಿಫಲವಾಗಿದೆ' },
+    hi: { title: 'तंतुलिंक भुगतान सुरक्षा', subtitle: 'स्मार्ट चरणबद्ध एस्क्रो व्यवस्था', total: 'ऑर्डर कुल', released: 'कारीगर को जारी', held: 'एस्क्रो में सुरक्षित', locked: 'एस्क्रो भुगतान लॉक है', lockedText: 'इस ऑर्डर पर सक्रिय विवाद है। व्यवस्थापक के समाधान तक सभी चरणों का भुगतान रुका है।', schedule: '3 चरणों की भुगतान योजना:', confirmed: 'ऑर्डर की पुष्टि पर जारी', making: 'निर्माण और गुणवत्ता जांच पर जारी', delivered: 'अंतिम सत्यापित डिलीवरी पर जारी', release: 'जारी करें', releasing: 'जारी हो रहा है...', guarantee: 'कारीगर और खरीदार सुरक्षा गारंटी:', guaranteeText: 'धन सुरक्षित एस्क्रो में रखा जाता है। 20% सामग्री के लिए अग्रिम, 40% शिल्प पूरा होने पर और 40% सत्यापित डिलीवरी पर जारी होता है।', blocked: 'धन जारी नहीं किया जा सकता: इस ऑर्डर पर सक्रिय विवाद है। सभी भुगतान रुके हैं।', failed: 'चरण भुगतान जारी नहीं हो सका' }
+  }[language];
   const [releasingId, setReleasingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -56,7 +63,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
     if (milestone.status === 'RELEASED') return;
 
     if (hasActiveDispute) {
-      setErrorMessage('Cannot release funds: This order has an active dispute. All payouts are paused.');
+      setErrorMessage(copy.blocked);
       playSyntheticChime('stop');
       return;
     }
@@ -79,7 +86,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
         }
         playSyntheticChime('success');
       } else {
-        setErrorMessage(data.error || 'Failed to release milestone');
+        setErrorMessage(data.error || copy.failed);
         playSyntheticChime('stop');
       }
     } catch (e) {
@@ -125,10 +132,10 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
           </div>
           <div>
             <h4 className="font-serif font-bold text-sm text-charcoal flex items-center gap-1.5">
-              TantuLink Payment Protection
+              {copy.title}
             </h4>
             <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
-              Smart Milestone Escrow Protocol
+              {copy.subtitle}
             </p>
           </div>
         </div>
@@ -142,7 +149,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
       <div className="grid grid-cols-3 gap-2 text-center">
         <div className="bg-cream p-2.5 rounded-xl border border-cream-border">
           <span className="text-[9px] text-gray-500 font-bold uppercase tracking-wider block">
-            Order Total
+            {copy.total}
           </span>
           <p className="font-serif font-bold text-charcoal text-sm mt-0.5">
             ₹{(protection?.orderTotal ?? 0).toLocaleString()}
@@ -151,7 +158,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
 
         <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
           <span className="text-[9px] text-emerald-700 font-bold uppercase tracking-wider block">
-            Released to Weaver
+            {copy.released}
           </span>
           <p className="font-serif font-bold text-emerald-800 text-sm mt-0.5">
             ₹{(protection?.releasedAmount ?? 0).toLocaleString()}
@@ -160,7 +167,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
 
         <div className="bg-indigo-50 p-2.5 rounded-xl border border-indigo-200">
           <span className="text-[9px] text-indigo-700 font-bold uppercase tracking-wider block">
-            Held in Escrow
+            {copy.held}
           </span>
           <p className="font-serif font-bold text-indigo-900 text-sm mt-0.5">
             ₹{(protection?.pendingAmount ?? 0).toLocaleString()}
@@ -174,10 +181,10 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
           <Lock className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
           <div>
             <span className="font-bold block text-[11px] uppercase tracking-wider">
-              Escrow Payouts Locked
+              {copy.locked}
             </span>
             <p className="text-[11px] text-rose-800 mt-0.5">
-              Active dispute on this order. All milestone releases are frozen until admin resolution.
+              {copy.lockedText}
             </p>
           </div>
         </div>
@@ -186,7 +193,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
       {/* Milestone Breakdown List */}
       <div className="space-y-2.5 pt-1">
         <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">
-          3-Stage Milestone Payout Schedule:
+          {copy.schedule}
         </span>
 
         {protection.milestones.map((m, idx) => {
@@ -236,7 +243,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
                     </div>
                   ) : (
                     <p className="text-[10px] text-gray-400 mt-0.5">
-                      {idx === 0 ? 'Released upon order confirmation' : idx === 1 ? 'Released when making begins & QC passes' : 'Released upon final verified delivery'}
+                      {idx === 0 ? copy.confirmed : idx === 1 ? copy.making : copy.delivered}
                     </p>
                   )}
                 </div>
@@ -261,7 +268,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
                     title="Release this milestone in demo sandbox"
                   >
                     <Zap className="w-3 h-3 text-mustard" />
-                    <span>{isReleasing ? 'Releasing...' : 'Release'}</span>
+                    <span>{isReleasing ? copy.releasing : copy.release}</span>
                   </button>
                 )}
               </div>
@@ -279,8 +286,8 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
 
       {/* Explanatory Safety Seal */}
       <div className="bg-cream/60 rounded-xl p-2.5 border border-cream-border text-[10px] text-gray-500 leading-relaxed">
-        <span className="font-bold text-charcoal block">Artisan & Buyer Protection Guarantee:</span>
-        Funds are held in neutral escrow. 20% advances materials to the weaver upfront, 40% releases on craft completion, and 40% releases on verified handloom delivery.
+        <span className="font-bold text-charcoal block">{copy.guarantee}</span>
+        {copy.guaranteeText}
       </div>
 
     </div>

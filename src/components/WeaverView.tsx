@@ -149,7 +149,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
     speakText(text, language, undefined, () => triggerSubtitleStop());
   };
 
-  // Speaks the guided question to the weaver on load
+  // Speaks the guided question to the artisan on load
   const speakCurrentQuestion = (index: number) => {
     const question = QA_QUESTIONS[index];
     const qText = question.label[language];
@@ -239,7 +239,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       id: 'p-' + Date.now(),
       title: qaAnswers.title || 'Authentic Village Handloom Product',
       weaverName: profile?.name || 'Annaiah Devanga',
-      weaverBio: `A certified master weaver with ${profile?.experience || '15'}+ years of experience, specializing in manual loom creations. Proud member of ${profile?.cooperative || 'Gudikal Co-operative'}.`,
+      weaverBio: `A certified master artisan with ${profile?.experience || '15'}+ years of experience, specializing in handmade creations. Proud member of ${profile?.cooperative || 'Gudikal Co-operative'}.`,
       weaverRegion: profile?.region || 'Gudikal, Bagalkot, Karnataka',
       weaverImage: 'https://images.unsplash.com/photo-1607990283143-e81e7a2c93ab?auto=format&fit=crop&q=80&w=300',
       material: qaAnswers.material || 'Pure Khadi Cotton',
@@ -305,7 +305,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               {
                 status: 'Quality Checked',
                 timestamp: new Date().toISOString(),
-                description: 'Pre-dispatch Quality Check passed! Weaver trimmed loose threads and verified structural integrity.'
+                description: 'Pre-dispatch Quality Check passed! Artisan verified the product and its structural integrity.'
               }
             ]
           };
@@ -314,7 +314,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       })
     );
 
-    // Increment weaver earnings instantly as demo encouragement!
+    // Increment artisan earnings instantly as demo encouragement!
     setEarnings(prev => ({
       ...prev,
       pending: prev.pending + Math.round(selectedOrderForQc.product.price * 0.91)
@@ -338,7 +338,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               <h2 className="font-serif text-2xl font-bold text-charcoal">{t.weaverDashboard}</h2>
               <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider flex items-center gap-1">
                 <span className={`w-2 h-2 rounded-full bg-emerald-500 ${dataSaver ? '' : 'animate-pulse'}`}></span>
-                Weaver ID: #{profile?.weaverId || 'WEV-8809'}
+                Artisan ID: #{profile?.weaverId || 'WEV-8809'}
               </p>
             </div>
             
@@ -586,7 +586,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             </div>
           </div>
 
-          {/* Weaver Success Tips: Actionable ways to boost product visibility */}
+          {/* Artisan Success Tips: Actionable ways to boost product visibility */}
           <WeaverSuccessTips 
             language={language}
             onApplyTip={() => {
@@ -609,7 +609,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               <div className="bg-cream-dark/50 border border-gray-200 rounded-xl p-6 text-center">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
                 <p className="text-sm font-medium text-gray-700">All orders dispatched securely!</p>
-                <p className="text-xs text-gray-500 mt-1">Excellent job keeping rural weavers active.</p>
+                <p className="text-xs text-gray-500 mt-1">Excellent job keeping rural artisans active.</p>
               </div>
             ) : (
               orders
@@ -646,9 +646,10 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       order={order}
                       onUpdateOrder={(updated) => setOrders(prev => prev.map(o => o.id === updated.id ? updated : o))}
                       userRole="artisan"
+                      language={language}
                     />
 
-                    {/* Feature 3: Dispute Notification & Response for Weaver */}
+                    {/* Feature 3: Dispute Notification & Response for Artisan */}
                     {order.dispute && (
                       <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 space-y-2 text-xs">
                         <div className="flex items-center justify-between">
@@ -1539,6 +1540,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       {selectedPricingProduct && (
         <AiDynamicPricingModal
           product={selectedPricingProduct}
+          language={language}
           onClose={() => setSelectedPricingProduct(null)}
           onApplyPrice={(newPrice, rec) => {
             setProducts(prev => prev.map(p => p.id === selectedPricingProduct.id ? { ...p, price: newPrice, pricingRecommendation: rec } : p));
@@ -1550,6 +1552,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       {/* Feature 4: AI Dynamic Pricing for Wizard Draft */}
       {showWizardPricingModal && (
         <AiDynamicPricingModal
+          language={language}
           product={{
             id: "wizard-draft",
             title: qaAnswers.title || "Village Handloom Saree",

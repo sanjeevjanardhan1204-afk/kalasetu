@@ -115,55 +115,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
     >
       <div className="max-w-md mx-auto px-2 py-1.5 flex items-center justify-around">
         
-        {/* 1. Weaver Studio Tab */}
-        <button
-          id="bottom-nav-weaver-btn"
-          onClick={() => {
-            playSyntheticChime('click');
-            handleRoleChange('weaver');
-          }}
-          className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
-            currentTab === 'weaver'
-              ? 'text-terracotta font-bold'
-              : 'text-gray-beige hover:text-charcoal'
-          }`}
-        >
-          <div className={`p-1 rounded-lg transition-transform ${currentTab === 'weaver' ? 'bg-terracotta/10 scale-110' : ''}`}>
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">
-            {language === 'kn' ? 'ನೇಯ್ಗೆಯವರು' : language === 'hi' ? 'बुनकर हब' : 'Weaver Hub'}
-          </span>
-          {currentTab === 'weaver' && (
-            <span className="w-1.5 h-1.5 rounded-full bg-terracotta absolute bottom-0.5"></span>
-          )}
-        </button>
-
-        {/* 2. Buyer Marketplace Tab */}
-        <button
-          id="bottom-nav-buyer-btn"
-          onClick={() => {
-            playSyntheticChime('click');
-            handleRoleChange('buyer');
-          }}
-          className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative ${
-            currentTab === 'buyer'
-              ? 'text-terracotta font-bold'
-              : 'text-gray-beige hover:text-charcoal'
-          }`}
-        >
-          <div className={`p-1 rounded-lg transition-transform ${currentTab === 'buyer' ? 'bg-terracotta/10 scale-110' : ''}`}>
-            <ShoppingBag className="w-5 h-5" />
-          </div>
-          <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">
-            {language === 'kn' ? 'ಖರೀದಿದಾರರು' : language === 'hi' ? 'खरीदार बाज़ार' : 'Marketplace'}
-          </span>
-          {currentTab === 'buyer' && (
-            <span className="w-1.5 h-1.5 rounded-full bg-terracotta absolute bottom-0.5"></span>
-          )}
-        </button>
-
-        {/* 3. Center Prominent Voice AI Sahayak Button */}
+        {/* Center Prominent Voice AI Sahayak Button */}
         <div className="flex-1 flex justify-center -mt-4">
           <button
             id="bottom-nav-voice-btn"

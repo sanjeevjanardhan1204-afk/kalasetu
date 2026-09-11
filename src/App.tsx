@@ -772,74 +772,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Earthy Mode Switcher Toggle slider (Weaver vs Buyer vs Admin) */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <div className="bg-cream-dark p-1 rounded-2xl flex-1 flex relative border border-cream-border" id="view-mode-toggle-slider">
-                  <button
-                    id="toggle-weaver-mode-btn"
-                    onClick={() => toggleMode('weaver')}
-                    className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold uppercase transition duration-300 flex items-center justify-center gap-1.5 sm:gap-2 relative z-10 min-h-[44px] ${
-                      currentMode === 'weaver' 
-                        ? 'bg-indigo-custom text-white shadow-sm' 
-                        : 'text-gray-beige hover:text-charcoal'
-                    }`}
-                  >
-                    {t.weaverView}
-                  </button>
-                  <button
-                    id="toggle-buyer-mode-btn"
-                    onClick={() => toggleMode('buyer')}
-                    className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold uppercase transition duration-300 flex items-center justify-center gap-1.5 sm:gap-2 relative z-10 min-h-[44px] ${
-                      currentMode === 'buyer' 
-                        ? 'bg-terracotta text-white shadow-sm' 
-                        : 'text-gray-beige hover:text-charcoal'
-                    }`}
-                  >
-                    {t.buyerView}
-                  </button>
-                  <button
-                    id="toggle-admin-mode-btn"
-                    onClick={() => {
-                      if (profile?.role === 'admin') {
-                        toggleMode('admin');
-                      } else {
-                        playSyntheticChime('click');
-                        setShowLoginModal(true);
-                      }
-                    }}
-                    className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-bold uppercase transition duration-300 flex items-center justify-center gap-1.5 sm:gap-2 relative z-10 min-h-[44px] ${
-                      currentMode === 'admin' 
-                        ? 'bg-[#2D2926] text-amber-400 shadow-sm' 
-                        : 'text-gray-beige hover:text-charcoal'
-                    }`}
-                  >
-                    <Landmark className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Admin View</span>
-                  </button>
-                </div>
-
-                {/* Direct Admin Access Button */}
-                <button
-                  id="header-admin-portal-btn"
-                  onClick={() => {
-                    playSyntheticChime('click');
-                    if (profile?.role === 'admin') {
-                      setCurrentMode(currentMode === 'admin' ? 'weaver' : 'admin');
-                    } else {
-                      setShowLoginModal(true);
-                    }
-                  }}
-                  className={`px-3.5 py-2.5 rounded-2xl border text-xs font-bold transition flex items-center justify-center gap-2 shrink-0 ${
-                    currentMode === 'admin'
-                      ? 'bg-[#2D2926] text-amber-400 border-black shadow-sm ring-2 ring-amber-400/40'
-                      : 'bg-white hover:bg-amber-50 text-charcoal border-cream-border hover:border-amber-400 shadow-2xs'
-                  }`}
-                  title="Administrative Portal & GI Verification Cell (admin@tantulink.demo)"
-                >
-                  <Landmark className={`w-4 h-4 ${currentMode === 'admin' ? 'text-amber-400' : 'text-amber-600'}`} />
-                  <span>{currentMode === 'admin' ? 'GI Admin Active' : 'Admin Portal'}</span>
-                </button>
-              </div>
+              {/* Role selection happens during onboarding; public users stay in their chosen experience. */}
             </header>
 
             {/* Global Floating Web Speech subtitles and recorder panel */}
@@ -958,11 +891,6 @@ export default function App() {
             <BottomNavigation 
               activeRole={currentMode}
               activeTab={currentMode}
-              setActiveRole={(mode) => toggleMode(mode)}
-              setRole={(mode) => toggleMode(mode)}
-              onRoleChange={(mode) => toggleMode(mode)}
-              setActiveTab={(mode) => toggleMode(mode as any)}
-              onTabChange={(mode) => toggleMode(mode as any)}
               onOpenVoiceModal={testVoiceAssistant}
               onOpenVoice={testVoiceAssistant}
               onOpenOfflineLab={() => {
@@ -1024,7 +952,6 @@ export default function App() {
             onClose={() => setShowAccountModal(false)}
             onResetOnboarding={handleResetOnboarding}
             orders={orders}
-            onOpenLogin={() => setShowLoginModal(true)}
           />
         )}
 

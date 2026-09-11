@@ -15,6 +15,12 @@ export interface UserProfile {
   weaverId?: string;
   buyerId?: string;
   avatar?: string;
+  userType?: 'producer' | 'buyer';
+  producerType?: 'individual_artisan' | 'cooperative_society' | 'shg_ngo';
+  buyerType?: 'individual_consumer' | 'boutique_retailer' | 'institutional_corporate' | 'wholesale_exporter';
+  accountType?: string;
+  artisanId?: string;
+  onboardingData?: Record<string, string>;
 }
 
 export type BottomNavTab = 'weaver' | 'buyer' | 'offline-lab' | 'voice-ai' | 'account' | 'admin';
@@ -289,4 +295,6 @@ export interface Translation {
   payWithUpi: string;
   orderConfirmed: string;
   trackStatus: string;
+  recommendationsTitle: string;
+  recommendationsEmpty: string;
 }

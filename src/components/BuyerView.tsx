@@ -137,6 +137,29 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
     .map(id => products.find(p => p.id === id))
     .filter((p): p is Product => !!p);
 
+  const craftFamilies: Record<string, string[]> = {
+    textiles: ['saree', 'sari', 'mundu', 'textile', 'handloom', 'ikat', 'cotton', 'silk', 'fabric', 'shawl', 'dhoti', 'veshti', 'weave'],
+    pottery: ['pottery', 'ceramic', 'clay', 'terracotta'],
+    metalcraft: ['metalcraft', 'metal', 'brass', 'copper', 'iron', 'bell metal'],
+    jewellery: ['jewellery', 'jewelry', 'necklace', 'earring', 'bangle', 'ornament'],
+    woodcraft: ['woodcraft', 'wooden', 'wood carving', 'carved wood'],
+    bamboo: ['bamboo', 'cane', 'basket'],
+    painting: ['painting', 'folk art', 'madhubani', 'pattachitra', 'warli'],
+    embroidery: ['embroidery', 'kasuti', 'needlework', 'stitched']
+  };
+
+  const getCraftFamily = (product: Product | string) => {
+    const text = typeof product === 'string'
+      ? product
+      : [product.title, product.material, product.description, product.giInfo?.category || ''].join(' ');
+    const normalized = text.toLowerCase();
+    return Object.entries(craftFamilies).find(([, terms]) => terms.some(term => normalized.includes(term)))?.[0] || null;
+  };
+
+  const recommendedProducts = selectedProduct
+    ? products.filter(product => product.id !== selectedProduct.id && product.status !== 'Sold' && getCraftFamily(product) === getCraftFamily(selectedProduct)).slice(0, 4)
+    : [];
+
   // Search History State with LocalStorage Persistence
   const [searchHistory, setSearchHistory] = useState<string[]>(() => {
     try {
@@ -247,7 +270,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
     }, 2000);
   };
 
-  // Speaks the weaver's story aloud using SpeechSynthesis
+  // Speaks the artisan's story aloud using SpeechSynthesis
   const handleHearWeaverStory = (product: Product) => {
     if (storySpeakingId === product.id) {
       setStorySpeakingId(null);
@@ -259,7 +282,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       ? `ನಮಸ್ಕಾರ, ನಾನು ${product.weaverName}. ನಾನು ${product.weaverRegion} ನೇಕಾರ. ನನ್ನ ಕುಟುಂಬವು ತಲೆಮಾರುಗಳಿಂದ ಕೈಮಗ್ಗ ನೆಯ್ದು ಜೀವನ ಸಾಗಿಸುತ್ತಿದೆ. ಈ ಸೀರೆಯನ್ನು ತಯಾರಿಸಲು ನನಗೆ ಸುಮಾರು ಐದು ದಿನಗಳ ಕಠಿಣ ಶ್ರಮ ಬೇಕಾಯಿತು. ದಯವಿಟ್ಟು ಗ್ರಾಮೀಣ ಸೃಜನಶೀಲತೆಯನ್ನು ಪ್ರೋತ್ಸಾಹಿಸಿ.`
       : language === 'hi'
       ? `नमस्ते, मैं ${product.weaverName} हूँ। मैं ${product.weaverRegion} से हूँ। हमारा परिवार पीढ़ियों से हथकरघा बुनाई का काम कर रहा है। इस कपड़े को तैयार करने में मेरी ५ दिनों की मेहनत लगी है। अपना समर्थन दें।`
-      : `Hello, I am ${product.weaverName}, weaving directly from ${product.weaverRegion}. This beautiful product was handloomed over five days on our manual frames. Thank you for connecting with rural weavers directly.`;
+      : `Hello, I am ${product.weaverName}, crafting directly from ${product.weaverRegion}. This beautiful product was handmade over five days. Thank you for connecting with artisans directly.`;
 
     triggerSubtitleSpeak(storyText);
     speakText(storyText, language, undefined, () => {
@@ -305,7 +328,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
   // Calculate checkout price components
   const getPriceBreakdown = (price: number) => {
-    const logistics = 220; // flat courier from rural weaver
+    const logistics = 220; // flat courier from rural artisan
     const platformFee = Math.round(price * 0.03); // 3% TantuLink tech platform fee
     const weaverDirect = price - logistics - platformFee;
     return {
@@ -390,7 +413,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
           {
             status: 'Order Received',
             timestamp: new Date().toISOString(),
-            description: 'Direct-to-Weaver Order placed successfully! Verified payment of ₹' + selectedProduct.price
+            description: 'Direct-to-Artisan Order placed successfully! Verified payment of ₹' + selectedProduct.price
           }
         ]
       };
@@ -404,7 +427,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         ? 'ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ! ನೇಕಾರರ ನೇರ ಆದಾಯವನ್ನು ಖಾತರಿಪಡಿಸಲಾಗಿದೆ.' 
         : language === 'hi' 
         ? 'ऑर्डर सफल रहा! बुनकर की सीधी कमाई सुनिश्चित की गई।' 
-        : 'Order confirmed successfully! Weaver direct payment processed.';
+        : 'Order confirmed successfully! Artisan direct payment processed.';
       triggerSubtitleSpeak(succText);
       speakText(succText, language, undefined, () => triggerSubtitleStop());
     }, 2000);
@@ -421,7 +444,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
           
           if (o.status === 'Order Received') {
             nextStatus = 'Accepted';
-            desc = 'Weaver acknowledged receipt and started final handloom polishing.';
+            desc = 'Artisan acknowledged receipt and started final handcraft polishing.';
           } else if (o.status === 'Accepted') {
             nextStatus = 'Quality Checked';
             desc = 'Pre-dispatch QC checklists successfully passed with photographs.';
@@ -436,7 +459,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             desc = 'Successfully delivered. 24-hour verification hold is now active.';
           } else if (o.status === 'Delivered') {
             nextStatus = 'Payment Settled';
-            desc = 'Weaver payout completed directly into Sharanappa Devanga’s bank account! Verified.';
+            desc = 'Artisan payout completed directly into Sharanappa Devanga’s bank account! Verified.';
           }
 
           // Advance milestone releases if not disputed
@@ -548,7 +571,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 </p>
                 <p className="text-[11px] text-charcoal font-semibold mt-0.5">
                   {syncStatus === 'syncing' 
-                    ? 'Syncing ledger with weavers...' 
+                    ? 'Syncing ledger with artisans...'
                     : `Last checked: ${lastSyncText}`
                   }
                 </p>
@@ -724,7 +747,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-3">
               <div>
                 <h3 className="font-serif text-lg font-bold text-charcoal">Available Loom Crafts</h3>
-                <p className="text-[11px] text-gray-500">Connecting you directly with rural weaver families</p>
+                <p className="text-[11px] text-gray-500">Connecting you directly with rural artisan families</p>
               </div>
               
               {/* Quick Filter Tabs for Saved Items */}
@@ -874,7 +897,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                       </div>
 
                       <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] font-bold text-indigo-custom uppercase">
-                        <span>Direct Weaver</span>
+                        <span>Direct Artisan</span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </div>
                     </div>
@@ -1041,7 +1064,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               </div>
             )}
 
-            {/* Weaver Story Section */}
+            {/* Artisan Story Section */}
             <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-xs">
               <h3 className="font-serif text-sm font-bold text-charcoal flex items-center gap-1.5">
                 <User className="w-4 h-4 text-terracotta" />
@@ -1146,6 +1169,31 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <span>{t.buyNow}</span>
               </button>
             </div>
+
+            <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-xs" id="craft-recommendations-panel">
+              <h3 className="font-serif text-sm font-bold text-charcoal">{t.recommendationsTitle}</h3>
+              {recommendedProducts.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {recommendedProducts.map(product => (
+                    <button
+                      key={product.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        addToRecentlyViewed(product.id);
+                        setReviewedSpecs(false);
+                      }}
+                      className="text-left bg-cream rounded-xl overflow-hidden border border-cream-border hover:border-terracotta transition"
+                    >
+                      <img src={product.images[0]} alt={product.title} className="w-full h-20 object-cover" referrerPolicy="no-referrer" />
+                      <span className="block p-2 text-[11px] font-bold text-charcoal line-clamp-2">{product.title}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500">{t.recommendationsEmpty}</p>
+              )}
+            </div>
           </div>
 
         </div>
@@ -1178,7 +1226,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               </div>
               <div className="text-xs">
                 <h4 className="font-serif font-bold text-charcoal">{selectedProduct.title}</h4>
-                <p className="text-gray-500 mt-0.5">Weaver: {selectedProduct.weaverName}</p>
+                <p className="text-gray-500 mt-0.5">Artisan: {selectedProduct.weaverName}</p>
                 <p className="font-extrabold text-terracotta mt-1 text-sm">₹{selectedProduct.price}</p>
               </div>
             </div>
@@ -1328,6 +1376,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                       if (activeOrder?.id === updated.id) setActiveOrder(updated);
                     }}
                     userRole="buyer"
+                      language={language}
                   />
 
                   {/* Feature 3: Dispute & Escrow Refund Flow */}
