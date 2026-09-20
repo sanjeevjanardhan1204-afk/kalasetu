@@ -1,4 +1,4 @@
-import { Product, Order, Language, Translation, SearchFilters } from './types';
+import { Product, Order, Language, Translation, SearchFilters, GovernmentScheme } from './types';
 
 // Unsplash premium-looking textile and weaver-related images
 export const SAMPLE_PRODUCT_IMAGES = [
@@ -35,6 +35,8 @@ export const MOCK_PRODUCTS: Product[] = [
     dateAdded: '2026-07-15T12:00:00Z',
     status: 'Listed',
     languageCreated: 'kn',
+    capacityPerWeek: 3,
+    capacityPerMonth: 12,
     giInfo: {
       status: 'VERIFIED',
       productName: 'Ilkal Sarees',
@@ -66,6 +68,8 @@ export const MOCK_PRODUCTS: Product[] = [
     dateAdded: '2026-07-16T14:30:00Z',
     status: 'Listed',
     languageCreated: 'en',
+    capacityPerWeek: 2,
+    capacityPerMonth: 8,
     giInfo: {
       status: 'PENDING',
       productName: 'Pochampally Ikat',
@@ -1055,5 +1059,88 @@ export const SIMULATED_VOICE_SPEECHES = {
     "I would like to sell it for four thousand five hundred rupees",
     "Two thousand five hundred rupees is my expected price",
     "Twelve thousand rupees because it took eighteen days to weave"
+  ]
+};
+
+export const CURATED_GOVERNMENT_SCHEMES: GovernmentScheme[] = [
+  {
+    id: 'gov-scheme-1',
+    title: 'National Handloom Development Programme (NHDP)',
+    agency: 'Ministry of Textiles, Govt. of India',
+    description: 'Comprehensive financial support for handloom weaver cooperatives and individual artisans for loom upgrades, raw material subsidies, and cluster development.',
+    benefitSummary: 'Up to ₹2,00,000 for lighting and advanced loom accessories + 10% yarn subsidy',
+    eligibilityCrafts: ['Handloom & Textiles', 'Embroidery', 'Sarees & Textiles'],
+    applicableStates: ['Karnataka', 'Telangana', 'Tamil Nadu', 'Andhra Pradesh', 'Odisha', 'West Bengal', 'Uttar Pradesh', 'All India'],
+    linkUrl: 'https://handlooms.nic.in/',
+    category: 'Subsidy'
+  },
+  {
+    id: 'gov-scheme-2',
+    title: 'Handloom Mark & Silk Mark Certification Grant',
+    agency: 'Textiles Committee & Silk Mark Organisation of India',
+    description: 'Provides 100% reimbursement for small artisans and cooperatives to obtain official Handloom Mark and Silk Mark holographic tags to protect against powerloom counterfeits.',
+    benefitSummary: 'Free registration + 500 holographic authenticity tags per weaver',
+    eligibilityCrafts: ['Handloom & Textiles', 'Sarees & Textiles'],
+    applicableStates: ['All India'],
+    linkUrl: 'http://textilescommittee.nic.in/',
+    category: 'GI & Heritage'
+  },
+  {
+    id: 'gov-scheme-3',
+    title: 'Pradhan Mantri MUDRA Yojana (Shishu & Kishore)',
+    agency: 'SIDBI & Scheduled Commercial Banks',
+    description: 'Collateral-free institutional credit loans specifically tailored for solo artisans, self-help groups, and rural master craftsmen to purchase raw silk/cotton in bulk.',
+    benefitSummary: 'Collateral-free loan up to ₹50,000 (Shishu) to ₹5,00,000 (Kishore) at low interest',
+    eligibilityCrafts: ['Handloom & Textiles', 'Pottery & Ceramics', 'Woodcraft', 'Metalcraft', 'Jewellery', 'Leathercraft', 'Bamboo & Cane', 'Embroidery'],
+    applicableStates: ['All India'],
+    linkUrl: 'https://www.mudra.org.in/',
+    category: 'Credit'
+  },
+  {
+    id: 'gov-scheme-4',
+    title: 'PM VIKAS (Vishwakarma Kaushal Samman)',
+    agency: 'Ministry of Micro, Small & Medium Enterprises',
+    description: 'End-to-end support for traditional artisans including toolkit incentive, modern design training, brand building, and direct e-commerce onboarding linkage.',
+    benefitSummary: '₹15,000 toolkit grant + ₹500/day stipend during skill upgrade training',
+    eligibilityCrafts: ['Woodcraft', 'Metalcraft', 'Pottery & Ceramics', 'Bamboo & Cane', 'Folk Painting', 'Traditional Toys'],
+    applicableStates: ['All India'],
+    linkUrl: 'https://pmvishwakarma.gov.in/',
+    category: 'Infrastructure'
+  },
+  {
+    id: 'gov-scheme-5',
+    title: 'Handicraft & Handloom Export Promotion Subsidy (MEIS/RoDTEP)',
+    agency: 'Directorate General of Foreign Trade (DGFT)',
+    description: 'Duty drawback and export incentive scheme for registered artisan cooperatives, SHGs, and exporters shipping Indian heritage crafts globally.',
+    benefitSummary: '3.5% to 6% rebate on FOB export value + freight subsidies for craft fairs',
+    eligibilityCrafts: ['Handloom & Textiles', 'Woodcraft', 'Metalcraft', 'Embroidery', 'Jewellery'],
+    applicableStates: ['All India'],
+    linkUrl: 'https://dgft.gov.in/',
+    category: 'Export'
+  },
+  {
+    id: 'gov-scheme-6',
+    title: 'Geographical Indication (GI) Registration Financial Support',
+    agency: 'Department for Promotion of Industry and Internal Trade (DPIIT)',
+    description: 'Financial assistance and legal support for artisan societies to register local authentic crafts under GI registry and enforce GI legal rights.',
+    benefitSummary: '100% grant for GI registration application + legal defense fund',
+    eligibilityCrafts: ['Handloom & Textiles', 'Pottery & Ceramics', 'Woodcraft', 'Metalcraft', 'Folk Painting'],
+    applicableStates: ['Karnataka', 'Telangana', 'Odisha', 'Tamil Nadu', 'All India'],
+    linkUrl: 'https://ipindia.gov.in/',
+    category: 'GI & Heritage'
+  }
+];
+
+export const DEMAND_INTELLIGENCE_DATA = {
+  trendingCrafts: [
+    { craft: 'Ilkal Silk & Kasuti Embroidery', demandIndex: 94, growth: '+28%', peakSeason: 'Diwali & Wedding Season', topSearchTerms: ['Kasuti pallu', 'pure silk green saree'] },
+    { craft: 'Pochampally Double Ikat', demandIndex: 88, growth: '+22%', peakSeason: 'Navratri & Festival Season', topSearchTerms: ['Geometric ikat', 'gold zari saree'] },
+    { craft: 'Natural Indigo Cotton Handloom', demandIndex: 82, growth: '+35%', peakSeason: 'Summer & Daily Wear', topSearchTerms: ['Vegetable dye', 'organic cotton'] },
+    { craft: 'Kerala Traditional Mundu', demandIndex: 79, growth: '+18%', peakSeason: 'Onam & Vishu', topSearchTerms: ['Golden border mundu', 'unbleached cotton'] }
+  ],
+  seasonalForecasts: [
+    { period: 'Oct - Nov (Festival Peak)', expectedSpike: '+45% Surge', recommendedPrep: 'Stock pure silk sarees with gold zari and traditional festive colors (Red, Saffron, Emerald Green).' },
+    { period: 'Dec - Feb (Wedding Season)', expectedSpike: '+35% Surge', recommendedPrep: 'Focus on heavy bridal double-ikat sarees, Kasuti embroidery, and bulk wedding gift sets.' },
+    { period: 'Mar - May (Summer Casuals)', expectedSpike: '+20% Surge', recommendedPrep: 'Increase production of breathable fine organic cotton daily wear sarees, dupattas, and mundus.' }
   ]
 };

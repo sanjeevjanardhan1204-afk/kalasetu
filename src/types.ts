@@ -21,6 +21,8 @@ export interface UserProfile {
   accountType?: string;
   artisanId?: string;
   onboardingData?: Record<string, string>;
+  capacityPerWeek?: number;
+  capacityPerMonth?: number;
 }
 
 export type BottomNavTab = 'weaver' | 'buyer' | 'offline-lab' | 'voice-ai' | 'account' | 'admin';
@@ -29,6 +31,37 @@ export interface Dimensions {
   length: string; // e.g., "5.5 meters" or "40 inches"
   width: string;  // e.g., "1.1 meters" or "28 inches"
   customText?: string;
+}
+
+export interface GovernmentScheme {
+  id: string;
+  title: string;
+  agency: string;
+  description: string;
+  benefitSummary: string;
+  eligibilityCrafts: string[];
+  applicableStates?: string[];
+  linkUrl: string;
+  category: 'Subsidy' | 'Export' | 'Credit' | 'Infrastructure' | 'GI & Heritage';
+}
+
+export interface CustomBulkOrderRequest {
+  id: string;
+  buyerName: string;
+  buyerContact?: string;
+  buyerId?: string;
+  producerId?: string;
+  productTitle: string;
+  productId?: string;
+  quantity: number;
+  specifications: string;
+  desiredTimelineDays: number;
+  status: 'PENDING_QUOTE' | 'QUOTED' | 'ACCEPTED' | 'REJECTED' | 'CONVERTED_TO_ORDER';
+  quotedPrice?: number;
+  quotedTimelineDays?: number;
+  createdAt: string;
+  capacityWarningExceeded?: boolean;
+  stagedScheduleSuggested?: boolean;
 }
 
 export interface Product {
@@ -53,6 +86,8 @@ export interface Product {
   version?: number;
   giInfo?: GiInfo;
   pricingRecommendation?: PricingRecommendation;
+  capacityPerWeek?: number;
+  capacityPerMonth?: number;
 }
 
 export type GiStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';

@@ -478,9 +478,9 @@ export default function App() {
     const timer = setTimeout(() => {
       let welcomeText = '';
       if (language === 'kn') {
-        welcomeText = `ಸುಸ್ವಾಗತ ${profile?.name || ''}. ತಾನಾ ಧ್ವನಿ ಆಧಾರಿತ ಮಾರುಕಟ್ಟೆಗೆ ಧನ್ಯವಾದಗಳು.`;
+        welcomeText = `ಸುಸ್ವಾಗತ ${profile?.name || ''}. ಕಲಾಸೇತು ಧ್ವನಿ ಆಧಾರಿತ ಮಾರುಕಟ್ಟೆಗೆ ಧನ್ಯವಾದಗಳು.`;
       } else if (language === 'hi') {
-        welcomeText = `स्वागत है ${profile?.name || ''}। ताना डायरेक्ट मार्केटप्लेस में आपका धन्यवाद।`;
+        welcomeText = `स्वागत है ${profile?.name || ''}। कलासेतु डायरेक्ट मार्केटप्लेस में आपका धन्यवाद।`;
       } else {
         welcomeText = `Welcome back ${profile?.name || ''}. Thank you for connecting with KalaSetu.`;
       }
@@ -501,9 +501,9 @@ export default function App() {
   const testVoiceAssistant = () => {
     let testMsg = '';
     if (language === 'kn') {
-      testMsg = "ನಮಸ್ಕಾರ, ತಾನಾ ಧ್ವನಿ ಸಹಾಯಕಿ ಸಕ್ರಿಯವಾಗಿದೆ ಮತ್ತು ಸರಿಯಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತಿದೆ.";
+      testMsg = "ನಮಸ್ಕಾರ, ಕಲಾಸೇತು ಧ್ವನಿ ಸಹಾಯಕಿ ಸಕ್ರಿಯವಾಗಿದೆ ಮತ್ತು ಸರಿಯಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತಿದೆ.";
     } else if (language === 'hi') {
-      testMsg = "नमस्ते, ताना आवाज सहायक सक्रिय है और ठीक से काम कर रहा है।";
+      testMsg = "नमस्ते, कलासेतु आवाज सहायक सक्रिय है और ठीक से काम कर रहा है।";
     } else {
       testMsg = "Hello, the KalaSetu voice assistant is active and working correctly.";
     }

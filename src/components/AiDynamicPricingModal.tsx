@@ -166,8 +166,11 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
               </label>
               <input
                 type="number"
+                min={0}
+                onWheel={(e) => e.currentTarget.blur()}
+                onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
                 value={materialCost}
-                onChange={(e) => setMaterialCost(Math.max(0, Number(e.target.value)))}
+                onChange={(e) => setMaterialCost(Math.max(0, Number(e.target.value) || 0))}
                 className="w-full bg-cream border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-terracotta"
               />
               <span className="text-[9px] text-gray-400 mt-0.5 block">{language === 'kn' ? 'ಜರಿ, ರೇಷ್ಮೆ/ಹತ್ತಿ ದಾರ, ಬಣ್ಣಗಳು' : language === 'hi' ? 'जरी, रेशम/कपास के धागे, रंग' : 'Zari, silk/cotton yarns, dyes'}</span>
@@ -179,8 +182,11 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
               </label>
               <input
                 type="number"
+                min={1}
+                onWheel={(e) => e.currentTarget.blur()}
+                onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
                 value={labourHours}
-                onChange={(e) => setLabourHours(Math.max(1, Number(e.target.value)))}
+                onChange={(e) => setLabourHours(Math.max(1, Number(e.target.value) || 1))}
                 className="w-full bg-cream border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-terracotta"
               />
               <span className="text-[9px] text-gray-400 mt-0.5 block">{language === 'kn' ? 'ಒಟ್ಟು ಕೆಲಸದ ಗಂಟೆಗಳು' : language === 'hi' ? 'कुल श्रम घंटे' : 'Total craft hours dedicated'}</span>

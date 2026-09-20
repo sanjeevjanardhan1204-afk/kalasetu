@@ -161,7 +161,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       copied: "Copied!"
     },
     kn: {
-      title: "ನನ್ನ ತಾನಾ ಪ್ರೊಫೈಲ್",
+      title: "ನನ್ನ ಕಲಾಸೇತು ಪ್ರೊಫೈಲ್",
       subtitle: "ಧೃಡೀಕೃತ ಕುಶಲಕರ್ಮಿ ಗುರುತಿನ ಚೀಟಿ",
       weaverCardTitle: "ಧೃಡೀಕೃತ ಕುಶಲಕರ್ಮಿ ಪ್ರೊಫೈಲ್",
       buyerCardTitle: "ಧೃಡೀಕೃತ ಖರೀದಿದಾರರ ಪ್ರೊಫೈಲ್",
@@ -174,7 +174,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       relaunchOnboarding: "ಮತ್ತೆ ಮೊದಲಿನಿಂದ ಆರಂಭಿಸಿ",
       close: "ಮುಚ್ಚಿ",
       traceId: "ಟ್ರೇಸ್ ಐಡಿ",
-      trustShield: "ತಾನಾ ಅಧಿಕೃತ ಲಿಂಕ್",
+      trustShield: "ಕಲಾಸೇತು ಅಧಿಕೃತ ಲಿಂಕ್",
       statusText: "ಸಕ್ರಿಯವಾಗಿದೆ",
       dataSaverTitle: "ಡೇಟಾ ಉಳಿತಾಯ ಮೋಡ್",
       dataSaverDesc: "ಗ್ರಾಮೀಣ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಅನಿಮೇಷನ್‌ಗಳನ್ನು ನಿಲ್ಲಿಸುತ್ತದೆ ಮತ್ತು ಹಿನ್ನೆಲೆ ಸಿಂಕ್ ಪರೀಕ್ಷೆಗಳ ವೇಗವನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ.",
@@ -186,7 +186,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       availableOfflineDesc: "ಗ್ರಾಮೀಣ ಪ್ರದೇಶಗಳಿಗಾಗಿ ಎಲ್ಲಾ ಆರ್ಡರ್ ಇತಿಹಾಸ ಮತ್ತು ರಶೀದಿಗಳನ್ನು ಸಾಧನದಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗಿದೆ.",
       cachedBadge: "ಸಾಧನದಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿದೆ",
       noCachedOrders: "ಸ್ಥಳೀಯ ಸಂಗ್ರಹದಲ್ಲಿ ಯಾವುದೇ ಆರ್ಡರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ.",
-      receiptTitle: "ತಾನಾ ಡಿಜಿಟಲ್ ರಶೀದಿ",
+      receiptTitle: "ಕಲಾಸೇತು ಡಿಜಿಟಲ್ ರಶೀದಿ",
       directWeaverBenefit: "೧೦೦% ಕುಶಲಕರ್ಮಿಗೆ ನೇರ ಲಾಭ ವರ್ಗಾಯಿಸಲಾಗಿದೆ",
       closeReceipt: "ರಶೀದಿ ಮುಚ್ಚಿ",
       viewReceipt: "ರಶೀದಿ ವೀಕ್ಷಿಸಿ",
@@ -196,13 +196,13 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       weaverLabel: "ಮುಖ್ಯ ಕುಶಲಕರ್ಮಿ",
       buyerLabel: "ಖರೀದಿದಾರರು",
       amountPaid: "ಪಾವತಿಸಿದ ಮೊತ್ತ",
-      offlineNotice: "ಆಫ್‌ಲೈನ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ — ತಾನಾ ಲೆಡ್ಜರ್ ಮೂಲಕ ದೃಢೀಕರಿಸಲಾಗಿದೆ",
+      offlineNotice: "ಆಫ್‌ಲೈನ್ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ — ಕಲಾಸೇತು ಲೆಡ್ಜರ್ ಮೂಲಕ ದೃಢೀಕರಿಸಲಾಗಿದೆ",
       itemDetails: "ಕೈಮಗ್ಗ ಉತ್ಪನ್ನದ ವಿವರ",
       financialBreakdown: "ಆರ್ಥಿಕ ಪಾವತಿ ವಿಭಜನೆ",
       customerPrice: "ಗ್ರಾಹಕರು ಪಾವತಿಸಿದ ಒಟ್ಟು ಮೊತ್ತ",
       weaverDirectEarn: "ಕುಶಲಕರ್ಮಿಯ ನೇರ ಆದಾಯ (೯೧%)",
       logisticsCost: "ಗ್ರಾಮೀಣ ಕೊರಿಯರ್ ವೆಚ್ಚ",
-      platformFee: "ತಾನಾ ಸೇವಾ ಶುಲ್ಕ (೩%)",
+      platformFee: "ಕಲಾಸೇತು ಸೇವಾ ಶುಲ್ಕ (೩%)",
       trackingHistoryTitle: "ದಾಖಲಾದ ಟ್ರ್ಯಾಕಿಂಗ್ ಹಂತಗಳು",
       showPaymentQR: "ಪಾವತಿ ಕ್ಯೂಆರ್ ತೋರಿಸಿ",
       offlinePaymentQRTitle: "ಆಫ್‌ಲೈನ್ ಕುಶಲಕರ್ಮಿ ಪಾವತಿ ಕ್ಯೂಆರ್",
@@ -217,7 +217,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       copied: "ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!"
     },
     hi: {
-      title: "मेरी ताना पहचान",
+      title: "मेरी कलासेतु पहचान",
       subtitle: "सत्यापित कारीगर डिजिटल पासपोर्ट",
       weaverCardTitle: "सत्यापित कारीगर पहचान पत्र",
       buyerCardTitle: "सत्यापित हथकरघा संरक्षक पत्र",
@@ -230,7 +230,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       relaunchOnboarding: "ऑनबोर्डिंग टूर फिर से चलाएं",
       close: "बंद करें",
       traceId: "ट्रेस आईडी",
-      trustShield: "ताना प्रमाणित सीधा लिंक",
+      trustShield: "कलासेतु प्रमाणित सीधा लिंक",
       statusText: "सत्यापित सक्रिय",
       dataSaverTitle: "डेटा बचत (ग्रामीण अनुकूलित)",
       dataSaverDesc: "कमजोर मोबाइल नेटवर्क पर डेटा बचाने के लिए एनिमेशन बंद करता है और पृष्ठभूमि सिंक जांच को धीमा करता है।",
@@ -242,7 +242,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       availableOfflineDesc: "ग्रामीण पहुंच के लिए सभी ऑर्डर इतिहास और डिजिटल रसीदें आपके डिवाइस पर सुरक्षित हैं।",
       cachedBadge: "डिवाइस में सहेजा गया",
       noCachedOrders: "डिवाइस में कोई कैश्ड ऑर्डर नहीं मिला।",
-      receiptTitle: "ताना सत्यापित डिजिटल रसीद",
+      receiptTitle: "कलासेतु सत्यापित डिजिटल रसीद",
       directWeaverBenefit: "100% सीधे कारीगर को लाभ पहुँचाया गया",
       closeReceipt: "रसीद बंद करें",
       viewReceipt: "रसीद देखें",
@@ -252,13 +252,13 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       weaverLabel: "मास्टर कारीगर",
       buyerLabel: "ग्राहक / संरक्षक",
       amountPaid: "कुल भुगतान राशि",
-      offlineNotice: "रीड-ओनली ऑफलाइन स्नैपशॉट — ताना लेजर द्वारा सत्यापित",
+      offlineNotice: "रीड-ओनली ऑफलाइन स्नैपशॉट — कलासेतु लेजर द्वारा सत्यापित",
       itemDetails: "हस्तनिर्मित उत्पाद विवरण",
       financialBreakdown: "वित्तीय भुगतान विवरण",
       customerPrice: "ग्राहक द्वारा कुल भुगतान",
       weaverDirectEarn: "कारीगर का सीधा हिस्सा (91%)",
       logisticsCost: "ग्रामीण कूरियर शुल्क",
-      platformFee: "ताना सेवा शुल्क (3%)",
+      platformFee: "कलासेतु सेवा शुल्क (3%)",
       trackingHistoryTitle: "दर्ज ट्रैकिंग स्थिति",
       showPaymentQR: "भुगतान QR कोड दिखाएं",
       offlinePaymentQRTitle: "ऑफलाइन कारीगर भुगतान QR",
@@ -392,17 +392,46 @@ export const AccountModal: React.FC<AccountModalProps> = ({
           </div>
 
           {isWeaver ? (
-            <div className="flex items-start gap-3 pt-3 border-t border-cream-dark">
-              <Landmark className="w-4 h-4 text-indigo-custom shrink-0 mt-0.5" />
-              <div>
-                <span className="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">
-                  {t.coop}
-                </span>
-                <p className="font-medium text-charcoal leading-relaxed">
-                  {profile.cooperative}
-                </p>
+            <>
+              <div className="flex items-start gap-3 pt-3 border-t border-cream-dark">
+                <Landmark className="w-4 h-4 text-indigo-custom shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 block tracking-wider">
+                    {t.coop}
+                  </span>
+                  <p className="font-medium text-charcoal leading-relaxed">
+                    {profile.cooperative}
+                  </p>
+                </div>
               </div>
-            </div>
+
+              <div className="flex items-start gap-3 pt-3 border-t border-cream-dark bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/60">
+                <Package className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-[10px] uppercase font-bold text-amber-900 tracking-wider">
+                      Stated Production Capacity Limits
+                    </span>
+                    <span className="text-[9px] bg-amber-200/80 text-amber-900 font-bold px-1.5 py-0.5 rounded">
+                      {profile.producerType === 'cooperative_society' ? 'Cooperative Society' : profile.producerType === 'shg_ngo' ? 'SHG / NGO' : 'Solo Artisan'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-charcoal text-[11px] font-semibold my-1">
+                    <div className="bg-white p-2 rounded-lg border border-amber-200">
+                      <span className="text-[9px] text-gray-500 block uppercase font-bold">Weekly Cap</span>
+                      <span>{profile.capacityPerWeek ? `${profile.capacityPerWeek} units / week` : '3 units / week (Default)'}</span>
+                    </div>
+                    <div className="bg-white p-2 rounded-lg border border-amber-200">
+                      <span className="text-[9px] text-gray-500 block uppercase font-bold">Monthly Cap</span>
+                      <span>{profile.capacityPerMonth ? `${profile.capacityPerMonth} units / month` : '12 units / month (Default)'}</span>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-amber-800 leading-tight italic mt-1">
+                    * Helper Note: Capacity limits protect fair working hours and handmade quality. Fully producer-defined and scalable.
+                  </p>
+                </div>
+              </div>
+            </>
           ) : (
             <div className="flex items-start gap-3 pt-3 border-t border-cream-dark">
               <Phone className="w-4 h-4 text-indigo-custom shrink-0 mt-0.5" />
