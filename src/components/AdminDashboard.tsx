@@ -1074,7 +1074,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <input
                 type="number"
                 value={partialRefundAmount}
-                onChange={(e) => setPartialRefundAmount(e.target.value)}
+                onWheel={(e) => e.currentTarget.blur()}
+                onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
+                onChange={(e) => setPartialRefundAmount(String(Math.max(1, parseInt(e.target.value) || 1)))}
                 min={1}
                 max={partialRefundOrder.product.price}
                 className="w-full bg-white p-3 rounded-xl border border-cream-border focus:outline-none focus:border-amber-500 text-sm font-bold font-serif text-charcoal"

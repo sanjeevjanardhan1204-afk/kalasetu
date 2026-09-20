@@ -3,12 +3,14 @@ import {
   Plus, Camera, Mic, Keyboard, Check, AlertCircle, Play, 
   Trash2, Landmark, Clock, CheckCircle2, ChevronRight, 
   ChevronLeft, ArrowLeft, RefreshCw, Upload, ShieldCheck,
-  BarChart3, Award, ShieldAlert, Sparkles, FileText
+  BarChart3, Award, ShieldAlert, Sparkles, FileText, TrendingUp,
+  Building2, ExternalLink, PackageCheck, AlertTriangle, Layers, Filter
 } from 'lucide-react';
-import { Product, Order, Language, Translation, Dimensions, GiInfo } from '../types';
+import { Product, Order, Language, Translation, Dimensions, GiInfo, GovernmentScheme, CustomBulkOrderRequest } from '../types';
 import { 
   SAMPLE_PRODUCT_IMAGES, QA_QUESTIONS, TRANSLATIONS, 
-  SIMULATED_VOICE_SPEECHES, playSyntheticChime 
+  SIMULATED_VOICE_SPEECHES, playSyntheticChime,
+  CURATED_GOVERNMENT_SCHEMES, DEMAND_INTELLIGENCE_DATA
 } from '../data';
 import { speakText, stopSpeaking, triggerSubtitleSpeak, triggerSubtitleStop } from './VoiceHelper';
 import { WeaverSuccessTips } from './WeaverSuccessTips';
@@ -138,6 +140,92 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   const [selectedGiProduct, setSelectedGiProduct] = useState<Product | null>(null);
   const [selectedDisputeOrder, setSelectedDisputeOrder] = useState<Order | null>(null);
   const [disputeInitialMode, setDisputeInitialMode] = useState<'artisan-respond' | 'view' | 'admin-resolve'>('artisan-respond');
+
+  // Schemes & Custom Orders State
+  const [schemeFilter, setSchemeFilter] = useState<string>('All');
+  const [customRequestsList, setCustomRequestsList] = useState<CustomBulkOrderRequest[]>(() => {
+    const saved = localStorage.getItem('taana_custom_requests');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return [
+      {
+        id: 'cbr-101',
+        buyerName: 'Urban Heritage Retail',
+        buyerContact: '+91 98112 33445',
+        productTitle: 'Pochampally Ikat Pure Silk Saree (Bulk Spec)',
+        quantity: 15,
+        specifications: '15 units of double-ikat silk sarees in custom sapphire blue border with zari pallu. Desired delivery in 35 days.',
+        desiredTimelineDays: 35,
+        status: 'PENDING_QUOTE',
+        createdAt: new Date().toISOString()
+      }
+    ];
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('taana_custom_requests', JSON.stringify(customRequestsList)); } catch (e) {}
+  }, [customRequestsList]);
+
+  useEffect(() => {
+    const handleNewCustomOrder = (e: Event) => {
+      const customEvt = e as CustomEvent;
+      if (customEvt.detail) {
+        setCustomRequestsList(prev => [customEvt.detail, ...prev]);
+      }
+    };
+    window.addEventListener('taana_new_custom_request', handleNewCustomOrder);
+    return () => window.removeEventListener('taana_new_custom_request', handleNewCustomOrder);
+  }, []);
+
+  const handleAcceptCustomRequest = (req: CustomBulkOrderRequest) => {
+    playSyntheticChime('success');
+    setCustomRequestsList(prev => prev.map(r => r.id === req.id ? { ...r, status: 'ACCEPTED' } : r));
+
+    const matchedProduct = products[0] || { title: 'Custom Handloom Product', price: 4500 };
+    const newOrder: Order = {
+      id: 'ord-cust-' + Math.floor(1000 + Math.random() * 9000),
+      product: {
+        ...matchedProduct,
+        title: req.productTitle,
+        price: 4500 * req.quantity
+      } as Product,
+      buyerName: req.buyerName,
+      buyerAddress: 'Boutique Store, Indiranagar, Bengaluru - 560038',
+      orderDate: new Date().toISOString(),
+      status: 'Accepted',
+      shippingAddress: {
+        street: '100 Feet Road, Indiranagar',
+        city: 'Bengaluru',
+        state: 'Karnataka',
+        pincode: '560038',
+        phone: req.buyerContact || '+91 98112 33445'
+      },
+      trackingHistory: [
+        {
+          status: 'Order Accepted',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          description: `Custom order request accepted by artisan. Milestone escrow created for ${req.quantity} units.`
+        }
+      ],
+      paymentProtection: {
+        isDemo: true,
+        label: 'DEMO / SANDBOX',
+        orderTotal: 4500 * req.quantity,
+        paymentSecured: 4500 * req.quantity,
+        releasedAmount: Math.round(4500 * req.quantity * 0.2),
+        pendingAmount: Math.round(4500 * req.quantity * 0.8),
+        refundedAmount: 0,
+        milestones: [
+          { id: 'm1', name: 'ORDER CONFIRMED', percentage: 20, amount: Math.round(4500 * req.quantity * 0.2), status: 'RELEASED', releasedAt: new Date().toISOString() },
+          { id: 'm2', name: 'CRAFTING / MAKING', percentage: 40, amount: Math.round(4500 * req.quantity * 0.4), status: 'PENDING' },
+          { id: 'm3', name: 'DELIVERED', percentage: 40, amount: Math.round(4500 * req.quantity * 0.4), status: 'PENDING' }
+        ]
+      }
+    };
+
+    setOrders(prev => [newOrder, ...prev]);
+  };
 
   // Wizard Draft GI State
   const [draftGiRegistered, setDraftGiRegistered] = useState<boolean>(false);
@@ -287,7 +375,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       ? 'ನಿಮ್ಮ ಉತ್ಪನ್ನವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿ ಪ್ರಕಟಿಸಲಾಗಿದೆ!' 
       : language === 'hi' 
       ? 'आपका उत्पाद सफलतापूर्वक प्रकाशित हो गया है!' 
-      : 'Your handloom product has been successfully published to Taana!';
+      : 'Your handloom product has been successfully published to KalaSetu!';
     triggerSubtitleSpeak(successMsg);
     speakText(successMsg, language, undefined, () => triggerSubtitleStop());
   };
@@ -380,7 +468,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                 </p>
                 <p className="text-[11px] text-charcoal font-semibold mt-0.5">
                   {syncStatus === 'syncing' 
-                    ? 'Checking listing ledgers with Taana...' 
+                    ? 'Checking listing ledgers with KalaSetu...' 
                     : `Last synced: ${lastSyncText}`
                   }
                 </p>
@@ -594,6 +682,233 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Feature 2: Demand Intelligence Panel */}
+          <div className="bg-white rounded-2xl border border-cream-border p-5 shadow-xs space-y-4 animate-fade-in" id="demand-intelligence-widget">
+            <div className="flex justify-between items-center border-b border-cream-dark pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-200">
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-sm font-bold text-charcoal">
+                    {language === 'kn' ? 'ಮಾರುಕಟ್ಟೆ ಬೇಡಿಕೆ ವಿಶ್ಲೇಷಣೆ' : language === 'hi' ? 'मांग और ट्रेंड विश्लेषण' : 'Demand Intelligence'}
+                  </h3>
+                  <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                    {language === 'kn' ? 'ಉತ್ಪನ್ನ ಶ್ರೇಣಿ ಮತ್ತು ಋತುಮಾನದ ಬೇಡಿಕೆ' : language === 'hi' ? 'लोकप्रिय शिल्प एवं मौसमी मांग' : 'Real-time Category Trends & Seasonal Spikes'}
+                  </p>
+                </div>
+              </div>
+              <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider font-mono">
+                Live Insights
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold text-charcoal uppercase tracking-wider">Top Trending Crafts Right Now</h4>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {DEMAND_INTELLIGENCE_DATA.trendingCrafts.map((item, idx) => (
+                  <div key={idx} className="bg-cream/40 p-3 rounded-xl border border-cream-border flex flex-col justify-between space-y-1">
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold text-xs text-charcoal">{item.craft}</span>
+                      <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                        {item.growth}
+                      </span>
+                    </div>
+                    <div className="w-full bg-cream-dark h-1.5 rounded-full overflow-hidden my-1">
+                      <div className="bg-emerald-600 h-full rounded-full" style={{ width: `${item.demandIndex}%` }} />
+                    </div>
+                    <div className="flex justify-between items-center text-[10px] text-gray-500">
+                      <span>Peak: {item.peakSeason}</span>
+                      <span className="font-mono">Index {item.demandIndex}/100</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-amber-50/70 border border-amber-200 p-3.5 rounded-xl space-y-2">
+              <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
+                <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Upcoming Seasonal Demand Spike Forecast</span>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-3 text-[11px]">
+                {DEMAND_INTELLIGENCE_DATA.seasonalForecasts.map((fc, i) => (
+                  <div key={i} className="bg-white p-2.5 rounded-lg border border-amber-200/80 space-y-1">
+                    <div className="font-bold text-amber-950 flex justify-between">
+                      <span>{fc.period}</span>
+                      <span className="text-terracotta font-extrabold text-[10px]">{fc.expectedSpike}</span>
+                    </div>
+                    <p className="text-[10px] text-gray-600 leading-tight">{fc.recommendedPrep}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Feature 3: Government Schemes Panel ("Schemes for You") */}
+          <div className="bg-white rounded-2xl border border-cream-border p-5 shadow-xs space-y-4 animate-fade-in" id="government-schemes-panel">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-cream-dark pb-3 gap-2">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-indigo-custom/10 text-indigo-custom rounded-lg border border-indigo-custom/20">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-sm font-bold text-charcoal">
+                    {language === 'kn' ? 'ನಿಮಗಾಗಿ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು' : language === 'hi' ? 'आपके लिए सरकारी योजनाएं' : 'Schemes for You'}
+                  </h3>
+                  <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                    {language === 'kn' ? 'ಕರಕುಶಲ ಮತ್ತು ರೇಷ್ಮೆ ನೇಯ್ಗೆ ಪ್ರೋತ್ಸಾಹಕಗಳು' : language === 'hi' ? 'हस्तशिल्प एवं बुनकर सब्सिडी' : 'Curated Subsidies, Grants & Export Incentives'}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-1 overflow-x-auto pb-1 text-[10px]">
+                {['All', 'Subsidy', 'Export', 'Credit', 'GI & Heritage'].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setSchemeFilter(cat)}
+                    className={`px-2.5 py-1 rounded-full font-bold whitespace-nowrap transition ${
+                      schemeFilter === cat ? 'bg-indigo-custom text-white' : 'bg-cream-dark/60 text-charcoal hover:bg-cream-dark'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {CURATED_GOVERNMENT_SCHEMES
+                .filter(s => schemeFilter === 'All' || s.category === schemeFilter)
+                .map(scheme => (
+                  <div key={scheme.id} className="bg-cream/40 p-4 rounded-xl border border-cream-border flex flex-col justify-between space-y-2 hover:border-indigo-custom/40 transition">
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-start gap-2">
+                        <h4 className="font-bold text-xs text-charcoal leading-snug">{scheme.title}</h4>
+                        <span className="bg-indigo-custom/10 text-indigo-custom text-[9px] font-extrabold px-1.5 py-0.5 rounded shrink-0">
+                          {scheme.category}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-gray-500 font-semibold">{scheme.agency}</p>
+                      <p className="text-[11px] text-gray-700 leading-relaxed pt-1">{scheme.description}</p>
+                    </div>
+
+                    <div className="bg-white p-2.5 rounded-lg border border-cream-dark space-y-1 mt-2">
+                      <span className="text-[9px] uppercase font-bold text-emerald-700 block">Benefit Summary:</span>
+                      <p className="text-[11px] font-bold text-charcoal">{scheme.benefitSummary}</p>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2 text-[10px]">
+                      <span className="text-gray-500 font-mono truncate max-w-[150px]">
+                        Eligible: {scheme.eligibilityCrafts.slice(0, 2).join(', ')}
+                      </span>
+                      <a
+                        href={scheme.linkUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-indigo-custom hover:bg-indigo-light text-white px-2.5 py-1 rounded-md font-bold flex items-center gap-1 transition shrink-0"
+                      >
+                        <span>Apply / Details</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Feature 4: Custom & Bulk Order Requests Pipeline */}
+          <div className="bg-white rounded-2xl border border-cream-border p-5 shadow-xs space-y-4 animate-fade-in" id="custom-bulk-order-requests-widget">
+            <div className="flex justify-between items-center border-b border-cream-dark pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-terracotta/10 text-terracotta rounded-lg border border-terracotta/20">
+                  <Layers className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-sm font-bold text-charcoal">
+                    {language === 'kn' ? 'ಬಲ್ಕ್ ಮತ್ತು ಕಸ್ಟಮ್ ಆರ್ಡರ್ ವಿನಂತಿಗಳು' : language === 'hi' ? 'कस्टम एवं थोक ऑर्डर अनुरोध' : 'Structured Custom & Bulk Order Requests'}
+                  </h3>
+                  <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                    {language === 'kn' ? 'ಖರೀದಿದಾರರಿಂದ ವಿಶೇಷ ವಿನಂತಿಗಳು' : language === 'hi' ? 'खरीदारों से सीधी पूछताछ एवं ऑर्डर कोटेशन' : 'Buyer Specs & Capacity-Aware Order Flow'}
+                  </p>
+                </div>
+              </div>
+              <span className="bg-terracotta text-white font-bold text-xs px-2.5 py-0.5 rounded-full">
+                {customRequestsList.length} Requests
+              </span>
+            </div>
+
+            {customRequestsList.length === 0 ? (
+              <div className="bg-cream-dark/40 border border-gray-200 rounded-xl p-6 text-center text-gray-500 text-xs">
+                No custom or bulk order requests currently pending.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {customRequestsList.map(req => {
+                  const capacityMonth = profile?.capacityPerMonth || 12;
+                  const isOverCapacity = req.quantity > capacityMonth;
+                  return (
+                    <div key={req.id} className="bg-cream/40 border border-cream-border rounded-xl p-4 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-serif font-bold text-sm text-charcoal">{req.productTitle}</h4>
+                          <p className="text-[11px] text-gray-500">Requested by: <span className="font-bold text-charcoal">{req.buyerName}</span> ({req.buyerContact || 'Patron Buyer'})</p>
+                        </div>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          req.status === 'ACCEPTED' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          {req.status}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                        <div className="bg-white p-2 rounded-lg border border-cream-dark">
+                          <span className="text-[9px] uppercase font-bold text-gray-400 block">Quantity</span>
+                          <span className="font-bold text-charcoal">{req.quantity} units</span>
+                        </div>
+                        <div className="bg-white p-2 rounded-lg border border-cream-dark">
+                          <span className="text-[9px] uppercase font-bold text-gray-400 block">Desired Timeline</span>
+                          <span className="font-bold text-charcoal">{req.desiredTimelineDays} days</span>
+                        </div>
+                        <div className="bg-white p-2 rounded-lg border border-cream-dark col-span-2 sm:col-span-1">
+                          <span className="text-[9px] uppercase font-bold text-gray-400 block">Stated Producer Cap</span>
+                          <span className="font-bold text-charcoal">{capacityMonth} units / month</span>
+                        </div>
+                      </div>
+
+                      {isOverCapacity && (
+                        <div className="bg-amber-100/90 border border-amber-300 p-2.5 rounded-lg flex items-start gap-2 text-amber-950 text-[11px]">
+                          <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-bold block">Capacity Limit Warning: Requested {req.quantity} units exceeds stated cap of {capacityMonth}/month.</span>
+                            <span className="text-[10px] text-amber-800">Friendly Recommendation: Suggest splitting into a staged/scheduled order or confirm timeline feasibility manually.</span>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="bg-white p-2.5 rounded-lg border border-cream-dark text-xs space-y-1">
+                        <span className="text-[9px] uppercase font-bold text-gray-400 block">Specifications & Notes:</span>
+                        <p className="text-gray-700 italic">"{req.specifications}"</p>
+                      </div>
+
+                      {req.status === 'PENDING_QUOTE' && (
+                        <div className="flex gap-2 justify-end pt-1">
+                          <button
+                            onClick={() => handleAcceptCustomRequest(req)}
+                            className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition shadow-xs"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Accept & Convert to Escrow Order</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Artisan Success Tips: Actionable ways to boost product visibility */}

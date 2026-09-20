@@ -239,6 +239,13 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   const [selectedDisputeOrder, setSelectedDisputeOrder] = useState<Order | null>(null);
   const [disputeInitialMode, setDisputeInitialMode] = useState<'raise' | 'view' | 'admin-resolve'>('view');
 
+  // Custom & Bulk Order Builder Modal States
+  const [showCustomOrderModal, setShowCustomOrderModal] = useState<boolean>(false);
+  const [customQty, setCustomQty] = useState<number>(5);
+  const [customSpecs, setCustomSpecs] = useState<string>('Custom border weaving with natural vegetable indigo dye, gold zari pallu accent');
+  const [customTimelineDays, setCustomTimelineDays] = useState<number>(30);
+  const [customOrderSuccess, setCustomOrderSuccess] = useState<boolean>(false);
+
   // Sample Queries to autofill/demonstrate Natural Language Search
   const SAMPLE_QUERIES = [
     {
@@ -1191,13 +1198,26 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               </label>
             </div>
 
-            {/* Main Buy Button Trigger */}
-            <div className="pt-2">
+            {/* Producer Capacity Info Badge */}
+            <div className="bg-amber-50/70 border border-amber-200 p-3 rounded-2xl flex items-center justify-between text-xs text-amber-900">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-amber-700 shrink-0" />
+                <div>
+                  <span className="font-bold block">Producer Capacity:</span>
+                  <span className="text-[11px] text-amber-800">
+                    Available for solo/single-piece orders • Bulk capacity: up to {selectedProduct.capacityPerMonth || 12} units/month
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Buy Button & Custom Order Trigger */}
+            <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 id="buy-now-submit-btn"
                 disabled={!reviewedSpecs}
                 onClick={handleBuyNowTrigger}
-                className={`w-full font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-md transition transform ${
+                className={`w-full font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-md transition transform ${
                   reviewedSpecs 
                     ? 'bg-terracotta hover:bg-terracotta-dark text-cream active:scale-95' 
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
@@ -1205,6 +1225,19 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               >
                 <ShieldCheck className="w-5 h-5 text-mustard" />
                 <span>{t.buyNow}</span>
+              </button>
+
+              <button
+                id="custom-bulk-order-btn"
+                onClick={() => {
+                  playSyntheticChime('click');
+                  setShowCustomOrderModal(true);
+                  setCustomOrderSuccess(false);
+                }}
+                className="w-full font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 bg-indigo-custom hover:bg-indigo-light text-white shadow-md transition active:scale-95"
+              >
+                <Sparkles className="w-5 h-5 text-mustard" />
+                <span>Custom / Bulk Order Builder</span>
               </button>
             </div>
 
@@ -1712,6 +1745,164 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             setSelectedDisputeOrder(updated);
           }}
         />
+      )}
+
+      {/* Feature 4: Custom & Bulk Order Builder Modal */}
+      {showCustomOrderModal && selectedProduct && (
+        <div className="fixed inset-0 z-50 bg-charcoal/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-cream border-2 border-terracotta rounded-3xl p-5 text-left max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl space-y-4 my-auto relative">
+            <div className="flex justify-between items-start border-b border-cream-dark pb-3">
+              <div>
+                <h3 className="font-serif text-lg font-bold text-charcoal">Custom & Bulk Order Builder</h3>
+                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">
+                  Direct artisan specification request
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  playSyntheticChime('click');
+                  setShowCustomOrderModal(false);
+                }}
+                className="text-gray-400 hover:text-black font-extrabold text-sm p-1.5 bg-white rounded-full border border-cream-border shadow-xs"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {customOrderSuccess ? (
+              <div className="bg-emerald-50 border border-emerald-200 p-6 rounded-2xl text-center space-y-3">
+                <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
+                <h4 className="font-serif font-bold text-lg text-emerald-950">Spec Request Submitted!</h4>
+                <p className="text-xs text-emerald-800 leading-relaxed">
+                  Your custom order specifications have been dispatched to master artisan <span className="font-bold">{selectedProduct.weaverName}</span>.
+                </p>
+                <div className="bg-white p-3 rounded-xl border border-emerald-200 text-left text-xs text-gray-700 space-y-1">
+                  <p>✓ Quantity: <span className="font-bold">{customQty} units</span></p>
+                  <p>✓ Desired Timeline: <span className="font-bold">{customTimelineDays} days</span></p>
+                  <p>✓ Confirmed orders plug directly into Escrow Milestone Payments.</p>
+                </div>
+                <button
+                  onClick={() => {
+                    playSyntheticChime('click');
+                    setShowCustomOrderModal(false);
+                  }}
+                  className="w-full bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs"
+                >
+                  Return to Product
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4 text-xs">
+                <div className="bg-white p-3 rounded-xl border border-cream-border">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase">Selected Handloom Base</p>
+                  <p className="font-serif font-bold text-sm text-charcoal">{selectedProduct.title}</p>
+                  <p className="text-[10px] text-indigo-custom font-semibold">Artisan: {selectedProduct.weaverName}</p>
+                </div>
+
+                {/* Stated Producer Capacity Indicator */}
+                <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 space-y-1">
+                  <div className="flex justify-between items-center text-amber-900 font-bold text-[11px]">
+                    <span>Stated Artisan Capacity Limit:</span>
+                    <span className="font-mono bg-amber-200/80 px-1.5 py-0.5 rounded text-[10px]">
+                      {selectedProduct.capacityPerMonth || 12} units / month
+                    </span>
+                  </div>
+                  {customQty > (selectedProduct.capacityPerMonth || 12) && (
+                    <div className="bg-amber-100/90 border border-amber-300 p-2 rounded-lg text-amber-950 text-[10px] leading-tight flex items-start gap-1.5 mt-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block">Capacity Warning:</span>
+                        Requested {customQty} units exceeds stated capacity ({selectedProduct.capacityPerMonth || 12} units/month).
+                        We recommend splitting into a staged delivery schedule or flagging for artisan manual feasibility review.
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Spec Form */}
+                <div className="space-y-3">
+                  <div>
+                    <label className="font-bold text-charcoal block mb-1">Required Quantity (Units)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={500}
+                      onWheel={(e) => e.currentTarget.blur()}
+                      onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
+                      value={customQty}
+                      onChange={(e) => setCustomQty(Math.max(1, parseInt(e.target.value) || 1))}
+                      className="w-full bg-white p-2.5 rounded-xl border border-cream-dark focus:outline-none focus:border-terracotta text-xs font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-charcoal block mb-1">Desired Completion Timeline (Days)</label>
+                    <input
+                      type="number"
+                      min={7}
+                      max={180}
+                      onWheel={(e) => e.currentTarget.blur()}
+                      onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
+                      value={customTimelineDays}
+                      onChange={(e) => setCustomTimelineDays(Math.max(1, parseInt(e.target.value) || 1))}
+                      className="w-full bg-white p-2.5 rounded-xl border border-cream-dark focus:outline-none focus:border-terracotta text-xs font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-charcoal block mb-1">Custom Specifications & Notes</label>
+                    <textarea
+                      rows={3}
+                      value={customSpecs}
+                      onChange={(e) => setCustomSpecs(e.target.value)}
+                      placeholder="Specify custom colors, embroidery patterns, border designs, packaging requirements..."
+                      className="w-full bg-white p-2.5 rounded-xl border border-cream-dark focus:outline-none focus:border-terracotta text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      playSyntheticChime('success');
+                      const requestObj = {
+                        id: 'cbr-' + Date.now(),
+                        buyerName: profile?.name || 'Patron Buyer',
+                        buyerContact: profile?.phone || '+91 98112 33445',
+                        buyerId: profile?.buyerId || 'BYR-4012',
+                        producerId: selectedProduct.weaverName,
+                        productTitle: `${selectedProduct.title} (Custom Spec)`,
+                        productId: selectedProduct.id,
+                        quantity: customQty,
+                        specifications: customSpecs,
+                        desiredTimelineDays: customTimelineDays,
+                        status: 'PENDING_QUOTE' as const,
+                        createdAt: new Date().toISOString(),
+                        capacityWarningExceeded: customQty > (selectedProduct.capacityPerMonth || 12),
+                        stagedScheduleSuggested: customQty > (selectedProduct.capacityPerMonth || 12)
+                      };
+
+                      // Dispatch event for WeaverView to receive
+                      window.dispatchEvent(new CustomEvent('taana_new_custom_request', { detail: requestObj }));
+
+                      // Save to localStorage
+                      try {
+                        const existing = JSON.parse(localStorage.getItem('taana_custom_requests') || '[]');
+                        localStorage.setItem('taana_custom_requests', JSON.stringify([requestObj, ...existing]));
+                      } catch (e) {}
+
+                      setCustomOrderSuccess(true);
+                    }}
+                    className="w-full bg-terracotta hover:bg-terracotta-dark text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md transition"
+                  >
+                    <Sparkles className="w-4 h-4 text-mustard" />
+                    <span>Submit Custom Spec Request to Artisan</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
     </div>

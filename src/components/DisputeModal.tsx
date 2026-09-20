@@ -503,7 +503,9 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
                     <input
                       type="number"
                       value={partialRefundAmount}
-                      onChange={(e) => setPartialRefundAmount(Number(e.target.value))}
+                      onWheel={(e) => e.currentTarget.blur()}
+                      onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
+                      onChange={(e) => setPartialRefundAmount(Math.max(1, Number(e.target.value) || 1))}
                       max={order.paymentProtection?.pendingAmount || order.product.price}
                       min={1}
                       className="w-full bg-white border border-purple-300 rounded-xl px-3 py-2 text-xs font-mono font-bold focus:outline-none"
