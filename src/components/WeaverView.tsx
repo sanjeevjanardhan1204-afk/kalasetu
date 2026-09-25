@@ -4,9 +4,9 @@ import {
   Trash2, Landmark, Clock, CheckCircle2, ChevronRight, 
   ChevronLeft, ArrowLeft, RefreshCw, Upload, ShieldCheck,
   BarChart3, Award, ShieldAlert, Sparkles, FileText, TrendingUp,
-  Building2, ExternalLink, PackageCheck, AlertTriangle, Layers, Filter
+  Building2, ExternalLink, PackageCheck, AlertTriangle, Layers, Filter, X, Video, Users, Send, IndianRupee
 } from 'lucide-react';
-import { Product, Order, Language, Translation, Dimensions, GiInfo, GovernmentScheme, CustomBulkOrderRequest } from '../types';
+import { Product, Order, Language, Translation, Dimensions, GiInfo, GovernmentScheme, CustomBulkOrderRequest, ProductVariant, BulkPricingTier, MaterialClusterRequest } from '../types';
 import {
   SAMPLE_PRODUCT_IMAGES, QA_QUESTIONS, TRANSLATIONS,
   SIMULATED_VOICE_SPEECHES, playSyntheticChime,
@@ -44,7 +44,9 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   startListening,
   dataSaver
 }) => {
-  const t = TRANSLATIONS[language];
+  // Merge with English so any newer key not yet translated for `language` still renders text
+  // instead of `undefined`, consistent with the pickLang() fallback pattern used elsewhere.
+  const t = { ...TRANSLATIONS.en, ...TRANSLATIONS[language] };
 
   // Data saver synchronization states
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced'>('idle');
@@ -139,6 +141,15 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   const [selectedPricingProduct, setSelectedPricingProduct] = useState<Product | null>(null);
   const [showWizardPricingModal, setShowWizardPricingModal] = useState<boolean>(false);
   const [selectedGiProduct, setSelectedGiProduct] = useState<Product | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [confirmArchiveId, setConfirmArchiveId] = useState<string | null>(null);
+  const [selectedClusterRequest, setSelectedClusterRequest] = useState<string | null>(null);
+  const [joinedClusterIds, setJoinedClusterIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('kalasetu_joined_clusters');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [selectedDisputeOrder, setSelectedDisputeOrder] = useState<Order | null>(null);
   const [disputeInitialMode, setDisputeInitialMode] = useState<'artisan-respond' | 'view' | 'admin-resolve'>('artisan-respond');
 
@@ -167,6 +178,43 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   useEffect(() => {
     try { localStorage.setItem('taana_custom_requests', JSON.stringify(customRequestsList)); } catch (e) {}
   }, [customRequestsList]);
+
+  useEffect(() => {
+    try { localStorage.setItem('kalasetu_joined_clusters', JSON.stringify(joinedClusterIds)); } catch (e) {}
+  }, [joinedClusterIds]);
+
+  // Product management: duplicate, change status, and edit outside the creation wizard
+  const handleDuplicateProduct = (product: Product) => {
+    playSyntheticChime('click');
+    const copy: Product = {
+      ...product,
+      id: 'p-' + Date.now(),
+      title: product.title + ' (Copy)',
+      status: 'Draft',
+      dateAdded: new Date().toISOString(),
+      giInfo: undefined,
+      provenanceHash: undefined,
+      provenanceTimestamp: undefined
+    };
+    setProducts(prev => [copy, ...prev]);
+  };
+
+  const handleSetProductStatus = (productId: string, status: Product['status']) => {
+    playSyntheticChime('click');
+    setProducts(prev => prev.map(p => p.id === productId ? { ...p, status } : p));
+    setConfirmArchiveId(null);
+  };
+
+  const handleSaveEditedProduct = (updated: Product) => {
+    playSyntheticChime('success');
+    setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
+    setEditingProduct(null);
+  };
+
+  const handleJoinClusterRequest = (requestId: string) => {
+    playSyntheticChime('success');
+    setJoinedClusterIds(prev => prev.includes(requestId) ? prev : [...prev, requestId]);
+  };
 
   useEffect(() => {
     const handleNewCustomOrder = (e: Event) => {
@@ -1061,9 +1109,61 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                         {product.title}
                       </h4>
                       <p className="text-[10px] text-gray-500 mt-1 font-semibold flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        {product.status === 'Listed' ? 'Active Direct' : product.status}
+                        <span className={`w-1.5 h-1.5 rounded-full ${product.status === 'Listed' ? 'bg-emerald-500' : product.status === 'Draft' ? 'bg-gray-400' : product.status === 'Archived' ? 'bg-gray-300' : 'bg-amber-500'}`}></span>
+                        {product.status === 'Listed' ? 'Active Direct'
+                          : product.status === 'Draft' ? t.statusDraft
+                          : product.status === 'Unpublished' ? t.statusUnpublished
+                          : product.status === 'Archived' ? t.statusArchived
+                          : product.status}
                       </p>
+                    </div>
+
+                    {/* Product management: edit, duplicate, and change listing status without the wizard */}
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        onClick={() => { playSyntheticChime('click'); setEditingProduct(product); }}
+                        className="text-[9px] font-bold text-indigo-custom bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2 py-1 rounded-md transition"
+                      >
+                        {t.editProduct}
+                      </button>
+                      <button
+                        onClick={() => handleDuplicateProduct(product)}
+                        className="text-[9px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2 py-1 rounded-md transition"
+                      >
+                        {t.duplicateProduct}
+                      </button>
+                      {product.status === 'Draft' && (
+                        <button
+                          onClick={() => handleSetProductStatus(product.id, 'Listed')}
+                          className="text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-1 rounded-md transition"
+                        >
+                          {t.publishProduct}
+                        </button>
+                      )}
+                      {product.status === 'Listed' && (
+                        <button
+                          onClick={() => handleSetProductStatus(product.id, 'Unpublished')}
+                          className="text-[9px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2 py-1 rounded-md transition"
+                        >
+                          {t.unpublishProduct}
+                        </button>
+                      )}
+                      {product.status === 'Unpublished' && (
+                        <button
+                          onClick={() => handleSetProductStatus(product.id, 'Listed')}
+                          className="text-[9px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-1 rounded-md transition"
+                        >
+                          {t.publishProduct}
+                        </button>
+                      )}
+                      {product.status !== 'Archived' && (
+                        <button
+                          onClick={() => setConfirmArchiveId(product.id)}
+                          className="text-[9px] font-bold text-gray-500 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2 py-1 rounded-md transition"
+                        >
+                          {t.archiveProduct}
+                        </button>
+                      )}
                     </div>
 
                     {/* GI Status Badge / Trigger */}
@@ -1117,6 +1217,26 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       <Trash2 className="w-3.5 h-3.5" />
                       Remove
                     </button>
+
+                    {confirmArchiveId === product.id && (
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-2 space-y-1.5">
+                        <p className="text-[9px] text-gray-600">{t.confirmArchive}</p>
+                        <div className="flex gap-1.5">
+                          <button
+                            onClick={() => handleSetProductStatus(product.id, 'Archived')}
+                            className="flex-1 text-[9px] font-bold text-white bg-gray-600 hover:bg-gray-700 py-1 rounded-md"
+                          >
+                            {t.archiveProduct}
+                          </button>
+                          <button
+                            onClick={() => setConfirmArchiveId(null)}
+                            className="flex-1 text-[9px] font-bold text-gray-600 bg-white border border-gray-200 py-1 rounded-md"
+                          >
+                            {t.cancel}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1930,6 +2050,134 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
         />
       )}
 
+      {editingProduct && (
+        <ProductEditModal
+          product={editingProduct}
+          t={t}
+          onClose={() => setEditingProduct(null)}
+          onSave={handleSaveEditedProduct}
+        />
+      )}
+
+    </div>
+  );
+};
+
+// Product editing outside the creation wizard: also covers variants, discounts/bulk pricing,
+// and an optional process video - kept as one modal so an artisan doesn't have to hunt through
+// several separate screens to change simple things about a listing they already published.
+const ProductEditModal: React.FC<{ product: Product; t: Translation; onClose: () => void; onSave: (p: Product) => void }> = ({ product, t, onClose, onSave }) => {
+  const [draft, setDraft] = useState<Product>({ ...product });
+
+  const updateVariant = (id: string, patch: Partial<ProductVariant>) => {
+    setDraft(prev => ({ ...prev, variants: (prev.variants || []).map(v => v.id === id ? { ...v, ...patch } : v) }));
+  };
+  const addVariant = () => {
+    setDraft(prev => ({ ...prev, variants: [...(prev.variants || []), { id: 'var-' + Date.now(), priceDelta: 0 }] }));
+  };
+  const removeVariant = (id: string) => {
+    setDraft(prev => ({ ...prev, variants: (prev.variants || []).filter(v => v.id !== id) }));
+  };
+  const addBulkTier = () => {
+    setDraft(prev => ({ ...prev, bulkPricingTiers: [...(prev.bulkPricingTiers || []), { minQty: 5, pricePerUnit: prev.price }] }));
+  };
+  const updateBulkTier = (index: number, patch: Partial<BulkPricingTier>) => {
+    setDraft(prev => ({ ...prev, bulkPricingTiers: (prev.bulkPricingTiers || []).map((tier, i) => i === index ? { ...tier, ...patch } : tier) }));
+  };
+  const removeBulkTier = (index: number) => {
+    setDraft(prev => ({ ...prev, bulkPricingTiers: (prev.bulkPricingTiers || []).filter((_, i) => i !== index) }));
+  };
+
+  return (
+    <div className="fixed inset-0 bg-charcoal/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-white border-2 border-terracotta rounded-3xl p-5 sm:p-6 text-left max-w-lg w-full shadow-2xl space-y-5 my-8">
+        <div className="flex items-center justify-between">
+          <h3 className="font-serif font-bold text-charcoal text-base">{t.editProduct}</h3>
+          <button onClick={onClose} className="p-1 rounded-full bg-gray-100 hover:bg-gray-200">
+            <X className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-600">Title</label>
+            <input value={draft.title} onChange={(e) => setDraft(prev => ({ ...prev, title: e.target.value }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-600">Price (₹)</label>
+              <input type="number" min={0} onWheel={(e) => e.currentTarget.blur()} onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }} value={draft.price} onChange={(e) => setDraft(prev => ({ ...prev, price: Math.max(0, Number(e.target.value) || 0) }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-600">Material</label>
+              <input value={draft.material} onChange={(e) => setDraft(prev => ({ ...prev, material: e.target.value }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-600">Description</label>
+            <textarea value={draft.description} onChange={(e) => setDraft(prev => ({ ...prev, description: e.target.value }))} rows={2} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta resize-none" />
+          </div>
+        </div>
+
+        {/* Variants */}
+        <div className="space-y-2 border-t border-gray-100 pt-3">
+          <label className="text-xs font-bold text-gray-600">{t.variants}</label>
+          {(draft.variants || []).map(v => (
+            <div key={v.id} className="grid grid-cols-4 gap-1.5 items-center">
+              <input placeholder={t.variantSize} value={v.size || ''} onChange={(e) => updateVariant(v.id, { size: e.target.value })} className="col-span-1 bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
+              <input placeholder={t.variantColor} value={v.color || ''} onChange={(e) => updateVariant(v.id, { color: e.target.value })} className="col-span-1 bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
+              <input type="number" placeholder={t.variantExtraPrice} onWheel={(e) => e.currentTarget.blur()} value={v.priceDelta} onChange={(e) => updateVariant(v.id, { priceDelta: Number(e.target.value) || 0 })} className="col-span-1 bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
+              <button onClick={() => removeVariant(v.id)} className="text-[9px] font-bold text-rose-500">{t.removeVariant}</button>
+            </div>
+          ))}
+          <button onClick={addVariant} className="text-[10px] font-bold text-indigo-custom hover:underline">+ {t.addVariant}</button>
+        </div>
+
+        {/* Discounts */}
+        <div className="space-y-2 border-t border-gray-100 pt-3">
+          <label className="text-xs font-bold text-gray-600">{t.discountsAndOffers}</label>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-[10px] text-gray-500">{t.discountPercentLabel}</label>
+              <input type="number" min={0} max={90} onWheel={(e) => e.currentTarget.blur()} value={draft.discountPercent || 0} onChange={(e) => setDraft(prev => ({ ...prev, discountPercent: Math.max(0, Math.min(90, Number(e.target.value) || 0)) }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] text-gray-500">{t.saleEndsOn}</label>
+              <input type="date" value={draft.saleEndsAt || ''} onChange={(e) => setDraft(prev => ({ ...prev, saleEndsAt: e.target.value }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs" />
+            </div>
+          </div>
+        </div>
+
+        {/* Bulk pricing */}
+        <div className="space-y-2 border-t border-gray-100 pt-3">
+          <label className="text-xs font-bold text-gray-600">{t.bulkPricingTiers}</label>
+          {(draft.bulkPricingTiers || []).map((tier, i) => (
+            <div key={i} className="grid grid-cols-3 gap-1.5 items-center">
+              <input type="number" placeholder={t.bulkMinQty} onWheel={(e) => e.currentTarget.blur()} value={tier.minQty} onChange={(e) => updateBulkTier(i, { minQty: Math.max(1, Number(e.target.value) || 1) })} className="bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
+              <input type="number" placeholder={t.bulkPricePerUnit} onWheel={(e) => e.currentTarget.blur()} value={tier.pricePerUnit} onChange={(e) => updateBulkTier(i, { pricePerUnit: Math.max(0, Number(e.target.value) || 0) })} className="bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
+              <button onClick={() => removeBulkTier(i)} className="text-[9px] font-bold text-rose-500">{t.removeVariant}</button>
+            </div>
+          ))}
+          <button onClick={addBulkTier} className="text-[10px] font-bold text-indigo-custom hover:underline">+ {t.addBulkTier}</button>
+        </div>
+
+        {/* Process video */}
+        <div className="space-y-1 border-t border-gray-100 pt-3">
+          <label className="text-xs font-bold text-gray-600">{t.attachProcessVideo}</label>
+          <input
+            type="text"
+            placeholder="https://..."
+            value={draft.videoUrl || ''}
+            onChange={(e) => setDraft(prev => ({ ...prev, videoUrl: e.target.value }))}
+            className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
+          />
+          {draft.videoUrl && <p className="text-[10px] text-emerald-700">{t.videoAttachedLabel}</p>}
+        </div>
+
+        <button onClick={() => onSave(draft)} className="w-full bg-terracotta hover:bg-terracotta-dark text-white font-bold py-3 rounded-xl text-xs shadow-md transition">
+          {t.next}
+        </button>
+      </div>
     </div>
   );
 };

@@ -29,6 +29,13 @@ export interface UserProfile {
   onboardingData?: Record<string, string>;
   capacityPerWeek?: number;
   capacityPerMonth?: number;
+  payoutMethod?: 'bank' | 'upi';
+  payoutBankAccountLast4?: string;
+  payoutIfsc?: string;
+  payoutUpiId?: string;
+  minPayoutThreshold?: number;
+  whatsappNumber?: string;
+  whatsappAlertsEnabled?: boolean;
 }
 
 export type BottomNavTab = 'weaver' | 'buyer' | 'offline-lab' | 'voice-ai' | 'account' | 'admin';
@@ -51,6 +58,21 @@ export interface GovernmentScheme {
   category: 'Subsidy' | 'Export' | 'Credit' | 'Infrastructure' | 'GI & Heritage';
 }
 
+// Raw-material cluster/bulk-buying: a shared bulk-purchase request other artisans in the same
+// craft/region/cooperative can see and join, extending the existing cluster/cooperative support
+// rather than introducing a separate subsystem.
+export interface MaterialClusterRequest {
+  id: string;
+  materialName: string;
+  craft: string;
+  region: string;
+  targetQuantity: string;
+  pricePerUnitEstimate: string;
+  organizerName: string;
+  deadline: string;
+  joinedArtisanIds: string[];
+}
+
 export interface CustomBulkOrderRequest {
   id: string;
   buyerName: string;
@@ -70,6 +92,20 @@ export interface CustomBulkOrderRequest {
   stagedScheduleSuggested?: boolean;
 }
 
+export interface ProductVariant {
+  id: string;
+  size?: string;
+  color?: string;
+  material?: string;
+  priceDelta: number; // added to/subtracted from the base product price
+  stock?: number;
+}
+
+export interface BulkPricingTier {
+  minQty: number;
+  pricePerUnit: number;
+}
+
 export interface Product {
   id: string;
   title: string;
@@ -84,9 +120,14 @@ export interface Product {
   specialFeatures: string;
   description: string;
   images: string[];
+  // AI Camera: original uploads are always kept alongside enhanced versions; enhancement never
+  // touches images[] in place, so "original" is never lost even after enhancement is applied.
+  enhancedImages?: string[];
+  aiEnhanced?: boolean;
+  videoUrl?: string;
   careInstructions: string;
   dateAdded: string;
-  status: 'Pending Approval' | 'Listed' | 'Sold';
+  status: 'Pending Approval' | 'Listed' | 'Sold' | 'Draft' | 'Unpublished' | 'Archived';
   languageCreated?: Language;
   updatedAt?: number;
   version?: number;
@@ -94,6 +135,15 @@ export interface Product {
   pricingRecommendation?: PricingRecommendation;
   capacityPerWeek?: number;
   capacityPerMonth?: number;
+  variants?: ProductVariant[];
+  discountPercent?: number;
+  saleEndsAt?: string;
+  bulkPricingTiers?: BulkPricingTier[];
+  // Design/IP-theft protection: a hash of title+description+images+timestamp taken the moment a
+  // product is first listed, recorded once and never recomputed, as a verifiable first-authorship
+  // record independent of any later edits to the listing.
+  provenanceHash?: string;
+  provenanceTimestamp?: string;
 }
 
 export type GiStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
@@ -448,4 +498,82 @@ export interface Translation {
   genericErrorTitle?: string;
   genericErrorHint?: string;
   retry?: string;
+
+  // Product management
+  editProduct?: string;
+  duplicateProduct?: string;
+  saveAsDraft?: string;
+  publishProduct?: string;
+  unpublishProduct?: string;
+  archiveProduct?: string;
+  statusDraft?: string;
+  statusUnpublished?: string;
+  statusArchived?: string;
+  confirmArchive?: string;
+
+  // Variants
+  variants?: string;
+  addVariant?: string;
+  variantSize?: string;
+  variantColor?: string;
+  variantMaterial?: string;
+  variantExtraPrice?: string;
+  variantStock?: string;
+  removeVariant?: string;
+
+  // Business growth
+  discountsAndOffers?: string;
+  discountPercentLabel?: string;
+  saleEndsOn?: string;
+  bulkPricingTiers?: string;
+  addBulkTier?: string;
+  bulkMinQty?: string;
+  bulkPricePerUnit?: string;
+
+  // Payout
+  payoutSettings?: string;
+  payoutMethodLabel?: string;
+  bankAccountOption?: string;
+  upiOption?: string;
+  payoutSchedule?: string;
+  payoutScheduleText?: string;
+  minPayoutThresholdLabel?: string;
+
+  // IP / provenance
+  provenanceRecord?: string;
+  provenanceRecordedOn?: string;
+  provenanceExplain?: string;
+
+  // Raw material cluster
+  materialCluster?: string;
+  materialClusterHint?: string;
+  joinClusterRequest?: string;
+  joinedClusterRequest?: string;
+  clusterDeadlineLabel?: string;
+  clusterTargetLabel?: string;
+
+  // WhatsApp
+  whatsappIntegration?: string;
+  whatsappNumberLabel?: string;
+  whatsappEnableAlerts?: string;
+  whatsappComingSoonNote?: string;
+
+  // Video
+  attachProcessVideo?: string;
+  videoAttachedLabel?: string;
+
+  // AI Camera
+  aiCameraTitle?: string;
+  aiEnhancedBadge?: string;
+  viewOriginalPhoto?: string;
+  viewEnhancedPhoto?: string;
+  photoBlurWarning?: string;
+  photoDarkWarning?: string;
+  retakePhotoLabel?: string;
+  useThisPhotoLabel?: string;
+  enhancePhotoLabel?: string;
+
+  // Invoice
+  downloadInvoice?: string;
+  invoiceTitleLabel?: string;
 }

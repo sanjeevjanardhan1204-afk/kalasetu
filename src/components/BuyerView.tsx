@@ -244,7 +244,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   };
 
   const recommendedProducts = selectedProduct
-    ? products.filter(product => product.id !== selectedProduct.id && product.status !== 'Sold' && getCraftFamily(product) === getCraftFamily(selectedProduct)).slice(0, 4)
+    ? products.filter(product => product.id !== selectedProduct.id && (product.status === 'Listed' || product.status === 'Pending Approval') && getCraftFamily(product) === getCraftFamily(selectedProduct)).slice(0, 4)
     : [];
 
   // A review only ever affects how an artisan/product is surfaced once it has at least this many
@@ -412,7 +412,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
   // Filters product catalog based on parsed search tags
   const filteredProducts = products.filter(product => {
-    if (product.status === 'Sold') return false;
+    if (product.status !== 'Listed' && product.status !== 'Pending Approval') return false;
     
     // Filter by Favorites Only
     if (showFavoritesOnly && !savedProductIds.includes(product.id)) return false;
@@ -1085,7 +1085,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                       : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'
                   }`}
                 >
-                  All Crafts ({products.filter(p => p.status !== 'Sold').length})
+                  All Crafts ({products.filter(p => p.status === 'Listed' || p.status === 'Pending Approval').length})
                 </button>
                 <button
                   id="filter-saved-crafts"
