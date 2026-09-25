@@ -11,7 +11,7 @@ import {
   SAMPLE_PRODUCT_IMAGES, QA_QUESTIONS, TRANSLATIONS,
   SIMULATED_VOICE_SPEECHES, playSyntheticChime,
   CURATED_GOVERNMENT_SCHEMES, DEMAND_INTELLIGENCE_DATA, CURATED_MATERIAL_CLUSTERS,
-  normalizeSpokenNumerals, parseSpokenDimensions, pickLang
+  normalizeSpokenNumerals, parseSpokenDimensions, pickLang, computeProvenanceHash
 } from '../data';
 import { speakText, stopSpeaking, triggerSubtitleSpeak, triggerSubtitleStop } from './VoiceHelper';
 import { WeaverSuccessTips } from './WeaverSuccessTips';
@@ -238,6 +238,38 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
     setEditingProduct(null);
   };
 
+  // GST invoice for a completed order - generated client-side as a downloadable HTML file since
+  // there is no backend billing system; the itemized breakdown and GSTIN line make it a real,
+  // usable invoice format rather than a placeholder.
+  const handleDownloadInvoice = (order: Order) => {
+    playSyntheticChime('click');
+    const gstRate = 0.05; // 5% GST slab commonly applicable to handloom/handicraft textiles
+    const taxableValue = Math.round(order.product.price / (1 + gstRate));
+    const gstAmount = order.product.price - taxableValue;
+    const cgst = Math.round(gstAmount / 2);
+    const sgst = gstAmount - cgst;
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${t.invoiceTitleLabel} - ${order.id}</title>
+<style>body{font-family:Arial,sans-serif;padding:32px;color:#2D2926;}h1{font-size:20px;}table{width:100%;border-collapse:collapse;margin-top:16px;}td,th{border:1px solid #ddd;padding:8px;font-size:12px;text-align:left;}.total{font-weight:bold;}</style>
+</head><body>
+<h1>${t.invoiceTitleLabel}</h1>
+<p><strong>KalaSetu</strong> — Direct Artisan Marketplace<br/>Seller: ${order.product.weaverName}, ${order.product.weaverRegion}<br/>GSTIN: ${profile?.gstin || 'URP (Unregistered Person - below GST threshold)'}</p>
+<p>Invoice No: INV-${order.id}<br/>Order Date: ${new Date(order.orderDate).toLocaleDateString('en-IN')}<br/>Buyer: ${order.buyerName}<br/>Shipping Address: ${order.buyerAddress}</p>
+<table>
+<tr><th>Item</th><th>Qty</th><th>Taxable Value</th><th>CGST (2.5%)</th><th>SGST (2.5%)</th><th>Total</th></tr>
+<tr><td>${order.product.title}</td><td>${order.quantity || 1}</td><td>₹${taxableValue}</td><td>₹${cgst}</td><td>₹${sgst}</td><td>₹${order.product.price}</td></tr>
+<tr class="total"><td colspan="5">Grand Total</td><td>₹${order.product.price}</td></tr>
+</table>
+<p style="margin-top:24px;font-size:11px;color:#8C8379;">This is a system-generated invoice from KalaSetu's demo/sandbox billing. Verify GSTIN and tax details with your accountant before formal filing.</p>
+</body></html>`;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `invoice-${order.id}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleJoinClusterRequest = (requestId: string) => {
     playSyntheticChime('success');
     setJoinedClusterIds(prev => prev.includes(requestId) ? prev : [...prev, requestId]);
@@ -445,7 +477,15 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
     };
 
     setProducts(prev => [newProduct, ...prev]);
-    
+
+    // Design/IP protection: record the first-listing timestamp + hash asynchronously and patch
+    // it onto the just-created product once ready, without blocking publish on it.
+    const provenanceTimestamp = new Date().toISOString();
+    computeProvenanceHash({ title: newProduct.title, description: newProduct.description, images: newProduct.images, timestamp: provenanceTimestamp })
+      .then(hash => {
+        setProducts(prev => prev.map(p => p.id === newProduct.id ? { ...p, provenanceHash: hash, provenanceTimestamp } : p));
+      });
+
     // Clear and return to Dashboard
     setSelectedPhoto(null);
     setQaAnswers({ title: '', material: '', specialFeatures: '', price: '' });
@@ -1244,6 +1284,35 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             )}
           </div>
 
+          {/* Completed orders with downloadable GST invoices */}
+          {artisanOrders.some(o => o.status === 'Delivered' || o.status === 'Payment Settled') && (
+            <div className="space-y-3" id="completed-orders-invoices">
+              <h3 className="font-serif text-lg font-bold text-charcoal flex items-center gap-2">
+                <FileText className="w-4 h-4 text-indigo-custom" />
+                {t.completedOrders}
+              </h3>
+              <div className="space-y-2">
+                {artisanOrders
+                  .filter(o => o.status === 'Delivered' || o.status === 'Payment Settled')
+                  .map(order => (
+                    <div key={order.id} className="bg-white border border-cream-border rounded-xl p-3 flex items-center justify-between gap-3 text-xs">
+                      <div className="min-w-0">
+                        <p className="font-bold text-charcoal truncate">{order.product.title}</p>
+                        <p className="text-gray-500 text-[10px]">#{order.id} • ₹{order.product.price}</p>
+                      </div>
+                      <button
+                        onClick={() => handleDownloadInvoice(order)}
+                        className="shrink-0 bg-indigo-custom hover:bg-indigo-light text-white font-bold px-3 py-1.5 rounded-lg text-[10px] flex items-center gap-1.5"
+                      >
+                        <FileText className="w-3 h-3" />
+                        {t.downloadInvoice}
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
           {/* List of current listings */}
           <div className="space-y-3" id="weaver-listings-section">
             <h3 className="font-serif text-lg font-bold text-charcoal">{t.myListedProducts}</h3>
@@ -1276,6 +1345,12 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                           : product.status}
                       </p>
                     </div>
+
+                    {product.provenanceHash && (
+                      <p className="text-[8px] text-gray-400 font-mono truncate" title={t.provenanceExplain}>
+                        {t.provenanceRecord}: {product.provenanceHash.slice(0, 12)}… ({t.provenanceRecordedOn} {new Date(product.provenanceTimestamp!).toLocaleDateString('en-IN')})
+                      </p>
+                    )}
 
                     {/* Product management: edit, duplicate, and change listing status without the wizard */}
                     <div className="flex flex-wrap gap-1.5">

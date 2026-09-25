@@ -2281,6 +2281,24 @@ export function playSyntheticChime(type: 'success' | 'record' | 'stop' | 'click'
   }
 }
 
+// Design/IP-theft protection: a timestamped hash of a product's original title, description and
+// photos, computed once at first listing and never recomputed on later edits, so an artisan has
+// a verifiable record of first authorship if a design is copied elsewhere later.
+export async function computeProvenanceHash(input: { title: string; description: string; images: string[]; timestamp: string }): Promise<string> {
+  const text = `${input.title}|${input.description}|${input.images.join(',')}|${input.timestamp}`;
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    try {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (e) {
+      // fall through to the simple hash below
+    }
+  }
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) { hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0; }
+  return Math.abs(hash).toString(16);
+}
+
 // Safely reads a per-language dictionary that hasn't been (or can't yet be) filled in for every
 // target language: falls back to the English entry so a screen is never blank/broken for a
 // language whose translation is still pending, per the "correct fallback behavior" requirement.
