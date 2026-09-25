@@ -3,7 +3,7 @@ import {
   Search, Mic, CheckSquare, Sparkles, User, Info, ArrowLeft, 
   MapPin, Check, ShieldCheck, HelpCircle, Truck, Heart, AlertTriangle, 
   ChevronRight, Play, CheckCircle2, MessageSquare, AlertCircle, RefreshCw,
-  Clock, X, Award, ShieldAlert, FileText
+  Clock, X, Award, ShieldAlert, FileText, ShoppingBag, Plus, Minus, Flag, Send, Star
 } from 'lucide-react';
 import { Product, Order, Language, Translation, SearchFilters, IssueReport } from '../types';
 import { TRANSLATIONS, parseConversationalSearch, playSyntheticChime } from '../data';
@@ -35,7 +35,9 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   dataSaver,
   openOrdersSignal = 0
 }) => {
-  const t = TRANSLATIONS[language];
+  // Merge with English so any newer key not yet translated for `language` still renders text
+  // instead of `undefined`, consistent with the pickLang() fallback pattern used elsewhere.
+  const t = { ...TRANSLATIONS.en, ...TRANSLATIONS[language] };
 
   // Data saver synchronization states
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'synced'>('idle');
@@ -72,7 +74,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   const lastSyncText = lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   // Tab states
-  const [activeTab, setActiveTab] = useState<'browse' | 'product-detail' | 'checkout' | 'orders'>('browse');
+  const [activeTab, setActiveTab] = useState<'browse' | 'product-detail' | 'checkout' | 'orders' | 'cart' | 'cart-checkout'>('browse');
 
   useEffect(() => {
     if (openOrdersSignal > 0) setActiveTab('orders');
@@ -116,6 +118,62 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         : [...prev, productId]
     );
   };
+
+  // Multi-item, multi-artisan Cart State with LocalStorage Persistence
+  const [cartItems, setCartItems] = useState<{ productId: string; quantity: number }[]>(() => {
+    try {
+      const saved = localStorage.getItem('kalasetu_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [addedToCartId, setAddedToCartId] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kalasetu_cart', JSON.stringify(cartItems));
+    } catch (e) {
+      console.error("Local storage sync error", e);
+    }
+  }, [cartItems]);
+
+  const addToCart = (productId: string) => {
+    playSyntheticChime('success');
+    setCartItems(prev => {
+      const existing = prev.find(i => i.productId === productId);
+      if (existing) return prev.map(i => i.productId === productId ? { ...i, quantity: i.quantity + 1 } : i);
+      return [...prev, { productId, quantity: 1 }];
+    });
+    setAddedToCartId(productId);
+    setTimeout(() => setAddedToCartId(null), 1800);
+  };
+
+  const removeFromCart = (productId: string) => {
+    playSyntheticChime('click');
+    setCartItems(prev => prev.filter(i => i.productId !== productId));
+  };
+
+  const updateCartQuantity = (productId: string, quantity: number) => {
+    if (quantity <= 0) return removeFromCart(productId);
+    setCartItems(prev => prev.map(i => i.productId === productId ? { ...i, quantity } : i));
+  };
+
+  // Resolve cart line items against the live catalog, dropping any that no longer exist (e.g. sold)
+  type CartLine = { item: { productId: string; quantity: number }; product: Product };
+  const cartLines: CartLine[] = cartItems
+    .map(item => ({ item, product: products.find(p => p.id === item.productId) }))
+    .filter((line): line is CartLine => !!line.product);
+
+  const cartByArtisan = cartLines.reduce<Record<string, CartLine[]>>((groups, line) => {
+    const key = line.product.weaverName;
+    groups[key] = groups[key] ? [...groups[key], line] : [line];
+    return groups;
+  }, {});
+
+  const cartArtisanCount = Object.keys(cartByArtisan).length;
+  const cartGrandTotal = cartLines.reduce((sum, line) => sum + line.product.price * line.item.quantity, 0);
+  const cartItemCount = cartLines.reduce((sum, line) => sum + line.item.quantity, 0);
 
   // Recently Viewed State with LocalStorage Persistence
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>(() => {
@@ -469,6 +527,82 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
     }, 2000);
   };
 
+  // Completes checkout for a multi-item, possibly multi-artisan cart. The buyer sees one order
+  // reference (cartGroupId) and one confirmation, but behind the scenes we create a separate
+  // Order per line item so each artisan's escrow, fulfillment and payout tracking stays
+  // independent - reusing the exact same per-order milestone structure as a single-item buy.
+  const handleCartCheckoutComplete = () => {
+    if (cartLines.length === 0) return;
+    playSyntheticChime('click');
+    setUpiProcessing(true);
+
+    setTimeout(() => {
+      setUpiProcessing(false);
+      playSyntheticChime('success');
+
+      const cartGroupId = 'grp-' + Date.now();
+      const newOrders: Order[] = cartLines.map((line, index) => {
+        const lineTotal = line.product.price * line.item.quantity;
+        const m1Amt = Math.round(lineTotal * 0.20);
+        const m2Amt = Math.round(lineTotal * 0.40);
+        const m3Amt = lineTotal - m1Amt - m2Amt;
+        const now = Date.now() + index; // keep ids/timestamps distinct across same-tick orders
+
+        return {
+          id: 'o-' + Math.floor(1000 + Math.random() * 9000) + '-' + index,
+          product: line.product,
+          quantity: line.item.quantity,
+          cartGroupId,
+          buyerName: profile?.name || 'Jagadish B.',
+          buyerAddress: profile?.shippingAddress || 'Indiranagar, Bengaluru, Karnataka - 560038',
+          orderDate: new Date().toISOString(),
+          status: 'Order Received',
+          shippingAddress: {
+            street: profile?.shippingAddress || 'Indiranagar, Bengaluru, Karnataka - 560038',
+            city: 'Bengaluru',
+            state: 'Karnataka',
+            pincode: '560038',
+            phone: profile?.phone || '+91 98765 43210'
+          },
+          paymentProtection: {
+            isDemo: true,
+            label: 'DEMO / SANDBOX',
+            orderTotal: lineTotal,
+            paymentSecured: lineTotal,
+            releasedAmount: 0,
+            pendingAmount: lineTotal,
+            refundedAmount: 0,
+            milestones: [
+              { id: `m-${now}-1`, name: 'ORDER CONFIRMED', percentage: 20, amount: m1Amt, status: 'PENDING' },
+              { id: `m-${now}-2`, name: 'CRAFTING / MAKING', percentage: 40, amount: m2Amt, status: 'PENDING' },
+              { id: `m-${now}-3`, name: 'DELIVERED', percentage: 40, amount: m3Amt, status: 'PENDING' }
+            ]
+          },
+          trackingHistory: [
+            {
+              status: 'Order Received',
+              timestamp: new Date().toISOString(),
+              description: `Direct-to-Artisan Order placed successfully! Verified payment of ₹${lineTotal}` + (cartArtisanCount > 1 ? ` (part of order ${cartGroupId})` : '')
+            }
+          ]
+        };
+      });
+
+      setOrders(prev => [...newOrders, ...prev]);
+      setActiveOrder(newOrders[0]);
+      setCartItems([]);
+      setActiveTab('orders');
+
+      const succText = language === 'kn'
+        ? `ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ! ${cartArtisanCount > 1 ? cartArtisanCount + ' ಕುಶಲಕರ್ಮಿಗಳಿಂದ ಪ್ರತ್ಯೇಕ ಸಾಗಣೆಗಳು.' : 'ನೇಕಾರರ ನೇರ ಆದಾಯವನ್ನು ಖಾತರಿಪಡಿಸಲಾಗಿದೆ.'}`
+        : language === 'hi'
+        ? `ऑर्डर सफल रहा! ${cartArtisanCount > 1 ? cartArtisanCount + ' अलग-अलग कारीगरों से शिपमेंट।' : 'बुनकर की सीधी कमाई सुनिश्चित की गई।'}`
+        : `Order confirmed successfully! ${cartArtisanCount > 1 ? cartArtisanCount + ' separate shipments from different artisans.' : 'Artisan direct payment processed.'}`;
+      triggerSubtitleSpeak(succText);
+      speakText(succText, language, undefined, () => triggerSubtitleStop());
+    }, 2000);
+  };
+
   // Advance Order Lifecycle for Demo Pitching! (Crucial Hackathon trigger!)
   const handleAdvanceLifecycle = (orderId: string) => {
     playSyntheticChime('click');
@@ -797,6 +931,20 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   {language === 'kn' ? 'ನನ್ನ ಆರ್ಡರ್‌ಗಳು' : language === 'hi' ? 'मेरे ऑर्डर' : 'My Orders'}
                 </button>
                 <button
+                  id="open-cart-btn"
+                  type="button"
+                  onClick={() => { playSyntheticChime('click'); setActiveTab('cart'); }}
+                  className="relative px-3 py-1.5 rounded-full text-xs font-semibold transition flex items-center gap-1.5 bg-indigo-custom text-white shadow-xs"
+                >
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  {t.cart}
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-mustard text-charcoal text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </button>
+                <button
                   id="filter-all-crafts"
                   onClick={() => {
                     playSyntheticChime('click');
@@ -823,7 +971,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   }`}
                 >
                   <Heart className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-cream text-cream' : 'text-terracotta'}`} />
-                  Saved ({savedProductIds.length})
+                  {t.wishlist} ({savedProductIds.length})
                 </button>
               </div>
             </div>
@@ -833,8 +981,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 {showFavoritesOnly ? (
                   <>
                     <Heart className="w-10 h-10 text-gray-300 mx-auto fill-gray-100" />
-                    <p className="text-sm font-semibold text-gray-700">Your Saved Items list is empty.</p>
-                    <p className="text-xs text-gray-500 max-w-xs mx-auto">Tap the heart icon on any handloom piece to save it here for quick access later!</p>
+                    <p className="text-sm font-semibold text-gray-700">{t.wishlistEmpty}</p>
+                    <p className="text-xs text-gray-500 max-w-xs mx-auto">{t.wishlistEmptyHint}</p>
                     <button
                       id="clear-favorites-filter"
                       onClick={() => {
@@ -849,10 +997,11 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 ) : (
                   <>
                     <AlertCircle className="w-10 h-10 text-mustard mx-auto" />
-                    <p className="text-sm font-semibold text-gray-700">No handlooms match those tags.</p>
+                    <p className="text-sm font-semibold text-gray-700">{t.searchNothingFound}</p>
+                    <p className="text-xs text-gray-500 max-w-xs mx-auto">{t.searchNothingFoundHint}</p>
                     <button
-                      onClick={() => setSearchQuery('')}
-                      className="text-xs text-terracotta hover:underline font-bold"
+                      onClick={() => { setSearchQuery(''); setActiveFilters({}); }}
+                      className="text-xs text-terracotta hover:underline font-bold mt-2 inline-block bg-cream px-4 py-1.5 rounded-full border border-terracotta/20"
                     >
                       Clear search filters
                     </button>
@@ -1228,6 +1377,15 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               </button>
 
               <button
+                id="add-to-cart-btn"
+                onClick={() => addToCart(selectedProduct.id)}
+                className="w-full font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-md transition transform active:scale-95 bg-white border-2 border-indigo-custom text-indigo-custom hover:bg-indigo-custom/5"
+              >
+                <ShoppingBag className="w-5 h-5" />
+                <span>{addedToCartId === selectedProduct.id ? t.addedToCart : t.addToCart}</span>
+              </button>
+
+              <button
                 id="custom-bulk-order-btn"
                 onClick={() => {
                   playSyntheticChime('click');
@@ -1243,6 +1401,9 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
             <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-xs" id="craft-recommendations-panel">
               <h3 className="font-serif text-sm font-bold text-charcoal">{t.recommendationsTitle}</h3>
+              {recommendedProducts.length > 0 && (
+                <p className="text-[10px] text-gray-400 -mt-2">{t.recommendationsWhy}</p>
+              )}
               {recommendedProducts.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3">
                   {recommendedProducts.map(product => (
@@ -1386,6 +1547,174 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         </div>
       )}
 
+      {/* CART SCREEN - multi-item, grouped by artisan */}
+      {activeTab === 'cart' && (
+        <div className="space-y-5" id="cart-screen">
+          <BackButton language={language} onBack={() => setActiveTab('browse')} />
+
+          <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
+            <button
+              onClick={() => { playSyntheticChime('click'); setActiveTab('browse'); }}
+              className="text-gray-600 hover:text-black p-1 bg-gray-100 rounded-full"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h3 className="font-serif font-bold text-charcoal text-base">{t.cart}</h3>
+          </div>
+
+          <div className="px-4 space-y-5">
+            {cartLines.length === 0 ? (
+              <div className="bg-white border border-gray-200 rounded-xl p-8 text-center space-y-3">
+                <ShoppingBag className="w-10 h-10 text-gray-300 mx-auto" />
+                <p className="text-sm font-semibold text-gray-700">{t.cartEmpty}</p>
+                <p className="text-xs text-gray-500 max-w-xs mx-auto">{t.cartEmptyHint}</p>
+                <button
+                  onClick={() => { playSyntheticChime('click'); setActiveTab('browse'); }}
+                  className="text-xs text-terracotta hover:underline font-bold mt-2 inline-block bg-cream px-4 py-1.5 rounded-full border border-terracotta/20"
+                >
+                  Browse All Crafts
+                </button>
+              </div>
+            ) : (
+              <>
+                {cartArtisanCount > 1 && (
+                  <div className="bg-indigo-custom/5 border border-indigo-custom/20 rounded-2xl p-3.5 flex gap-2.5 items-start text-xs text-indigo-custom">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{(t.cartOrderSplitNotice || '').replace('{n}', String(cartArtisanCount))}</span>
+                  </div>
+                )}
+
+                {Object.entries(cartByArtisan).map(([artisanName, lines]) => (
+                  <div key={artisanName} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs">
+                    <div className="bg-cream px-4 py-2.5 text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+                      {t.cartFromArtisan} {artisanName}
+                    </div>
+                    <div className="divide-y divide-gray-100">
+                      {lines.map(({ item, product }) => (
+                        <div key={product.id} className="p-3.5 flex gap-3 items-center">
+                          <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                            <img src={product.images[0]} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold text-charcoal truncate">{product.title}</p>
+                            <p className="text-xs font-extrabold text-terracotta mt-0.5">₹{product.price}</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              onClick={() => updateCartQuantity(product.id, item.quantity - 1)}
+                              className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600"
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
+                            <button
+                              onClick={() => updateCartQuantity(product.id, item.quantity + 1)}
+                              className="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(product.id)}
+                            className="text-[10px] font-bold text-gray-400 hover:text-rose-600 shrink-0 ml-1"
+                          >
+                            {t.cartRemove}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="bg-white rounded-2xl p-4 border border-gray-200 flex items-center justify-between shadow-xs">
+                  <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">{t.cartGrandTotal}</span>
+                  <span className="font-serif font-extrabold text-charcoal text-lg">₹{cartGrandTotal}</span>
+                </div>
+
+                <button
+                  id="cart-proceed-checkout-btn"
+                  onClick={() => { playSyntheticChime('click'); setActiveTab('cart-checkout'); }}
+                  className="w-full font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 bg-terracotta hover:bg-terracotta-dark text-cream shadow-md transition active:scale-95"
+                >
+                  <ShieldCheck className="w-5 h-5 text-mustard" />
+                  <span>{t.cartProceedToCheckout}</span>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* CART CHECKOUT SCREEN - one payment, split per artisan behind the scenes */}
+      {activeTab === 'cart-checkout' && cartLines.length > 0 && (
+        <div className="space-y-5" id="cart-checkout-screen">
+          <BackButton language={language} onBack={() => setActiveTab('cart')} />
+
+          <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
+            <button
+              onClick={() => { playSyntheticChime('click'); setActiveTab('cart'); }}
+              className="text-gray-600 hover:text-black p-1 bg-gray-100 rounded-full"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h3 className="font-serif font-bold text-charcoal text-base">{t.checkoutTitle}</h3>
+          </div>
+
+          <div className="px-4 space-y-6">
+            <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100 shadow-xs">
+              {cartLines.map(({ item, product }) => (
+                <div key={product.id} className="p-3.5 flex gap-3 items-center text-xs">
+                  <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0">
+                    <img src={product.images[0]} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-charcoal truncate">{product.title} {item.quantity > 1 ? `× ${item.quantity}` : ''}</p>
+                    <p className="text-gray-500">{t.cartFromArtisan} {product.weaverName}</p>
+                  </div>
+                  <span className="font-extrabold text-terracotta">₹{product.price * item.quantity}</span>
+                </div>
+              ))}
+            </div>
+
+            {cartArtisanCount > 1 && (
+              <div className="bg-indigo-custom/5 border border-indigo-custom/20 rounded-2xl p-3.5 flex gap-2.5 items-start text-xs text-indigo-custom">
+                <Info className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{(t.cartOrderSplitNotice || '').replace('{n}', String(cartArtisanCount))}</span>
+              </div>
+            )}
+
+            <div className="bg-white rounded-2xl p-4 border border-gray-200 flex items-center justify-between shadow-xs">
+              <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">{t.cartGrandTotal}</span>
+              <span className="font-serif font-extrabold text-charcoal text-lg">₹{cartGrandTotal}</span>
+            </div>
+
+            <div className="space-y-3" id="cart-upi-payment-panel">
+              <button
+                id="cart-pay-instant-upi-btn"
+                onClick={handleCartCheckoutComplete}
+                disabled={upiProcessing}
+                className="w-full bg-gradient-to-r from-[#5f259f] to-[#7b32cd] hover:opacity-90 text-cream font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2.5 shadow-md transition transform active:scale-95"
+              >
+                {upiProcessing ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <span>Processing Secure UPI...</span>
+                  </>
+                ) : (
+                  <span>{t.payWithUpi}</span>
+                )}
+              </button>
+
+              <div className="flex justify-center items-center gap-4 text-[10px] text-gray-400 font-bold uppercase">
+                <span>256-Bit Bank Encryption</span>
+                <span>•</span>
+                <span>UPI / RuPay verified</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 4. ORDERS STATUS TRACKER SCREEN */}
       {activeTab === 'orders' && (
         <div className="px-4 py-5 space-y-6" id="order-tracker-screen">
@@ -1429,10 +1758,19 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
           )}
 
           {buyerOrders.length === 0 ? (
-            <div className="text-center p-6 bg-white rounded-xl border border-gray-200">
+            <div className="text-center p-6 bg-white rounded-xl border border-gray-200 space-y-3">
               <p className="text-sm font-semibold text-gray-500">
                 {language === 'kn' ? 'ಇನ್ನೂ ಯಾವುದೇ ಆರ್ಡರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ.' : language === 'hi' ? 'अभी कोई ऑर्डर नहीं मिला।' : 'No placed orders found yet.'}
               </p>
+              <p className="text-xs text-gray-400 max-w-xs mx-auto">
+                {language === 'kn' ? 'ಮಾರುಕಟ್ಟೆ ಬ್ರೌಸ್ ಮಾಡಿ ಮತ್ತು ಮೊದಲ ಆರ್ಡರ್ ಮಾಡಿ.' : language === 'hi' ? 'बाज़ार देखें और अपना पहला ऑर्डर करें।' : 'Browse the marketplace and place your first order.'}
+              </p>
+              <button
+                onClick={() => { playSyntheticChime('click'); setActiveTab('browse'); }}
+                className="text-xs text-terracotta hover:underline font-bold mt-1 inline-block bg-cream px-4 py-1.5 rounded-full border border-terracotta/20"
+              >
+                Browse All Crafts
+              </button>
             </div>
           ) : (
             (() => {
@@ -1465,6 +1803,31 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                       </p>
                     </div>
                   </div>
+
+                  {/* Shared reference when this order was part of a multi-artisan cart checkout */}
+                  {currentOrder.cartGroupId && (() => {
+                    const siblings = orders.filter(o => o.cartGroupId === currentOrder.cartGroupId);
+                    if (siblings.length <= 1) return null;
+                    return (
+                      <div className="bg-indigo-custom/5 border border-indigo-custom/20 rounded-2xl p-3.5 text-xs text-indigo-custom space-y-2">
+                        <p className="font-bold">{t.orderReference}: {currentOrder.cartGroupId}</p>
+                        <p>{siblings.length} {t.shipmentsFromArtisans}:</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {siblings.map(s => (
+                            <button
+                              key={s.id}
+                              onClick={() => setActiveOrder(s)}
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold border transition ${
+                                s.id === currentOrder.id ? 'bg-indigo-custom text-white border-indigo-custom' : 'bg-white border-indigo-custom/30 hover:border-indigo-custom'
+                              }`}
+                            >
+                              {s.product.weaverName} • {s.status}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Animated Order Tracking Progress Bar (with QC & Dispatch State Transitions) */}
                   <OrderTrackingProgressBar

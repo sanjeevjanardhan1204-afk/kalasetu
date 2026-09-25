@@ -222,6 +222,7 @@ export interface IssueReport {
 export interface Order {
   id: string;
   product: Product;
+  quantity?: number;
   buyerName: string;
   buyerAddress: string;
   orderDate: string;
@@ -245,6 +246,56 @@ export interface Order {
   transactionHistory?: TransactionHistoryEntry[];
   updatedAt?: number;
   version?: number;
+  // When a checkout includes products from multiple artisans, every resulting Order shares this
+  // id so the buyer sees one order reference while fulfillment/payout/tracking stay per-artisan.
+  cartGroupId?: string;
+  returnRequest?: ReturnRequest;
+  reviews?: ProductReview[];
+  chatMessages?: ChatMessage[];
+}
+
+export interface CartItem {
+  productId: string;
+  quantity: number;
+}
+
+export type ReturnReason = 'Wrong item' | 'Damaged' | 'Defective' | 'Materially different' | 'Change of mind';
+export type ReturnResolutionType = 'REFUND' | 'REPLACEMENT';
+export type ReturnStatus = 'REQUESTED' | 'APPROVED' | 'REJECTED' | 'IN_TRANSIT' | 'COMPLETED';
+
+export interface ReturnRequest {
+  id: string;
+  reason: ReturnReason;
+  resolutionRequested: ReturnResolutionType;
+  note: string;
+  photoUrl?: string;
+  status: ReturnStatus;
+  createdAt: string;
+  updatedAt: string;
+  statusHistory: { status: ReturnStatus; timestamp: string; note: string }[];
+}
+
+export interface ProductReview {
+  id: string;
+  orderId: string; // proof of a verified purchase - a review always traces back to a delivered order
+  productId: string;
+  buyerName: string;
+  rating: 1 | 2 | 3 | 4 | 5;
+  text: string;
+  createdAt: string;
+  flagged?: boolean;
+  flagReason?: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  orderId: string;
+  sender: 'buyer' | 'artisan';
+  text: string;
+  timestamp: string;
+  flagged?: boolean;
+  flagReason?: string;
+  offPlatformWarning?: boolean;
 }
 
 export interface SearchFilters {
@@ -339,4 +390,62 @@ export interface Translation {
   trackStatus: string;
   recommendationsTitle: string;
   recommendationsEmpty: string;
+  recommendationsWhy?: string;
+  searchNothingFound?: string;
+  searchNothingFoundHint?: string;
+
+  // Cart
+  addToCart?: string;
+  addedToCart?: string;
+  cart?: string;
+  cartEmpty?: string;
+  cartEmptyHint?: string;
+  cartFromArtisan?: string;
+  cartGrandTotal?: string;
+  cartProceedToCheckout?: string;
+  cartRemove?: string;
+  cartOrderSplitNotice?: string;
+  orderReference?: string;
+  shipmentsFromArtisans?: string;
+
+  // Wishlist
+  wishlist?: string;
+  wishlistEmpty?: string;
+  wishlistEmptyHint?: string;
+  addToWishlist?: string;
+  removeFromWishlist?: string;
+
+  // Reviews
+  reviews?: string;
+  writeReview?: string;
+  verifiedPurchase?: string;
+  reviewNeedsPurchase?: string;
+  reviewSubmitted?: string;
+  reportReview?: string;
+  reviewReportedThanks?: string;
+  noReviewsYet?: string;
+  noReviewsYetHint?: string;
+
+  // Returns
+  returnOrReplace?: string;
+  returnStatus?: string;
+  returnReasonLabel?: string;
+  returnNote?: string;
+  returnSubmit?: string;
+  returnSubmitted?: string;
+  returnNotAvailable?: string;
+
+  // Chat
+  chatWithArtisan?: string;
+  chatEmpty?: string;
+  chatPlaceholder?: string;
+  chatSend?: string;
+  chatReportMessage?: string;
+  chatReportedThanks?: string;
+  chatOffPlatformWarning?: string;
+
+  // Generic empty/error states
+  genericErrorTitle?: string;
+  genericErrorHint?: string;
+  retry?: string;
 }
