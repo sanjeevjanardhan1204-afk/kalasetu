@@ -247,6 +247,20 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
     ? products.filter(product => product.id !== selectedProduct.id && product.status !== 'Sold' && getCraftFamily(product) === getCraftFamily(selectedProduct)).slice(0, 4)
     : [];
 
+  // A review only ever affects how an artisan/product is surfaced once it has at least this many
+  // non-flagged verified reviews - below that we show a neutral "new listing" state instead of a
+  // low/empty rating, so a genuinely new artisan is never penalized for not having reviews yet.
+  const MIN_REVIEWS_FOR_RATING = 3;
+  const getProductReviewStats = (productId: string) => {
+    const allReviews = orders
+      .filter(o => o.product.id === productId)
+      .flatMap(o => o.reviews || [])
+      .filter(r => !r.flagged);
+    const count = allReviews.length;
+    const average = count > 0 ? allReviews.reduce((sum, r) => sum + r.rating, 0) / count : 0;
+    return { count, average, meetsThreshold: count >= MIN_REVIEWS_FOR_RATING };
+  };
+
   // Search History State with LocalStorage Persistence
   const [searchHistory, setSearchHistory] = useState<string[]>(() => {
     try {
@@ -1202,6 +1216,17 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                           <MapPin className="w-2.5 h-2.5 text-terracotta" />
                           {product.weaverRegion.split(',').slice(-2).join(',').trim()}
                         </p>
+                        {(() => {
+                          const stats = getProductReviewStats(product.id);
+                          return stats.meetsThreshold ? (
+                            <p className="text-[9px] text-gray-600 mt-1 font-semibold flex items-center gap-0.5">
+                              <Star className="w-2.5 h-2.5 fill-mustard text-mustard" />
+                              {stats.average.toFixed(1)} ({stats.count})
+                            </p>
+                          ) : (
+                            <p className="text-[9px] text-indigo-custom/70 mt-1 font-semibold">New Listing</p>
+                          );
+                        })()}
                       </div>
 
                       <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] font-bold text-indigo-custom uppercase">
