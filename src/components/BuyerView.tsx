@@ -1333,12 +1333,17 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
           <div className="px-4 space-y-5">
             {/* Product Image Carousel block */}
             <div className="rounded-3xl overflow-hidden aspect-video relative shadow-sm border border-gray-200">
-              <img 
-                src={selectedProduct.images[0]} 
-                alt="" 
+              <img
+                src={(selectedProduct.aiEnhanced && selectedProduct.enhancedImages?.[0]) || selectedProduct.images[0]}
+                alt=""
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
+              {selectedProduct.aiEnhanced && (
+                <span className="absolute top-4 left-4 bg-indigo-custom text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-mustard" /> {t.aiEnhancedBadge}
+                </span>
+              )}
               <span className="absolute bottom-4 left-4 bg-terracotta text-cream text-base font-bold px-3 py-1 rounded-full">
                 ₹{(selectedProduct?.price ?? 0).toLocaleString()}
               </span>

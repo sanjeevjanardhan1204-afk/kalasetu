@@ -104,6 +104,18 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   const [wizardStep, setWizardStep] = useState<number>(1); // 1: Photo, 2: Guided Q&A, 3: Listen/Read Review
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState<boolean>(false);
+
+  // AI Camera (reduced first version, per Master Spec 24.1): basic blur/brightness detection on
+  // a real uploaded photo, plus a background/contrast cleanup pass. The original file is always
+  // kept - enhancement only ever produces a second, separate image (enhancedPhoto), never
+  // overwrites what the artisan actually captured, and colour/pattern/material are never altered
+  // beyond a small contrast/brightness normalization.
+  const photoFileInputRef = React.useRef<HTMLInputElement>(null);
+  const [enhancedPhoto, setEnhancedPhoto] = useState<string | null>(null);
+  const [photoIsAiEnhanced, setPhotoIsAiEnhanced] = useState(false);
+  const [photoQualityWarnings, setPhotoQualityWarnings] = useState<string[]>([]);
+  const [showOriginalPreview, setShowOriginalPreview] = useState(false);
+  const [isAnalyzingPhoto, setIsAnalyzingPhoto] = useState(false);
   
   // Q&A Question Index
   const [qaIndex, setQaIndex] = useState<number>(0);
@@ -413,6 +425,77 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   };
 
   // Simulate a manual voice recording capture (useful if Web Speech is blocked)
+  // AI Camera: reads a real uploaded photo, checks basic blur/brightness, and produces an
+  // enhanced (contrast/lighting cleaned up) copy alongside the untouched original.
+  const handlePhotoFileSelected = (file: File) => {
+    setIsAnalyzingPhoto(true);
+    setPhotoQualityWarnings([]);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const original = reader.result as string;
+      const img = new Image();
+      img.onload = () => {
+        const size = 200; // small analysis canvas is enough to estimate blur/brightness cheaply
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { setSelectedPhoto(original); setIsAnalyzingPhoto(false); return; }
+        ctx.drawImage(img, 0, 0, size, size);
+        const { data } = ctx.getImageData(0, 0, size, size);
+
+        // Brightness: mean luminance across sampled pixels
+        let totalLuma = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          totalLuma += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        }
+        const avgLuma = totalLuma / (data.length / 4);
+
+        // Blur: average absolute difference between horizontally adjacent grayscale pixels -
+        // a sharp, in-focus photo has high local contrast; a blurry one is much flatter.
+        let edgeSum = 0;
+        let edgeCount = 0;
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size - 1; x++) {
+            const i1 = (y * size + x) * 4;
+            const i2 = (y * size + x + 1) * 4;
+            const g1 = 0.299 * data[i1] + 0.587 * data[i1 + 1] + 0.114 * data[i1 + 2];
+            const g2 = 0.299 * data[i2] + 0.587 * data[i2 + 1] + 0.114 * data[i2 + 2];
+            edgeSum += Math.abs(g1 - g2);
+            edgeCount++;
+          }
+        }
+        const sharpness = edgeSum / edgeCount;
+
+        const warnings: string[] = [];
+        if (avgLuma < 70) warnings.push(t.photoDarkWarning || 'This photo looks a little dark.');
+        if (sharpness < 4) warnings.push(t.photoBlurWarning || 'This photo looks a little blurry.');
+        setPhotoQualityWarnings(warnings);
+
+        // Enhancement pass: mild contrast/brightness/saturation cleanup only - never touches hue,
+        // so the product's real color is preserved. Runs at full resolution, separate canvas.
+        const fullCanvas = document.createElement('canvas');
+        fullCanvas.width = img.naturalWidth;
+        fullCanvas.height = img.naturalHeight;
+        const fullCtx = fullCanvas.getContext('2d');
+        if (fullCtx) {
+          const brightnessBoost = avgLuma < 90 ? 1.12 : 1.0;
+          (fullCtx as any).filter = `contrast(112%) saturate(108%) brightness(${brightnessBoost})`;
+          fullCtx.drawImage(img, 0, 0);
+          setEnhancedPhoto(fullCanvas.toDataURL('image/jpeg', 0.9));
+          setPhotoIsAiEnhanced(true);
+        }
+
+        setSelectedPhoto(original);
+        setShowOriginalPreview(false);
+        setIsAnalyzingPhoto(false);
+        playSyntheticChime(warnings.length > 0 ? 'stop' : 'success');
+      };
+      img.src = original;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const triggerSimulatedRecording = () => {
     setWeaverListening(true);
     playSyntheticChime('record');
@@ -462,6 +545,8 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       specialFeatures: qaAnswers.specialFeatures || 'Woven using natural vegetable dyes and custom heritage borders.',
       description: `A stunning handloom creation featuring organic textures. Crafted with care over multiple days of precise manual tension on wooden frames.`,
       images: [selectedPhoto || SAMPLE_PRODUCT_IMAGES[0], SAMPLE_PRODUCT_IMAGES[1]],
+      enhancedImages: photoIsAiEnhanced && enhancedPhoto ? [enhancedPhoto] : undefined,
+      aiEnhanced: photoIsAiEnhanced && !!enhancedPhoto,
       careInstructions: 'Gentle hand wash separate in cold water. Do not twist. Hang to dry in a shady breeze.',
       dateAdded: new Date().toISOString(),
       status: 'Listed',
@@ -488,6 +573,9 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
 
     // Clear and return to Dashboard
     setSelectedPhoto(null);
+    setEnhancedPhoto(null);
+    setPhotoIsAiEnhanced(false);
+    setPhotoQualityWarnings([]);
     setQaAnswers({ title: '', material: '', specialFeatures: '', price: '' });
     setDraftGiRegistered(false);
     setQaIndex(0);
@@ -1535,18 +1623,31 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               <div className="aspect-square w-full max-w-sm mx-auto bg-white border-4 border-dashed border-gray-300 rounded-3xl flex flex-col items-center justify-center relative overflow-hidden group shadow-inner">
                 {selectedPhoto ? (
                   <>
-                    <img 
-                      src={selectedPhoto} 
-                      alt="Product Preview" 
+                    <img
+                      src={photoIsAiEnhanced && enhancedPhoto && !showOriginalPreview ? enhancedPhoto : selectedPhoto}
+                      alt="Product Preview"
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
                     />
+                    {photoIsAiEnhanced && enhancedPhoto && (
+                      <span className="absolute top-4 left-4 bg-indigo-custom text-white text-[9px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-md flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-mustard" /> {t.aiEnhancedBadge}
+                      </span>
+                    )}
                     <button
-                      onClick={() => setSelectedPhoto(null)}
+                      onClick={() => { setSelectedPhoto(null); setEnhancedPhoto(null); setPhotoIsAiEnhanced(false); setPhotoQualityWarnings([]); }}
                       className="absolute top-4 right-4 bg-red-600 text-cream p-2.5 rounded-full shadow-lg hover:bg-red-700 transition"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
+                    {photoIsAiEnhanced && enhancedPhoto && (
+                      <button
+                        onClick={() => setShowOriginalPreview(v => !v)}
+                        className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-charcoal/85 text-cream text-[10px] font-bold px-3 py-1.5 rounded-full shadow-md"
+                      >
+                        {showOriginalPreview ? t.viewEnhancedPhoto : t.viewOriginalPhoto}
+                      </button>
+                    )}
                   </>
                 ) : (
                   <div className="text-center p-6 space-y-4">
@@ -1554,19 +1655,47 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       <Camera className="w-8 h-8" />
                     </div>
                     <div>
-                      <p className="font-semibold text-charcoal">Simulate Camera Shot</p>
-                      <p className="text-xs text-gray-500 mt-1">Tap a template saree photo below</p>
+                      <p className="font-semibold text-charcoal">{t.aiCameraTitle}</p>
+                      <p className="text-xs text-gray-500 mt-1">Upload a real photo, or tap a template below</p>
                     </div>
+                    <input
+                      ref={photoFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePhotoFileSelected(f); }}
+                    />
+                    <button
+                      onClick={() => photoFileInputRef.current?.click()}
+                      className="bg-terracotta hover:bg-terracotta-dark text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition"
+                    >
+                      Upload Photo
+                    </button>
                   </div>
                 )}
-                
-                {isUploadingPhoto && (
+
+                {(isUploadingPhoto || isAnalyzingPhoto) && (
                   <div className="absolute inset-0 bg-cream/80 flex flex-col items-center justify-center space-y-3">
                     <RefreshCw className="w-8 h-8 text-terracotta animate-spin" />
-                    <p className="text-xs font-bold text-charcoal uppercase tracking-wider">Processing image threads...</p>
+                    <p className="text-xs font-bold text-charcoal uppercase tracking-wider">{isAnalyzingPhoto ? t.enhancePhotoLabel : 'Processing image threads...'}</p>
                   </div>
                 )}
               </div>
+
+              {photoQualityWarnings.length > 0 && (
+                <div className="max-w-sm mx-auto bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-1.5">
+                  {photoQualityWarnings.map((w, i) => (
+                    <p key={i} className="text-[11px] text-amber-800 flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5 shrink-0" />{w}</p>
+                  ))}
+                  <button
+                    onClick={() => { setSelectedPhoto(null); setEnhancedPhoto(null); setPhotoIsAiEnhanced(false); setPhotoQualityWarnings([]); photoFileInputRef.current?.click(); }}
+                    className="text-[10px] font-bold text-amber-900 underline"
+                  >
+                    {t.retakePhotoLabel}
+                  </button>
+                </div>
+              )}
 
               {/* Weaver Saree Photo Templates */}
               <div className="space-y-2">
@@ -1581,6 +1710,9 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       onClick={() => {
                         playSyntheticChime('click');
                         setIsUploadingPhoto(true);
+                        setEnhancedPhoto(null);
+                        setPhotoIsAiEnhanced(false);
+                        setPhotoQualityWarnings([]);
                         setTimeout(() => {
                           setSelectedPhoto(img);
                           setIsUploadingPhoto(false);
