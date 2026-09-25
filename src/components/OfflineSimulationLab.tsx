@@ -663,7 +663,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
               <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-3.5 space-y-1 text-indigo-950">
                 <p className="font-bold">Why Offline Resilience Matters in Handloom Hubs:</p>
                 <p className="text-[11px] text-indigo-800 leading-relaxed">
-                  Weavers in remote Karnataka & UP villages operate looms inside stone or tin sheds where cellular signals drop. Taana's local outbox guarantees that listings and QC checklists never fail due to dropped connections.
+                  Weavers in remote Karnataka & UP villages operate looms inside stone or tin sheds where cellular signals drop. KalaSetu's local outbox guarantees that listings and QC checklists never fail due to dropped connections.
                 </p>
               </div>
             </div>

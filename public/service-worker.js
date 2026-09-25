@@ -93,7 +93,7 @@ self.addEventListener('fetch', (event) => {
           // Return fallback placeholder SVG if image fails offline
           if (request.destination === 'image') {
             return new Response(
-              '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="#F4EDE4"/><text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="15" fill="#C25E44">Taana Handloom</text><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#8C8379">Offline Cache Active</text></svg>',
+              '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="#F4EDE4"/><text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="15" fill="#C25E44">KalaSetu Handloom</text><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#8C8379">Offline Cache Active</text></svg>',
               { headers: { 'Content-Type': 'image/svg+xml' } }
             );
           }

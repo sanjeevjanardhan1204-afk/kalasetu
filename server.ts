@@ -533,15 +533,12 @@ let serverOrders: ServerOrder[] = [
 
 let serverConflictLogs: ServerConflictLog[] = [];
 
-async function startServer() {
+// Builds and configures the Express app with every API route registered, but does not bind a
+// port or wire up static/SPA serving. Used both by the standalone server (Cloud Run/local dev)
+// and by the Vercel serverless function entrypoint (api/index.ts), which invokes this directly
+// instead of a long-lived process since Vercel does not execute app.listen()-based servers.
+export async function createApp() {
   const app = express();
-  
-  // Environment & Port configuration:
-  // - In development: Dev server MUST strictly bind to port 3000 (required by local reverse proxy).
-  // - In production: Cloud Run injects PORT (default 8080) and expects container ingress on that port.
-  const isBundled = typeof __filename !== "undefined" && (__filename.includes("dist") || __filename.endsWith(".cjs"));
-  const isProduction = process.env.NODE_ENV === "production" || process.env.npm_lifecycle_event === "start" || isBundled;
-  const PORT = isProduction && process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
   // JSON Body Parser for REST Endpoints
   app.use(express.json({ limit: "10mb" }));
@@ -1464,6 +1461,22 @@ async function startServer() {
     }
   });
 
+  return app;
+}
+
+// Standalone server entrypoint (local dev via tsx, and any long-lived host like Cloud Run).
+// Not used on Vercel: Vercel invokes createApp() directly from api/index.ts per-request instead
+// of starting a persistent process, so this function must never run there.
+async function startServer() {
+  const app = await createApp();
+
+  // Environment & Port configuration:
+  // - In development: Dev server MUST strictly bind to port 3000 (required by local reverse proxy).
+  // - In production: Cloud Run injects PORT (default 8080) and expects container ingress on that port.
+  const isBundled = typeof __filename !== "undefined" && (__filename.includes("dist") || __filename.endsWith(".cjs"));
+  const isProduction = process.env.NODE_ENV === "production" || process.env.npm_lifecycle_event === "start" || isBundled;
+  const PORT = isProduction && process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+
   // Vite middleware for development & SPA serving
   if (!isProduction) {
     const { createServer: createViteServer } = await import("vite");
@@ -1504,5 +1517,9 @@ async function startServer() {
   }
 }
 
-startServer();
+// Vercel sets VERCEL=1 in its build/runtime environment; the serverless function in api/index.ts
+// imports createApp() directly and must not trigger a second, listen()-based server here.
+if (!process.env.VERCEL) {
+  startServer();
+}
 

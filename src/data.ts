@@ -657,7 +657,7 @@ export const MOCK_ORDERS: Order[] = [
       {
         status: 'Shipped',
         timestamp: '2026-07-07T14:00:00Z',
-        description: 'Shipped via Taana Premium Logistics.'
+        description: 'Shipped via KalaSetu Premium Logistics.'
       },
       {
         status: 'Delivered',
@@ -716,7 +716,7 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     priceBreakdown: 'Transparent Pricing Breakdown',
     customerPrice: 'Total Price You Pay',
     logisticsCost: 'Direct Logistics & Rural Courier',
-    platformFee: 'Taana Tech Fee (3%)',
+    platformFee: 'KalaSetu Tech Fee (3%)',
     weaverEarnings: 'Artisan Direct Earnings (91%)',
     payWithUpi: 'Pay Instantly with UPI / QR',
     orderConfirmed: 'Order Confirmed!',
@@ -771,7 +771,7 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     priceBreakdown: 'ಪಾರದರ್ಶಕ ಬೆಲೆ ವಿಭಜನೆ',
     customerPrice: 'ನೀವು ಪಾವತಿಸುವ ಒಟ್ಟು ಬೆಲೆ',
     logisticsCost: 'ನೇರ ಸಾರಿಗೆ ಮತ್ತು ಗ್ರಾಮೀಣ ಕೊರಿಯರ್',
-    platformFee: 'ತಂತುಲಿಂಕ್ ಸೇವಾ ಶುಲ್ಕ (೩%)',
+    platformFee: 'ಕಲಾಸೇತು ಸೇವಾ ಶುಲ್ಕ (೩%)',
     weaverEarnings: 'ಕುಶಲಕರ್ಮಿಯ ನೇರ ಆದಾಯ (೯೧%)',
     payWithUpi: 'UPI / QR ಮೂಲಕ ತಕ್ಷಣ ಪಾವತಿಸಿ',
     orderConfirmed: 'ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ!',
@@ -826,7 +826,7 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     priceBreakdown: 'पारदर्शी मूल्य विभाजन',
     customerPrice: 'आपके द्वारा भुगतान की जाने वाली राशि',
     logisticsCost: 'सीधा परिवहन और ग्रामीण कूरियर',
-    platformFee: 'तंतुलिंक सेवा शुल्क (3%)',
+    platformFee: 'कलासेतु सेवा शुल्क (3%)',
     weaverEarnings: 'कारीगर की सीधी कमाई (91%)',
     payWithUpi: 'UPI / QR द्वारा तुरंत भुगतान करें',
     orderConfirmed: 'ऑर्डर की पुष्टि हो गई!',
@@ -972,6 +972,33 @@ export function playSyntheticChime(type: 'success' | 'record' | 'stop' | 'click'
   } catch (e) {
     console.warn('Web Audio API not supported or blocked:', e);
   }
+}
+
+// Converts Devanagari (०-९) and Kannada (೦-೯) digit characters to ASCII so voice transcripts
+// in any supported script can still be parsed as numbers by parseInt/parseFloat.
+export function normalizeSpokenNumerals(text: string): string {
+  return text.replace(/[०-९೦-೯]/g, (ch) => {
+    const code = ch.codePointAt(0)!;
+    // Devanagari digits: U+0966-U+096F, Kannada digits: U+0CE6-U+0CEF
+    const base = code >= 0x0CE6 ? 0x0CE6 : 0x0966;
+    return String(code - base);
+  });
+}
+
+// Extracts up to two numbers (length, width) from a free-form voice/typed dimensions answer,
+// e.g. "length 5.5 meters and width 1.1 meters" or "5.5 by 1.1 meters". Returns null when no
+// number could be found, so callers can fall back to whatever dimensions are already set.
+export function parseSpokenDimensions(text: string): { length: string; width: string } | null {
+  const normalized = normalizeSpokenNumerals(text);
+  const numbers = normalized.match(/\d+(\.\d+)?/g);
+  if (!numbers || numbers.length === 0) return null;
+
+  const unitMatch = normalized.match(/meter|metre|मीटर|ಮೀಟರ್|inch|इंच|ಇಂಚ್|feet|foot|फुट|ಅಡಿ/i);
+  const unit = unitMatch ? unitMatch[0] : 'meters';
+
+  const length = `${numbers[0]} ${unit}`;
+  const width = `${numbers[1] || numbers[0]} ${unit}`;
+  return { length, width };
 }
 
 // Client-side Conversational NLP Parser for the demo

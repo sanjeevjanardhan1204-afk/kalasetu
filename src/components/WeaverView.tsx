@@ -7,10 +7,11 @@ import {
   Building2, ExternalLink, PackageCheck, AlertTriangle, Layers, Filter
 } from 'lucide-react';
 import { Product, Order, Language, Translation, Dimensions, GiInfo, GovernmentScheme, CustomBulkOrderRequest } from '../types';
-import { 
-  SAMPLE_PRODUCT_IMAGES, QA_QUESTIONS, TRANSLATIONS, 
+import {
+  SAMPLE_PRODUCT_IMAGES, QA_QUESTIONS, TRANSLATIONS,
   SIMULATED_VOICE_SPEECHES, playSyntheticChime,
-  CURATED_GOVERNMENT_SCHEMES, DEMAND_INTELLIGENCE_DATA
+  CURATED_GOVERNMENT_SCHEMES, DEMAND_INTELLIGENCE_DATA,
+  normalizeSpokenNumerals, parseSpokenDimensions
 } from '../data';
 import { speakText, stopSpeaking, triggerSubtitleSpeak, triggerSubtitleStop } from './VoiceHelper';
 import { WeaverSuccessTips } from './WeaverSuccessTips';
@@ -276,6 +277,14 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
     const key = QA_QUESTIONS[qaIndex].key;
     setQaAnswers(prev => ({ ...prev, [key]: text }));
     setCurrentInputText('');
+
+    // The "dimensions" QA answer is free-form speech/text (e.g. "length 5.5 meters width 1.1
+    // meters"); it must be parsed into the separate length/width fields actually used to build
+    // the product, otherwise a spoken measurement is silently discarded and the default persists.
+    if (key === 'dimensions') {
+      const parsed = parseSpokenDimensions(text);
+      if (parsed) setDimensions(parsed);
+    }
     
     // Auto transition to next or handle measurements specially
     if (qaIndex < QA_QUESTIONS.length - 1) {
@@ -341,7 +350,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       weaverRegion: profile?.region || 'Gudikal, Bagalkot, Karnataka',
       weaverImage: 'https://images.unsplash.com/photo-1607990283143-e81e7a2c93ab?auto=format&fit=crop&q=80&w=300',
       material: qaAnswers.material || 'Pure Khadi Cotton',
-      price: parseInt(qaAnswers.price) || 3500,
+      price: parseInt(normalizeSpokenNumerals(qaAnswers.price)) || 3500,
       dimensions: dimensions,
       specialFeatures: qaAnswers.specialFeatures || 'Woven using natural vegetable dyes and custom heritage borders.',
       description: `A stunning handloom creation featuring organic textures. Crafted with care over multiple days of precise manual tension on wooden frames.`,
@@ -1889,7 +1898,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             weaverRegion: profile?.region || "Karnataka",
             weaverImage: "",
             material: qaAnswers.material || "Khadi Silk Cotton",
-            price: parseInt(qaAnswers.price) || 3500,
+            price: parseInt(normalizeSpokenNumerals(qaAnswers.price)) || 3500,
             dimensions: dimensions,
             specialFeatures: qaAnswers.specialFeatures || "",
             description: "",
