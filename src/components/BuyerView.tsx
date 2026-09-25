@@ -5,7 +5,7 @@ import {
   ChevronRight, Play, CheckCircle2, MessageSquare, AlertCircle, RefreshCw,
   Clock, X, Award, ShieldAlert, FileText, ShoppingBag, Plus, Minus, Flag, Send, Star
 } from 'lucide-react';
-import { Product, Order, Language, Translation, SearchFilters, IssueReport } from '../types';
+import { Product, Order, Language, Translation, SearchFilters, IssueReport, ReturnReason, ReturnResolutionType, ReturnStatus, ProductReview, ChatMessage } from '../types';
 import { TRANSLATIONS, parseConversationalSearch, playSyntheticChime } from '../data';
 import { speakText, triggerSubtitleSpeak, triggerSubtitleStop } from './VoiceHelper';
 import { OrderTrackingProgressBar } from './OrderTrackingProgressBar';
@@ -291,6 +291,17 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   const [issuePhoto, setIssuePhoto] = useState<boolean>(false);
   const [showIssueResolution, setShowIssueResolution] = useState(false);
   const [resolvedMessage, setResolvedMessage] = useState('');
+
+  // Distinct Returns/Replacement/Refund flow (separate from disputes and the legacy issue report;
+  // shares the same order-level evidence surface but carries its own tracked status)
+  const [selectedReturnOrder, setSelectedReturnOrder] = useState<Order | null>(null);
+  const [returnReason, setReturnReason] = useState<ReturnReason>('Wrong item');
+  const [returnResolution, setReturnResolution] = useState<ReturnResolutionType>('REFUND');
+  const [returnNoteText, setReturnNoteText] = useState('');
+
+  // Buyer-artisan chat per order, with lightweight off-platform-payment keyword detection
+  const [chatDraft, setChatDraft] = useState('');
+  const OFF_PLATFORM_PATTERN = /\b(whatsapp|telegram|call me|cash on|pay (me )?directly|outside (the )?app|my number is)\b|\b\d{10}\b/i;
 
   // 4 New Features: Modal States
   const [selectedGiProduct, setSelectedGiProduct] = useState<Product | null>(null);
@@ -717,6 +728,110 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         };
       }
       return o;
+    }));
+  };
+
+  // Distinct Returns/Replacement/Refund flow - separate from disputes (which are for
+  // buyer-vs-artisan conflicting claims) and the legacy instant issue report above.
+  // Every step is recorded in statusHistory with a plain-language note.
+  const handleSubmitReturnRequest = () => {
+    if (!selectedReturnOrder) return;
+    playSyntheticChime('click');
+    const now = new Date().toISOString();
+    const request = {
+      id: 'ret-' + Date.now(),
+      reason: returnReason,
+      resolutionRequested: returnResolution,
+      note: returnNoteText,
+      status: 'REQUESTED' as ReturnStatus,
+      createdAt: now,
+      updatedAt: now,
+      statusHistory: [{ status: 'REQUESTED' as ReturnStatus, timestamp: now, note: 'Request received - we are reviewing it.' }]
+    };
+    setOrders(prev => prev.map(o => o.id === selectedReturnOrder.id ? { ...o, returnRequest: request } : o));
+    setActiveOrder(prev => prev && prev.id === selectedReturnOrder.id ? { ...prev, returnRequest: request } : prev);
+    setSelectedReturnOrder(null);
+    setReturnNoteText('');
+    playSyntheticChime('success');
+  };
+
+  // Demo-only progression trigger (same convention as the order-lifecycle "simulate" button
+  // elsewhere in this app, since there is no real backend to advance it automatically).
+  const handleAdvanceReturnStatus = (orderId: string) => {
+    playSyntheticChime('click');
+    const nextStatus: Record<ReturnStatus, { status: ReturnStatus; note: string } | null> = {
+      REQUESTED: { status: 'APPROVED', note: 'Approved - please pack the item; pickup/shipping instructions are on the way.' },
+      APPROVED: { status: 'IN_TRANSIT', note: 'Your returned item is on its way back to the artisan.' },
+      IN_TRANSIT: { status: 'COMPLETED', note: 'Received and inspected - your refund/replacement has been processed.' },
+      REJECTED: null,
+      COMPLETED: null
+    };
+    setOrders(prev => prev.map(o => {
+      if (o.id !== orderId || !o.returnRequest) return o;
+      const advance = nextStatus[o.returnRequest.status];
+      if (!advance) return o;
+      const now = new Date().toISOString();
+      const updatedRequest = {
+        ...o.returnRequest,
+        status: advance.status,
+        updatedAt: now,
+        statusHistory: [...o.returnRequest.statusHistory, { status: advance.status, timestamp: now, note: advance.note }]
+      };
+      const updated = { ...o, returnRequest: updatedRequest };
+      setActiveOrder(prevActive => prevActive && prevActive.id === orderId ? updated : prevActive);
+      return updated;
+    }));
+  };
+
+  // Verified-purchase review: only orders marked Delivered may leave a review, and it is tied to
+  // that order id as proof of purchase.
+  const handleSubmitReview = (order: Order, rating: 1 | 2 | 3 | 4 | 5, text: string) => {
+    if (order.status !== 'Delivered') return;
+    playSyntheticChime('success');
+    const review: ProductReview = {
+      id: 'rev-' + Date.now(),
+      orderId: order.id,
+      productId: order.product.id,
+      buyerName: profile?.name || 'Verified Buyer',
+      rating,
+      text,
+      createdAt: new Date().toISOString()
+    };
+    setOrders(prev => prev.map(o => o.id === order.id ? { ...o, reviews: [...(o.reviews || []), review] } : o));
+  };
+
+  const handleReportReview = (orderId: string, reviewId: string) => {
+    playSyntheticChime('click');
+    setOrders(prev => prev.map(o => {
+      if (o.id !== orderId) return o;
+      return { ...o, reviews: (o.reviews || []).map(r => r.id === reviewId ? { ...r, flagged: true } : r) };
+    }));
+  };
+
+  // Buyer-artisan chat with a non-blocking off-platform-payment/contact warning and a report path
+  const handleSendChatMessage = (order: Order) => {
+    const text = chatDraft.trim();
+    if (!text) return;
+    playSyntheticChime('click');
+    const offPlatform = OFF_PLATFORM_PATTERN.test(text);
+    const message: ChatMessage = {
+      id: 'msg-' + Date.now(),
+      orderId: order.id,
+      sender: 'buyer',
+      text,
+      timestamp: new Date().toISOString(),
+      offPlatformWarning: offPlatform
+    };
+    setOrders(prev => prev.map(o => o.id === order.id ? { ...o, chatMessages: [...(o.chatMessages || []), message] } : o));
+    setActiveOrder(prev => prev && prev.id === order.id ? { ...prev, chatMessages: [...(prev.chatMessages || []), message] } : prev);
+    setChatDraft('');
+  };
+
+  const handleReportChatMessage = (orderId: string, messageId: string) => {
+    playSyntheticChime('click');
+    setOrders(prev => prev.map(o => {
+      if (o.id !== orderId) return o;
+      return { ...o, chatMessages: (o.chatMessages || []).map(m => m.id === messageId ? { ...m, flagged: true } : m) };
     }));
   };
 
@@ -1947,11 +2062,210 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     </div>
                   )}
 
+                  {/* Distinct Returns/Replacement/Refund flow - separate from disputes above */}
+                  {currentOrder.status === 'Delivered' && !currentOrder.returnRequest && (
+                    <button
+                      id="open-return-request-btn"
+                      onClick={() => {
+                        playSyntheticChime('click');
+                        setSelectedReturnOrder(currentOrder);
+                        setReturnReason('Wrong item');
+                        setReturnResolution('REFUND');
+                        setReturnNoteText('');
+                      }}
+                      className="w-full bg-white hover:bg-cream border-2 border-indigo-custom/30 text-indigo-custom font-bold py-3 px-4 rounded-2xl text-xs shadow-xs transition flex items-center justify-center gap-2"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      {t.returnOrReplace}
+                    </button>
+                  )}
+                  {currentOrder.status !== 'Delivered' && (
+                    <p className="text-[11px] text-gray-400 text-center">{t.returnNotAvailable}</p>
+                  )}
+
+                  {currentOrder.returnRequest && (
+                    <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3" id="return-status-card">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-serif font-bold text-sm text-charcoal">{t.returnStatus}</h4>
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-custom/10 text-indigo-custom">
+                          {currentOrder.returnRequest.status.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <div className="space-y-2">
+                        {currentOrder.returnRequest.statusHistory.map((entry, i) => (
+                          <div key={i} className="flex gap-2 text-xs">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-charcoal font-semibold">{entry.note}</p>
+                              <p className="text-[10px] text-gray-400">{new Date(entry.timestamp).toLocaleString('en-IN')}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {(currentOrder.returnRequest.status === 'REQUESTED' || currentOrder.returnRequest.status === 'APPROVED' || currentOrder.returnRequest.status === 'IN_TRANSIT') && (
+                        <button
+                          onClick={() => handleAdvanceReturnStatus(currentOrder.id)}
+                          className="text-[10px] font-bold text-terracotta hover:underline"
+                        >
+                          Simulate next update (demo)
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Verified-purchase reviews */}
+                  <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3" id="order-reviews-panel">
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-mustard fill-mustard" />
+                      <h4 className="font-serif font-bold text-sm text-charcoal">{t.reviews}</h4>
+                    </div>
+                    {currentOrder.status === 'Delivered' ? (
+                      <ReviewComposer
+                        alreadyReviewed={(currentOrder.reviews || []).length > 0}
+                        onSubmit={(rating, text) => handleSubmitReview(currentOrder, rating, text)}
+                        t={t}
+                      />
+                    ) : (
+                      <p className="text-xs text-gray-500">{t.reviewNeedsPurchase}</p>
+                    )}
+                    {(currentOrder.reviews || []).map(review => (
+                      <div key={review.id} className="border-t border-gray-100 pt-2.5 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            {[1, 2, 3, 4, 5].map(n => (
+                              <Star key={n} className={`w-3 h-3 ${n <= review.rating ? 'fill-mustard text-mustard' : 'text-gray-200'}`} />
+                            ))}
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                              <ShieldCheck className="w-2.5 h-2.5" /> {t.verifiedPurchase}
+                            </span>
+                          </div>
+                          {!review.flagged ? (
+                            <button onClick={() => handleReportReview(currentOrder.id, review.id)} className="text-[10px] text-gray-400 hover:text-rose-600 flex items-center gap-0.5">
+                              <Flag className="w-3 h-3" /> {t.reportReview}
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-gray-400 italic">{t.reviewReportedThanks}</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-700">{review.text}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Buyer-artisan chat, with off-platform-payment warning and reporting */}
+                  <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3" id="order-chat-panel">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4 text-indigo-custom" />
+                      <h4 className="font-serif font-bold text-sm text-charcoal">{t.chatWithArtisan}</h4>
+                    </div>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {(currentOrder.chatMessages || []).length === 0 ? (
+                        <p className="text-xs text-gray-500">{t.chatEmpty}</p>
+                      ) : (
+                        (currentOrder.chatMessages || []).map(msg => (
+                          <div key={msg.id} className={`flex ${msg.sender === 'buyer' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[80%] rounded-xl px-3 py-2 text-xs ${msg.sender === 'buyer' ? 'bg-indigo-custom text-white' : 'bg-cream text-charcoal'}`}>
+                              <p>{msg.text}</p>
+                              {msg.offPlatformWarning && (
+                                <p className="mt-1 text-[10px] text-amber-200 flex items-center gap-1">
+                                  <AlertTriangle className="w-3 h-3" /> {t.chatOffPlatformWarning}
+                                </p>
+                              )}
+                              {!msg.flagged ? (
+                                <button onClick={() => handleReportChatMessage(currentOrder.id, msg.id)} className="mt-1 text-[9px] underline opacity-70">
+                                  {t.chatReportMessage}
+                                </button>
+                              ) : (
+                                <p className="mt-1 text-[9px] italic opacity-70">{t.chatReportedThanks}</p>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={chatDraft}
+                        onChange={(e) => setChatDraft(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(currentOrder); }}
+                        placeholder={t.chatPlaceholder}
+                        className="flex-1 bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
+                      />
+                      <button
+                        onClick={() => handleSendChatMessage(currentOrder)}
+                        className="bg-indigo-custom hover:bg-indigo-light text-white px-3 py-2 rounded-xl shrink-0"
+                      >
+                        <Send className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
               );
             })()
           )}
 
+        </div>
+      )}
+
+      {/* Distinct Return/Replace Request Modal (separate from the dispute modal and legacy issue modal) */}
+      {selectedReturnOrder && (
+        <div className="fixed inset-0 bg-charcoal/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white border-2 border-indigo-custom rounded-3xl p-5 sm:p-6 text-left max-w-md w-full shadow-2xl space-y-4 my-8">
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif font-bold text-charcoal text-base">{t.returnOrReplace}</h3>
+              <button onClick={() => setSelectedReturnOrder(null)} className="p-1 rounded-full bg-gray-100 hover:bg-gray-200">
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-600">{t.returnReasonLabel}</label>
+              <select
+                value={returnReason}
+                onChange={(e) => setReturnReason(e.target.value as ReturnReason)}
+                className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-terracotta"
+              >
+                {(['Wrong item', 'Damaged', 'Defective', 'Materially different', 'Change of mind'] as ReturnReason[]).map(r => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-600">{t.returnOrReplace}</label>
+              <div className="flex gap-2">
+                {(['REFUND', 'REPLACEMENT'] as ReturnResolutionType[]).map(opt => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setReturnResolution(opt)}
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold border transition ${returnResolution === opt ? 'bg-indigo-custom text-white border-indigo-custom' : 'bg-white border-gray-200 text-gray-600'}`}
+                  >
+                    {opt === 'REFUND' ? 'Refund' : 'Replacement'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-600">{t.returnNote}</label>
+              <textarea
+                value={returnNoteText}
+                onChange={(e) => setReturnNoteText(e.target.value)}
+                rows={3}
+                className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-terracotta resize-none"
+              />
+            </div>
+
+            <button
+              onClick={handleSubmitReturnRequest}
+              className="w-full bg-indigo-custom hover:bg-indigo-light text-white font-bold py-3 rounded-xl text-xs shadow-md transition"
+            >
+              {t.returnSubmit}
+            </button>
+          </div>
         </div>
       )}
 
@@ -2268,6 +2582,46 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         </div>
       )}
 
+    </div>
+  );
+};
+
+// Small inline star-rating + text composer for verified-purchase reviews. Kept outside the main
+// component since it needs no access to BuyerView's wider state, only its own local draft.
+const ReviewComposer: React.FC<{ alreadyReviewed: boolean; onSubmit: (rating: 1 | 2 | 3 | 4 | 5, text: string) => void; t: Translation }> = ({ alreadyReviewed, onSubmit, t }) => {
+  const [rating, setRating] = useState<1 | 2 | 3 | 4 | 5>(5);
+  const [text, setText] = useState('');
+  const [justSubmitted, setJustSubmitted] = useState(false);
+
+  if (justSubmitted) {
+    return <p className="text-xs text-emerald-700 font-semibold">{t.reviewSubmitted}</p>;
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map(n => (
+          <button key={n} type="button" onClick={() => setRating(n as 1 | 2 | 3 | 4 | 5)}>
+            <Star className={`w-5 h-5 ${n <= rating ? 'fill-mustard text-mustard' : 'text-gray-200'}`} />
+          </button>
+        ))}
+      </div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder={t.writeReview}
+        rows={2}
+        className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta resize-none"
+      />
+      <button
+        type="button"
+        disabled={!text.trim()}
+        onClick={() => { onSubmit(rating, text.trim()); setJustSubmitted(true); }}
+        className={`text-xs font-bold px-3 py-1.5 rounded-full ${text.trim() ? 'bg-terracotta text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+      >
+        {t.writeReview}
+      </button>
+      {alreadyReviewed && <p className="text-[10px] text-gray-400">You can leave another review too.</p>}
     </div>
   );
 };
