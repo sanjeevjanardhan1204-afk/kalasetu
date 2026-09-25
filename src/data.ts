@@ -1,4 +1,4 @@
-import { Product, Order, Language, Translation, SearchFilters, GovernmentScheme } from './types';
+import { Product, Order, Language, Translation, SearchFilters, GovernmentScheme, MaterialClusterRequest } from './types';
 
 // Unsplash premium-looking textile and weaver-related images
 export const SAMPLE_PRODUCT_IMAGES = [
@@ -2469,6 +2469,44 @@ export const CURATED_GOVERNMENT_SCHEMES: GovernmentScheme[] = [
     applicableStates: ['Karnataka', 'Telangana', 'Odisha', 'Tamil Nadu', 'All India'],
     linkUrl: 'https://ipindia.gov.in/',
     category: 'GI & Heritage'
+  }
+];
+
+// Raw-material cluster/bulk-buying: a curated static list (like the schemes panel above) rather
+// than a live marketplace - artisans "join" a group buy, recorded locally.
+export const CURATED_MATERIAL_CLUSTERS: MaterialClusterRequest[] = [
+  {
+    id: 'cluster-1',
+    materialName: 'Mulberry Silk Yarn (Grade A)',
+    craft: 'Handloom & Textiles',
+    region: 'Bagalkot, Karnataka',
+    targetQuantity: '200 kg',
+    pricePerUnitEstimate: '₹6,200/kg (bulk) vs ₹7,800/kg (solo)',
+    organizerName: 'Gudikal Weavers Co-operative',
+    deadline: '2026-10-15',
+    joinedArtisanIds: []
+  },
+  {
+    id: 'cluster-2',
+    materialName: 'Gold Zari Thread',
+    craft: 'Handloom & Textiles',
+    region: 'Bagalkot, Karnataka',
+    targetQuantity: '50 kg',
+    pricePerUnitEstimate: '₹9,500/kg (bulk) vs ₹11,000/kg (solo)',
+    organizerName: 'Ilkal Artisan Cluster',
+    deadline: '2026-10-20',
+    joinedArtisanIds: []
+  },
+  {
+    id: 'cluster-3',
+    materialName: 'Natural Indigo Dye Blocks',
+    craft: 'Handloom & Textiles',
+    region: 'Karnataka & Telangana',
+    targetQuantity: '80 kg',
+    pricePerUnitEstimate: '₹1,400/kg (bulk) vs ₹1,900/kg (solo)',
+    organizerName: 'Deccan Natural Dyers SHG',
+    deadline: '2026-11-01',
+    joinedArtisanIds: []
   }
 ];
 

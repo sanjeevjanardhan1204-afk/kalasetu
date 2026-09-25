@@ -10,7 +10,7 @@ import { Product, Order, Language, Translation, Dimensions, GiInfo, GovernmentSc
 import {
   SAMPLE_PRODUCT_IMAGES, QA_QUESTIONS, TRANSLATIONS,
   SIMULATED_VOICE_SPEECHES, playSyntheticChime,
-  CURATED_GOVERNMENT_SCHEMES, DEMAND_INTELLIGENCE_DATA,
+  CURATED_GOVERNMENT_SCHEMES, DEMAND_INTELLIGENCE_DATA, CURATED_MATERIAL_CLUSTERS,
   normalizeSpokenNumerals, parseSpokenDimensions, pickLang
 } from '../data';
 import { speakText, stopSpeaking, triggerSubtitleSpeak, triggerSubtitleStop } from './VoiceHelper';
@@ -150,6 +150,25 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
+
+  // Payout settings kept local since profile is a read-only prop here (no setProfile passed down)
+  const [payoutSettings, setPayoutSettings] = useState<{ method: 'bank' | 'upi'; upiId: string; bankLast4: string; ifsc: string; minThreshold: number }>(() => {
+    try {
+      const saved = localStorage.getItem('kalasetu_payout_settings');
+      return saved ? JSON.parse(saved) : { method: 'upi', upiId: '', bankLast4: '', ifsc: '', minThreshold: 500 };
+    } catch { return { method: 'upi', upiId: '', bankLast4: '', ifsc: '', minThreshold: 500 }; }
+  });
+  const [showPayoutSettings, setShowPayoutSettings] = useState(false);
+
+  // WhatsApp integration is an interface/configuration layer only in this phase - there is no
+  // live Meta WhatsApp Business API connection here (that requires an approved business account
+  // and server-side credentials outside this codebase). The app remains the source of truth.
+  const [whatsappSettings, setWhatsappSettings] = useState<{ number: string; enabled: boolean }>(() => {
+    try {
+      const saved = localStorage.getItem('kalasetu_whatsapp_settings');
+      return saved ? JSON.parse(saved) : { number: '', enabled: false };
+    } catch { return { number: '', enabled: false }; }
+  });
   const [selectedDisputeOrder, setSelectedDisputeOrder] = useState<Order | null>(null);
   const [disputeInitialMode, setDisputeInitialMode] = useState<'artisan-respond' | 'view' | 'admin-resolve'>('artisan-respond');
 
@@ -182,6 +201,14 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   useEffect(() => {
     try { localStorage.setItem('kalasetu_joined_clusters', JSON.stringify(joinedClusterIds)); } catch (e) {}
   }, [joinedClusterIds]);
+
+  useEffect(() => {
+    try { localStorage.setItem('kalasetu_payout_settings', JSON.stringify(payoutSettings)); } catch (e) {}
+  }, [payoutSettings]);
+
+  useEffect(() => {
+    try { localStorage.setItem('kalasetu_whatsapp_settings', JSON.stringify(whatsappSettings)); } catch (e) {}
+  }, [whatsappSettings]);
 
   // Product management: duplicate, change status, and edit outside the creation wizard
   const handleDuplicateProduct = (product: Product) => {
@@ -583,6 +610,102 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             </div>
           </div>
 
+          {/* Payout mechanics: method, schedule, minimum threshold - always visible and editable */}
+          <div className="bg-white rounded-2xl border border-cream-border p-4 space-y-3 shadow-xs" id="payout-settings-card">
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-sm font-bold text-charcoal flex items-center gap-2">
+                <IndianRupee className="w-4 h-4 text-terracotta" />
+                {t.payoutSettings}
+              </h3>
+              <button onClick={() => setShowPayoutSettings(v => !v)} className="text-[10px] font-bold text-indigo-custom hover:underline">
+                {showPayoutSettings ? t.cancel : t.editProduct}
+              </button>
+            </div>
+            <p className="text-[11px] text-gray-500">{t.payoutScheduleText}</p>
+            {!showPayoutSettings ? (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-700">
+                <span><span className="font-bold">{t.payoutMethodLabel}:</span> {payoutSettings.method === 'upi' ? t.upiOption : t.bankAccountOption}</span>
+                <span><span className="font-bold">{t.minPayoutThresholdLabel}:</span> ₹{payoutSettings.minThreshold}</span>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                <div className="flex gap-2">
+                  {(['upi', 'bank'] as const).map(m => (
+                    <button
+                      key={m}
+                      onClick={() => setPayoutSettings(prev => ({ ...prev, method: m }))}
+                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition ${payoutSettings.method === m ? 'bg-indigo-custom text-white border-indigo-custom' : 'bg-white border-gray-200 text-gray-600'}`}
+                    >
+                      {m === 'upi' ? t.upiOption : t.bankAccountOption}
+                    </button>
+                  ))}
+                </div>
+                {payoutSettings.method === 'upi' ? (
+                  <input
+                    value={payoutSettings.upiId}
+                    onChange={(e) => setPayoutSettings(prev => ({ ...prev, upiId: e.target.value }))}
+                    placeholder="yourname@upi"
+                    className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
+                  />
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      value={payoutSettings.bankLast4}
+                      onChange={(e) => setPayoutSettings(prev => ({ ...prev, bankLast4: e.target.value }))}
+                      placeholder="Account No."
+                      className="bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                    />
+                    <input
+                      value={payoutSettings.ifsc}
+                      onChange={(e) => setPayoutSettings(prev => ({ ...prev, ifsc: e.target.value }))}
+                      placeholder="IFSC"
+                      className="bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                    />
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-500">{t.minPayoutThresholdLabel}</label>
+                  <input
+                    type="number"
+                    min={0}
+                    onWheel={(e) => e.currentTarget.blur()}
+                    onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
+                    value={payoutSettings.minThreshold}
+                    onChange={(e) => setPayoutSettings(prev => ({ ...prev, minThreshold: Math.max(0, Number(e.target.value) || 0) }))}
+                    className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                  />
+                </div>
+                <button onClick={() => setShowPayoutSettings(false)} className="w-full bg-terracotta hover:bg-terracotta-dark text-white font-bold py-2 rounded-xl text-xs">
+                  {t.next}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* WhatsApp integration - configuration interface only; see comment on state above */}
+          <div className="bg-white rounded-2xl border border-cream-border p-4 space-y-2.5 shadow-xs" id="whatsapp-settings-card">
+            <h3 className="font-serif text-sm font-bold text-charcoal flex items-center gap-2">
+              <Send className="w-4 h-4 text-emerald-600" />
+              {t.whatsappIntegration}
+            </h3>
+            <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-2.5">{t.whatsappComingSoonNote}</p>
+            <input
+              value={whatsappSettings.number}
+              onChange={(e) => setWhatsappSettings(prev => ({ ...prev, number: e.target.value }))}
+              placeholder="+91 98765 43210"
+              className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
+            />
+            <label className="flex items-center gap-2 text-xs text-gray-600">
+              <input
+                type="checkbox"
+                checked={whatsappSettings.enabled}
+                onChange={(e) => setWhatsappSettings(prev => ({ ...prev, enabled: e.target.checked }))}
+                className="w-4 h-4"
+              />
+              {t.whatsappEnableAlerts}
+            </label>
+          </div>
+
           {/* Summary Dashboard: Sales & Earnings Performance */}
           <div className="bg-white rounded-2xl border border-cream-border p-5 shadow-xs space-y-5 animate-fade-in" id="weaver-summary-dashboard">
             <div className="flex items-center justify-between border-b border-cream-dark pb-3">
@@ -873,6 +996,42 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                     </div>
                   </div>
                 ))}
+            </div>
+          </div>
+
+          {/* Raw-material cluster/bulk-buying: shared group buys other artisans in the same craft/region can join */}
+          <div className="bg-white rounded-2xl border border-cream-border p-5 shadow-xs space-y-3 animate-fade-in" id="material-cluster-widget">
+            <div className="flex items-center gap-2 border-b border-cream-dark pb-3">
+              <div className="p-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-200">
+                <Users className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-serif text-sm font-bold text-charcoal">{t.materialCluster}</h3>
+                <p className="text-[10px] text-gray-500">{t.materialClusterHint}</p>
+              </div>
+            </div>
+            <div className="space-y-2.5">
+              {CURATED_MATERIAL_CLUSTERS.map(cluster => {
+                const joined = joinedClusterIds.includes(cluster.id);
+                return (
+                  <div key={cluster.id} className="bg-cream/60 border border-cream-border rounded-xl p-3 text-xs space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-charcoal">{cluster.materialName}</span>
+                      <span className="text-[9px] text-gray-500">{cluster.region}</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-700 font-semibold">{cluster.pricePerUnitEstimate}</p>
+                    <p className="text-[10px] text-gray-500">{t.clusterTargetLabel}: {cluster.targetQuantity} • {t.clusterDeadlineLabel} {new Date(cluster.deadline).toLocaleDateString('en-IN')}</p>
+                    <p className="text-[10px] text-gray-400">By {cluster.organizerName}</p>
+                    <button
+                      onClick={() => handleJoinClusterRequest(cluster.id)}
+                      disabled={joined}
+                      className={`w-full py-1.5 rounded-lg text-[10px] font-bold transition ${joined ? 'bg-emerald-50 text-emerald-700 cursor-default' : 'bg-indigo-custom text-white hover:bg-indigo-light'}`}
+                    >
+                      {joined ? t.joinedClusterRequest : t.joinClusterRequest}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
