@@ -19,6 +19,11 @@
   --font-serif: "Lora", Georgia, serif;
 }
 
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--color-cream);
   color: var(--color-charcoal);

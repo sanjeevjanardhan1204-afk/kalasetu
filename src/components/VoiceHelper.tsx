@@ -1173,7 +1173,7 @@ export const VoiceHelper: React.FC<VoiceHelperProps> = ({
       {subtitle && (
         <div 
           id="taana-subtitles"
-          className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 bg-charcoal/95 border border-terracotta/40 text-cream px-4 sm:px-6 py-3 sm:py-4 rounded-xl shadow-2xl flex items-center gap-3 sm:gap-4 max-w-lg w-[92%] sm:w-auto transition-all duration-300 transform translate-y-0 scale-100 animate-fadeIn"
+          className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 bg-charcoal/95 border border-terracotta/40 text-cream px-4 sm:px-6 py-3 sm:py-4 rounded-xl shadow-2xl flex items-center gap-3 sm:gap-4 max-w-lg w-[92%] sm:w-auto transition-all duration-300 transform translate-y-0 scale-100 animate-fadeIn"
         >
           <div className="flex gap-1.5 items-end h-6 w-8 shrink-0">
             {isSpeaking ? (
