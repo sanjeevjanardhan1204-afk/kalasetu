@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Sparkles, IndianRupee, HelpCircle, ArrowRight, Check, X, RefreshCw, BarChart2, ShieldCheck, Info } from 'lucide-react';
 import { Language, PricingRecommendation } from '../types';
-import { playSyntheticChime } from '../data';
+import { playSyntheticChime, pickLang } from '../data';
 import { BackButton } from './BackButton';
 
 interface AiDynamicPricingModalProps {
@@ -27,11 +27,11 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
   onApplyPrice,
   onClose
 }) => {
-  const copy = {
+  const copy = pickLang({
     en: { title: 'AI Dynamic Fair-Pricing', subtitle: 'Cost-Plus Heritage Valuation Engine', inputs: 'Craft Costing Inputs:', material: 'Raw Material Cost (₹):', labour: 'Artisan Labor Hours:', complexity: 'Craft Complexity:', current: 'Current / Draft Price:', calculate: 'Calculate Fair Price Recommendation', loading: 'Analyzing Craft Cost Benchmarks...', recommendation: 'Recommended Fair Valuation:', range: 'Fair Market Range:', earnings: 'Artisan Net (92%)', logic: 'Economic Logic & Wage Benchmark:', apply: 'Apply', keep: 'Keep', notice: 'Recommendation does not change the price automatically. Tap below to accept or keep your original price.' },
     kn: { title: 'ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆಯ ನ್ಯಾಯಯುತ ಬೆಲೆ', subtitle: 'ವೆಚ್ಚ ಮತ್ತು ಪರಂಪರೆ ಮೌಲ್ಯಮಾಪನ', inputs: 'ಕರಕುಶಲ ವೆಚ್ಚದ ವಿವರಗಳು:', material: 'ಕಚ್ಚಾ ವಸ್ತು ವೆಚ್ಚ (₹):', labour: 'ಕುಶಲಕರ್ಮಿಯ ಕೆಲಸದ ಗಂಟೆಗಳು:', complexity: 'ಕರಕುಶಲ ಸಂಕೀರ್ಣತೆ:', current: 'ಪ್ರಸ್ತುತ / ಕರಡು ಬೆಲೆ:', calculate: 'ನ್ಯಾಯಯುತ ಬೆಲೆ ಶಿಫಾರಸು ಲೆಕ್ಕಿಸಿ', loading: 'ಕರಕುಶಲ ವೆಚ್ಚದ ಮಾನದಂಡಗಳನ್ನು ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...', recommendation: 'ಶಿಫಾರಸು ಮಾಡಿದ ನ್ಯಾಯಯುತ ಮೌಲ್ಯ:', range: 'ನ್ಯಾಯಯುತ ಮಾರುಕಟ್ಟೆ ವ್ಯಾಪ್ತಿ:', earnings: 'ಕುಶಲಕರ್ಮಿಯ ನಿವ್ವಳ ಆದಾಯ (೯೨%)', logic: 'ಆರ್ಥಿಕ ಲೆಕ್ಕಾಚಾರ ಮತ್ತು ವೇತನ ಮಾನದಂಡ:', apply: 'ಉತ್ಪನ್ನಕ್ಕೆ ಅನ್ವಯಿಸಿ', keep: 'ಉಳಿಸಿ', notice: 'ಶಿಫಾರಸು ಬೆಲೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬದಲಾಯಿಸುವುದಿಲ್ಲ. ಕೆಳಗಿನ ಆಯ್ಕೆಯಿಂದ ಒಪ್ಪಿಕೊಳ್ಳಿ ಅಥವಾ ಮೂಲ ಬೆಲೆ ಉಳಿಸಿ.' },
     hi: { title: 'एआई उचित मूल्य निर्धारण', subtitle: 'लागत और विरासत मूल्यांकन इंजन', inputs: 'शिल्प लागत विवरण:', material: 'कच्ची सामग्री लागत (₹):', labour: 'कारीगर के श्रम घंटे:', complexity: 'शिल्प जटिलता:', current: 'वर्तमान / ड्राफ्ट मूल्य:', calculate: 'उचित मूल्य सुझाव की गणना करें', loading: 'शिल्प लागत मानकों का विश्लेषण हो रहा है...', recommendation: 'सुझाया गया उचित मूल्य:', range: 'उचित बाजार सीमा:', earnings: 'कारीगर की शुद्ध कमाई (92%)', logic: 'आर्थिक गणना और मजदूरी मानक:', apply: 'उत्पाद पर लागू करें', keep: 'रखें', notice: 'सुझाव से मूल्य अपने आप नहीं बदलेगा। नीचे स्वीकार करें या मूल मूल्य रखें।' }
-  }[language];
+  }, language);
   // Input parameters
   const [materialCost, setMaterialCost] = useState<number>(initialMaterialCost);
   const [labourHours, setLabourHours] = useState<number>(initialLabourHours);

@@ -1,4 +1,10 @@
-export type Language = 'en' | 'kn' | 'hi';
+// Full target language set (Master Spec Section 10). 'en' is the base/fallback language:
+// every UI string must resolve to English when a translation is missing for any other code,
+// so no screen is ever left half-translated or blank.
+export type Language =
+  | 'en' | 'as' | 'bn' | 'brx' | 'doi' | 'gu' | 'hi' | 'kn' | 'ks' | 'kok'
+  | 'mai' | 'ml' | 'mni' | 'mr' | 'ne' | 'or' | 'pa' | 'sa' | 'sat' | 'sd'
+  | 'ta' | 'te';
 
 export type UserRole = 'weaver' | 'buyer' | 'admin' | 'ADMIN';
 

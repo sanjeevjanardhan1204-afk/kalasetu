@@ -11,7 +11,7 @@ import {
   SAMPLE_PRODUCT_IMAGES, QA_QUESTIONS, TRANSLATIONS,
   SIMULATED_VOICE_SPEECHES, playSyntheticChime,
   CURATED_GOVERNMENT_SCHEMES, DEMAND_INTELLIGENCE_DATA,
-  normalizeSpokenNumerals, parseSpokenDimensions
+  normalizeSpokenNumerals, parseSpokenDimensions, pickLang
 } from '../data';
 import { speakText, stopSpeaking, triggerSubtitleSpeak, triggerSubtitleStop } from './VoiceHelper';
 import { WeaverSuccessTips } from './WeaverSuccessTips';
@@ -251,7 +251,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   // Speaks the guided question to the artisan on load
   const speakCurrentQuestion = (index: number) => {
     const question = QA_QUESTIONS[index];
-    const qText = question.label[language];
+    const qText = pickLang(question.label, language);
     triggerSubtitleSpeak(qText);
     speakText(qText, language, undefined, () => triggerSubtitleStop());
   };
@@ -1273,10 +1273,10 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                     Question {qaIndex + 1} of {QA_QUESTIONS.length}
                   </span>
                   <h4 className="font-serif text-xl font-bold text-charcoal leading-tight">
-                    {QA_QUESTIONS[qaIndex].label[language]}
+                    {pickLang(QA_QUESTIONS[qaIndex].label, language)}
                   </h4>
                   <p className="text-xs text-gray-500 italic">
-                    {QA_QUESTIONS[qaIndex].hint[language]}
+                    {pickLang(QA_QUESTIONS[qaIndex].hint, language)}
                   </p>
                 </div>
 
@@ -1311,7 +1311,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       Tap suggestion to speak/fill instantly:
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {QA_QUESTIONS[qaIndex].examples?.[language].map((exText: string, i: number) => (
+                      {(QA_QUESTIONS[qaIndex].examples ? pickLang(QA_QUESTIONS[qaIndex].examples, language) : []).map((exText: string, i: number) => (
                         <button
                           key={i}
                           id={`qa-suggestion-chip-${i}`}
