@@ -4,6 +4,7 @@
  */
 
 import { OfflineOutboxItem, Product, Order, SyncConflictLog } from '../types';
+import { randomId } from './id';
 
 const OUTBOX_STORAGE_KEY = 'taana_offline_outbox_v3';
 const CONFLICT_LOGS_STORAGE_KEY = 'taana_sync_conflicts_v3';
@@ -49,7 +50,7 @@ export function enqueueOfflineAction(
   const currentOutbox = getQueuedOutbox();
   const now = Date.now();
   const newItem: OfflineOutboxItem = {
-    id: `outbox-${now}-${Math.random().toString(36).substring(2, 7)}`,
+    id: randomId('outbox'),
     type,
     title,
     timestamp: new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -95,7 +96,7 @@ export function recordConflictLog(log: Omit<SyncConflictLog, 'id' | 'resolvedAt'
   const currentLogs = getSyncConflictLogs();
   const fullLog: SyncConflictLog = {
     ...log,
-    id: `conflict-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    id: randomId('conflict'),
     resolvedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
   };
 
@@ -261,10 +262,6 @@ export async function flushOutboxToBackend(
   saveQueuedOutbox([]);
   return { success: true, syncedCount: outboxItems.length, conflictCount: 0 };
 }
-
-// Alias helper functions for ergonomic integration
-export const queueOfflineMutation = enqueueOfflineAction;
-export const getConflictAuditLogs = getSyncConflictLogs;
 
 /**
  * Simulate a concurrent conflict on an order to demonstrate Last-Write-Wins (LWW) resolution

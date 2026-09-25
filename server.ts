@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import { DATABASE_SQL_DDL } from "./src/db/schema";
+import { randomId } from "./src/utils/id";
 import {
   GiInfo,
   PricingRecommendation,
@@ -622,11 +622,6 @@ async function startServer() {
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });
     }
-  });
-
-  // 2. Database Schema Definition & Migration Specs
-  app.get("/api/schema", (req, res) => {
-    res.type("text/plain").send(DATABASE_SQL_DDL);
   });
 
   // 3. Products Endpoints (GET & POST)
@@ -1332,7 +1327,7 @@ async function startServer() {
               syncedCount++;
 
               const conflictLog: ServerConflictLog = {
-                id: `conf-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+                id: randomId('conf'),
                 outboxItemId: item.id,
                 entityType: "order",
                 entityId: orderId,
@@ -1346,7 +1341,7 @@ async function startServer() {
             } else {
               conflictCount++;
               const conflictLog: ServerConflictLog = {
-                id: `conf-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+                id: randomId('conf'),
                 outboxItemId: item.id,
                 entityType: "order",
                 entityId: orderId,

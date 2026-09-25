@@ -19,11 +19,11 @@ import { DataSaverToast } from './components/DataSaverToast';
 import { OfflineSimulationLab } from './components/OfflineSimulationLab';
 import { BottomNavigation } from './components/BottomNavigation';
 import { 
-  getQueuedOutbox, 
-  queueOfflineMutation, 
-  flushOutboxToBackend, 
+  getQueuedOutbox,
+  enqueueOfflineAction,
+  flushOutboxToBackend,
   simulateConcurrentConflict,
-  getConflictAuditLogs
+  getSyncConflictLogs
 } from './utils/syncManager';
 
 export default function App() {
