@@ -13,7 +13,13 @@ import path from 'path';
 import fs from 'fs';
 import bcrypt from 'bcryptjs';
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+// On Vercel the deployed function bundle is read-only - only /tmp is writable. Using
+// process.cwd()/data there throws EROFS/EACCES at import time, which crashes EVERY /api/*
+// route (not just DB ones), since this module is imported before any route handler runs.
+// /tmp is ephemeral per serverless instance (data does not survive a cold start or a
+// different region/instance), which is a real limitation for a demo needing durable state
+// on Vercel - flagged here rather than silently accepted.
+const DATA_DIR = process.env.VERCEL ? '/tmp/data' : path.resolve(process.cwd(), 'data');
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
