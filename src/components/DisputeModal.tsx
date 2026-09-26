@@ -231,9 +231,9 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
       case 'UNDER REVIEW':
         return <span className="bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">UNDER REVIEW</span>;
       case 'RESOLVED':
-        return <span className="bg-blue-100 text-blue-800 border border-blue-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">RESOLVED</span>;
+        return <span className="bg-indigo-custom/10 text-indigo-custom border border-indigo-custom/30 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">RESOLVED</span>;
       case 'REFUNDED':
-        return <span className="bg-purple-100 text-purple-800 border border-purple-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">REFUNDED</span>;
+        return <span className="bg-terracotta/10 text-terracotta-dark border border-terracotta/30 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">REFUNDED</span>;
       case 'PAYMENT RELEASED':
         return <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">PAYMENT RELEASED</span>;
     }
@@ -360,7 +360,7 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
               <button
                 onClick={() => setActiveTab('admin-resolve')}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1 ${
-                  activeTab === 'admin-resolve' ? 'bg-purple-700 text-white' : 'text-gray-600 hover:bg-white'
+                  activeTab === 'admin-resolve' ? 'bg-indigo-custom text-white' : 'text-gray-600 hover:bg-white'
                 }`}
               >
                 <span>Admin Resolution</span>
@@ -487,7 +487,7 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
                         onClick={() => setAdminAction(act.id as any)}
                         className={`p-3 rounded-xl border text-left transition ${
                           adminAction === act.id
-                            ? 'bg-purple-50 border-purple-600 text-purple-900 font-bold shadow-xs'
+                            ? 'bg-indigo-custom/10 border-indigo-custom text-indigo-custom font-bold shadow-xs'
                             : 'bg-cream/40 border-cream-border text-gray-600 hover:bg-cream-dark'
                         }`}
                       >
@@ -499,8 +499,8 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
                 </div>
 
                 {adminAction === 'PARTIAL REFUND' && (
-                  <div className="space-y-1.5 bg-purple-50 p-4 rounded-xl border border-purple-200">
-                    <label className="text-[10px] text-purple-900 font-bold uppercase tracking-wider block">
+                  <div className="space-y-1.5 bg-indigo-custom/5 p-4 rounded-xl border border-indigo-custom/30">
+                    <label className="text-[10px] text-indigo-custom font-bold uppercase tracking-wider block">
                       Partial Refund Amount (₹)
                     </label>
                     <input
@@ -511,9 +511,9 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
                       onChange={(e) => setPartialRefundAmount(Math.max(1, Number(e.target.value) || 1))}
                       max={order.paymentProtection?.pendingAmount || order.product.price}
                       min={1}
-                      className="w-full bg-white border border-purple-300 rounded-xl px-3 py-2 text-xs font-mono font-bold focus:outline-none"
+                      className="w-full bg-white border border-indigo-custom/40 rounded-xl px-3 py-2 text-xs font-mono font-bold focus:outline-none"
                     />
-                    <span className="text-[10px] text-purple-700 block">
+                    <span className="text-[10px] text-indigo-custom block">
                       Max available in escrow: ₹{((order.paymentProtection?.pendingAmount || order.product?.price) ?? 0).toLocaleString()}
                     </span>
                   </div>
@@ -536,7 +536,7 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
                   type="button"
                   disabled={isResolving}
                   onClick={handleAdminResolve}
-                  className="w-full bg-purple-700 hover:bg-purple-700/90 text-white font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-xs transition"
+                  className="w-full bg-indigo-custom hover:bg-indigo-custom/90 text-white font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-xs transition"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>{isResolving ? 'Executing Resolution...' : `Apply Resolution: ${adminAction}`}</span>

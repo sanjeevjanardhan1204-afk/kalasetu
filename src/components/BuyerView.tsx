@@ -450,7 +450,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   // Calculate checkout price components
   const getPriceBreakdown = (price: number) => {
     const logistics = 220; // flat courier from rural artisan
-    const platformFee = Math.round(price * 0.03); // 3% TantuLink tech platform fee
+    const platformFee = Math.round(price * 0.03); // 3% KalaSetu tech platform fee
     const weaverDirect = price - logistics - platformFee;
     return {
       total: price,
@@ -542,7 +542,15 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       setOrders(prev => [newOrder, ...prev]);
       setActiveOrder(newOrder);
       setActiveTab('orders');
-      
+
+      // Persist to the real backend so escrow status is visible to the admin panel and the
+      // artisan's dashboard on other devices (polled from there, not just this browser tab).
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newOrder, updatedAt: Date.now() })
+      }).catch(() => {});
+
       // Prompt success
       const succText = language === 'kn'
         ? 'ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ! ನೇಕಾರರ ನೇರ ಆದಾಯವನ್ನು ಖಾತರಿಪಡಿಸಲಾಗಿದೆ.'
@@ -622,6 +630,15 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       setCartItems([]);
       setActiveTab('orders');
 
+      // Persist each line's order to the real backend (same reasoning as the single-item buy flow).
+      newOrders.forEach(o => {
+        fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...o, updatedAt: Date.now() })
+        }).catch(() => {});
+      });
+
       const succText = language === 'kn'
         ? `ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ! ${cartArtisanCount > 1 ? cartArtisanCount + ' ಕುಶಲಕರ್ಮಿಗಳಿಂದ ಪ್ರತ್ಯೇಕ ಸಾಗಣೆಗಳು.' : 'ನೇಕಾರರ ನೇರ ಆದಾಯವನ್ನು ಖಾತರಿಪಡಿಸಲಾಗಿದೆ.'}`
         : language === 'hi'
@@ -651,7 +668,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             desc = 'Pre-dispatch QC checklists successfully passed with photographs.';
           } else if (o.status === 'Quality Checked') {
             nextStatus = 'Pickup Arranged';
-            desc = 'TantuLink Rural Courier team coordinated packaging box pickup.';
+            desc = 'KalaSetu Rural Courier team coordinated packaging box pickup.';
           } else if (o.status === 'Pickup Arranged') {
             nextStatus = 'Shipped';
             desc = 'Package is in transit via India Post Rural Speed Network.';
@@ -724,7 +741,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
     let resolutionText = '';
     if (issueType === 'Damaged' || issueType === 'Wrong Item' || issueType === 'Wrong Size') {
-      resolutionText = `Under TantuLink direct rules, the weaver passed strict quality audits prior to dispatch. However, since the item is ${issueType.toLowerCase()}, we will coordinate a pickup and process a 100% full refund to you, while subsidizing the rural artisan's materials.`;
+      resolutionText = `Under KalaSetu direct rules, the weaver passed strict quality audits prior to dispatch. However, since the item is ${issueType.toLowerCase()}, we will coordinate a pickup and process a 100% full refund to you, while subsidizing the rural artisan's materials.`;
     } else {
       // Change of mind returns rejection to protect manual labor
       resolutionText = `This product is an authentic handloomed creation and matched the exact measurements of length ${selectedOrderForIssue.product.dimensions.length} and width ${selectedOrderForIssue.product.dimensions.width} specified in the listing. To protect the weaver's intensive manual handloom labour (which takes up to 40 hours per piece), this item is not eligible for a change-of-mind return.`;
@@ -1029,12 +1046,12 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   </span>
                 )}
                 {activeFilters.material && (
-                  <span className="bg-sky-100 text-sky-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                  <span className="bg-indigo-custom/10 text-indigo-custom text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
                     Yarn: {activeFilters.material}
                   </span>
                 )}
                 {activeFilters.occasion && (
-                  <span className="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                  <span className="bg-mustard/20 text-medium-beige text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
                     Event: {activeFilters.occasion}
                   </span>
                 )}
@@ -1615,7 +1632,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               </div>
             </div>
 
-            {/* TRANSPARENT PRICING BREAKDOWN (The heart of TantuLink's pitch!) */}
+            {/* TRANSPARENT PRICING BREAKDOWN (The heart of KalaSetu's pitch!) */}
             <div className="bg-white rounded-2xl border-2 border-indigo-custom/10 overflow-hidden shadow-xs" id="transparent-pricing-table">
               <div className="bg-indigo-custom text-cream p-3.5 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-mustard" />
@@ -1989,7 +2006,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     showSimulateTrigger={true}
                   />
 
-                  {/* Feature 2: TantuLink Payment Protection (Milestone Escrow Tracker) */}
+                  {/* Feature 2: KalaSetu Payment Protection (Milestone Escrow Tracker) */}
                   <PaymentProtectionTracker
                     order={currentOrder}
                     onUpdateOrder={(updated) => {
@@ -2063,7 +2080,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                       </div>
                       <div className="space-y-1">
                         <h4 className="font-serif font-bold text-sm text-charcoal">Report an Issue / Ask Return</h4>
-                        <p className="text-xs text-gray-500">Need resolution? Register any physical defect under TantuLink rules.</p>
+                        <p className="text-xs text-gray-500">Need resolution? Register any physical defect under KalaSetu rules.</p>
                       </div>
                       <button
                         id="open-issue-reporting-btn"
@@ -2091,7 +2108,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         <p><span className="font-bold">Reported Category:</span> {currentOrder.issueReport.issueType}</p>
                         <p><span className="font-bold">Your Note:</span> "{currentOrder.issueReport.note || 'No description provided'}"</p>
                         <div className="bg-white p-3 rounded-xl border border-indigo-custom/10 space-y-1">
-                          <span className="text-[10px] font-bold text-terracotta uppercase block">TantuLink Resolution Logic:</span>
+                          <span className="text-[10px] font-bold text-terracotta uppercase block">KalaSetu Resolution Logic:</span>
                           <p className="text-charcoal italic font-serif">"{currentOrder.issueReport.resolutionMsg}"</p>
                         </div>
                       </div>
@@ -2409,7 +2426,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               <div className="bg-indigo-custom text-cream p-4 rounded-2xl space-y-3 border-2 border-mustard" id="issue-resolution-drawer">
                 <div className="flex gap-2 items-center text-mustard font-bold text-xs">
                   <ShieldCheck className="w-5 h-5 text-mustard" />
-                  <span>Verified TantuLink Resolution Policy:</span>
+                  <span>Verified KalaSetu Resolution Policy:</span>
                 </div>
                 <p className="text-xs leading-relaxed italic font-serif">
                   "{resolvedMessage}"

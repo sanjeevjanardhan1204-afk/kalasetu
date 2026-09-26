@@ -16,6 +16,7 @@ import { LoginModal } from './components/LoginModal';
 import { VoiceHelper, speakText, stopSpeaking } from './components/VoiceHelper';
 import { OnboardingFlow } from './components/OnboardingFlow';
 import { LandingPage } from './components/LandingPage';
+import { AdminLoginScreen } from './components/AdminLoginScreen';
 import { AccountModal } from './components/AccountModal';
 import { DataSaverToast } from './components/DataSaverToast';
 import { OfflineSimulationLab } from './components/OfflineSimulationLab';
@@ -33,8 +34,6 @@ export default function App() {
   const [language, setLanguage] = useState<Language>('en');
   const [currentMode, setCurrentMode] = useState<'weaver' | 'buyer' | 'admin'>(() => {
     try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('role') === 'admin') return 'admin';
       const savedProfile = localStorage.getItem('taana_profile');
       if (savedProfile) {
         const parsed = JSON.parse(savedProfile);
@@ -45,6 +44,14 @@ export default function App() {
     } catch (e) {}
     return 'weaver';
   });
+  // Visiting /admin does NOT grant access by itself - it shows a dedicated admin-only login
+  // screen (AdminLoginScreen) that goes through the exact same real POST /api/auth/login + JWT
+  // check as every other login in the app, and explicitly rejects a successful login from a
+  // non-admin account.
+  const isAdminEntryRoute = (() => {
+    try { return window.location.pathname.replace(/\/+$/, '') === '/admin'; } catch (e) { return false; }
+  })();
+  const [showAdminLoginScreen, setShowAdminLoginScreen] = useState<boolean>(isAdminEntryRoute);
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const [products, setProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem('taana_cached_products');
@@ -108,33 +115,47 @@ export default function App() {
     } catch (e) {}
   }, [orders]);
 
+  // Poll the real backend for orders every few seconds so escrow/status changes made on another
+  // device (e.g. an admin releasing a milestone, or a buyer placing an order) show up here without
+  // a manual refresh. Same last-write-wins comparison already used by /api/orders/:id/status.
+  useEffect(() => {
+    let cancelled = false;
+    const pollOrders = async () => {
+      try {
+        const res = await fetch('/api/orders');
+        const data = await res.json();
+        if (cancelled || !data.success || !Array.isArray(data.orders)) return;
+
+        setOrders(prev => {
+          const serverById = new Map(data.orders.map((o: any) => [o.id, o]));
+          const merged = prev.map(local => {
+            const server = serverById.get(local.id);
+            if (!server) return local;
+            serverById.delete(local.id);
+            const serverUpdatedAt = (server as any).updatedAt || 0;
+            const localUpdatedAt = local.updatedAt || 0;
+            return serverUpdatedAt >= localUpdatedAt ? (server as Order) : local;
+          });
+          const newFromServer = Array.from(serverById.values()) as Order[];
+          return newFromServer.length > 0 ? [...newFromServer, ...merged] : merged;
+        });
+      } catch (e) {}
+    };
+
+    pollOrders();
+    const interval = setInterval(pollOrders, 4000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, []);
+
   // Onboarding & Profile Account States
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean>(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('role') === 'admin') return true;
-    } catch (e) {}
     return localStorage.getItem('taana_onboarding_done') === 'true';
   });
   const [hasSeenLanding, setHasSeenLanding] = useState<boolean>(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('role') === 'admin') return true;
-    } catch (e) {}
     return localStorage.getItem('taana_onboarding_done') === 'true' || localStorage.getItem('taana_seen_landing') === 'true';
   });
   const [profile, setProfile] = useState<any>(() => {
     try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('role') === 'admin') {
-        return {
-          id: 'admin-1',
-          name: 'TantuLink Administrator',
-          email: 'admin@tantulink.demo',
-          role: 'admin',
-          region: 'National Handloom Registry Center, New Delhi'
-        };
-      }
       const saved = localStorage.getItem('taana_profile');
       if (saved) {
         return JSON.parse(saved);
@@ -555,7 +576,27 @@ export default function App() {
         className="w-full max-w-7xl mx-auto bg-cream flex flex-col min-h-screen relative shadow-md border-x border-cream-border"
       >
 
-        {!hasSeenLanding ? (
+        {showAdminLoginScreen ? (
+          <AdminLoginScreen
+            onCancel={() => {
+              setShowAdminLoginScreen(false);
+              try { window.history.replaceState(null, '', '/'); } catch (e) {}
+            }}
+            onLoginSuccess={(loggedInProfile) => {
+              setProfile(loggedInProfile);
+              setCurrentMode('admin');
+              setOnboardingCompleted(true);
+              setHasSeenLanding(true);
+              setShowAdminLoginScreen(false);
+              try {
+                localStorage.setItem('taana_profile', JSON.stringify(loggedInProfile));
+                localStorage.setItem('taana_onboarding_done', 'true');
+                localStorage.setItem('taana_seen_landing', 'true');
+                window.history.replaceState(null, '', '/');
+              } catch (e) {}
+            }}
+          />
+        ) : !hasSeenLanding ? (
           <LandingPage
             language={language}
             setLanguage={handleLanguageChange}
@@ -576,7 +617,7 @@ export default function App() {
             {isOffline && (
               <div 
                 id="offline-cache-banner"
-                className="bg-[#3D2817] text-amber-50 px-3 sm:px-4 py-2 sm:py-2.5 text-xs border-b-2 border-amber-800/80 shadow-md z-40 animate-fadeIn"
+                className="bg-indigo-custom text-cream px-3 sm:px-4 py-2 sm:py-2.5 text-xs border-b-2 border-mustard/60 shadow-md z-40 animate-fadeIn"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
                   {/* Left Side: Status & Cached Catalog Count */}
@@ -864,6 +905,7 @@ export default function App() {
                   >
                     <AdminDashboard
                       language={language}
+                      profile={profile}
                       products={products}
                       setProducts={setProducts}
                       orders={orders}
@@ -948,19 +990,19 @@ export default function App() {
               onOpenOrders={() => setBuyerOrdersRequest(previous => previous + 1)}
             />
 
-            {/* Global Floating Offline Mode Trial Quick Access Button for Desktop */}
+            {/* Global Floating Offline Mode Trial Quick Access Button - visible at every viewport width */}
             <button
               id="floating-offline-trial-btn"
               onClick={() => {
                 playSyntheticChime('click');
                 setShowOfflineLab(true);
               }}
-              className="hidden md:flex fixed bottom-4 right-4 z-40 bg-charcoal/95 text-cream px-3.5 py-2.5 rounded-full shadow-2xl border-2 border-amber-400/90 items-center gap-2 text-xs font-bold hover:scale-105 transition-all hover:bg-charcoal cursor-pointer"
+              className="flex fixed bottom-20 md:bottom-4 right-4 z-40 bg-charcoal/95 text-cream px-3.5 py-2.5 rounded-full shadow-2xl border-2 border-amber-400/90 items-center gap-2 text-xs font-bold hover:scale-105 transition-all hover:bg-charcoal cursor-pointer"
               title="Open Offline Mode Demonstration & Outbox Sync Bench"
             >
               <span className={`w-2.5 h-2.5 rounded-full ${networkMode === 'offline' ? 'bg-amber-400 animate-ping' : 'bg-emerald-400'}`}></span>
               <Zap className="w-4 h-4 text-amber-300" />
-              <span>Offline Demo Trial</span>
+              <span className="hidden sm:inline">Offline Demo Trial</span>
               {outbox.length > 0 && (
                 <span className="bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full font-mono">
                   {outbox.length} Queued
@@ -993,10 +1035,12 @@ export default function App() {
             setProfile(loggedInProfile);
             setCurrentMode(loggedInProfile.role);
             setOnboardingCompleted(true);
+            setHasSeenLanding(true);
             setShowLoginModal(false);
             try {
               localStorage.setItem('taana_profile', JSON.stringify(loggedInProfile));
               localStorage.setItem('taana_onboarding_done', 'true');
+              localStorage.setItem('taana_seen_landing', 'true');
             } catch (e) {}
           }}
         />

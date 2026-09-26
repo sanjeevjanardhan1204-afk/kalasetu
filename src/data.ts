@@ -361,7 +361,7 @@ export const MOCK_ORDERS: Order[] = [
         amount: 3200,
         status: 'SUCCESS',
         timestamp: '2026-07-18T15:45:00Z',
-        description: 'Buyer payment secured in TantuLink Payment Protection Sandbox',
+        description: 'Buyer payment secured in KalaSetu Payment Protection Sandbox',
         isDemo: true
       },
       {
@@ -472,7 +472,7 @@ export const MOCK_ORDERS: Order[] = [
         amount: 5800,
         status: 'SUCCESS',
         timestamp: '2026-07-10T10:30:00Z',
-        description: 'Buyer payment secured in TantuLink Payment Protection Sandbox',
+        description: 'Buyer payment secured in KalaSetu Payment Protection Sandbox',
         isDemo: true
       },
       {
@@ -605,7 +605,7 @@ export const MOCK_ORDERS: Order[] = [
         amount: 3200,
         status: 'SUCCESS',
         timestamp: '2026-07-22T11:00:00Z',
-        description: 'Buyer payment secured in TantuLink Payment Protection Sandbox',
+        description: 'Buyer payment secured in KalaSetu Payment Protection Sandbox',
         isDemo: true
       },
       {
@@ -2798,7 +2798,27 @@ export const CURATED_GOVERNMENT_SCHEMES: GovernmentScheme[] = [
     eligibilityCrafts: ['Handloom & Textiles', 'Embroidery', 'Sarees & Textiles'],
     applicableStates: ['Karnataka', 'Telangana', 'Tamil Nadu', 'Andhra Pradesh', 'Odisha', 'West Bengal', 'Uttar Pradesh', 'All India'],
     linkUrl: 'https://handlooms.nic.in/',
-    category: 'Subsidy'
+    category: 'Subsidy',
+    translations: {
+      hi: {
+        title: 'राष्ट्रीय हथकरघा विकास कार्यक्रम (एनएचडीपी)',
+        agency: 'वस्त्र मंत्रालय, भारत सरकार',
+        description: 'हथकरघा बुनकर सहकारी समितियों और व्यक्तिगत कारीगरों के लिए करघा उन्नयन, कच्चे माल पर सब्सिडी और क्लस्टर विकास हेतु व्यापक वित्तीय सहायता।',
+        benefitSummary: 'प्रकाश व्यवस्था और उन्नत करघा उपकरण के लिए ₹2,00,000 तक + 10% धागा सब्सिडी'
+      },
+      kn: {
+        title: 'ರಾಷ್ಟ್ರೀಯ ಕೈಮಗ್ಗ ಅಭಿವೃದ್ಧಿ ಕಾರ್ಯಕ್ರಮ (NHDP)',
+        agency: 'ಜವಳಿ ಸಚಿವಾಲಯ, ಭಾರತ ಸರ್ಕಾರ',
+        description: 'ಕೈಮಗ್ಗ ನೇಕಾರ ಸಹಕಾರ ಸಂಘಗಳು ಮತ್ತು ವೈಯಕ್ತಿಕ ಕುಶಲಕರ್ಮಿಗಳಿಗೆ ಮಗ್ಗ ನವೀಕರಣ, ಕಚ್ಚಾ ವಸ್ತು ಸಬ್ಸಿಡಿ ಮತ್ತು ಕ್ಲಸ್ಟರ್ ಅಭಿವೃದ್ಧಿಗಾಗಿ ಸಮಗ್ರ ಆರ್ಥಿಕ ಬೆಂಬಲ.',
+        benefitSummary: 'ಬೆಳಕು ಮತ್ತು ಸುಧಾರಿತ ಮಗ್ಗ ಪರಿಕರಗಳಿಗೆ ₹2,00,000 ವರೆಗೆ + 10% ನೂಲು ಸಬ್ಸಿಡಿ'
+      },
+      ta: {
+        title: 'தேசிய கைத்தறி மேம்பாட்டுத் திட்டம் (NHDP)',
+        agency: 'ஜவுளித் துறை அமைச்சகம், இந்திய அரசு',
+        description: 'கைத்தறி நெசவாளர் கூட்டுறவு சங்கங்கள் மற்றும் தனிப்பட்ட கைவினைஞர்களுக்கு தறி மேம்படுத்தல், மூலப்பொருள் மானியம் மற்றும் கிளஸ்டர் மேம்பாட்டிற்கான விரிவான நிதி உதவி.',
+        benefitSummary: 'விளக்கு மற்றும் மேம்பட்ட தறி பாகங்களுக்கு ₹2,00,000 வரை + 10% நூல் மானியம்'
+      }
+    }
   },
   {
     id: 'gov-scheme-2',
@@ -2809,7 +2829,27 @@ export const CURATED_GOVERNMENT_SCHEMES: GovernmentScheme[] = [
     eligibilityCrafts: ['Handloom & Textiles', 'Sarees & Textiles'],
     applicableStates: ['All India'],
     linkUrl: 'http://textilescommittee.nic.in/',
-    category: 'GI & Heritage'
+    category: 'GI & Heritage',
+    translations: {
+      hi: {
+        title: 'हैंडलूम मार्क और सिल्क मार्क प्रमाणन अनुदान',
+        agency: 'वस्त्र समिति और सिल्क मार्क ऑर्गनाइजेशन ऑफ इंडिया',
+        description: 'पावरलूम की नकल से बचाने के लिए आधिकारिक हैंडलूम मार्क और सिल्क मार्क होलोग्राफिक टैग प्राप्त करने हेतु छोटे कारीगरों और सहकारी समितियों के लिए 100% प्रतिपूर्ति।',
+        benefitSummary: 'नि:शुल्क पंजीकरण + प्रति बुनकर 500 होलोग्राफिक प्रामाणिकता टैग'
+      },
+      kn: {
+        title: 'ಹ್ಯಾಂಡ್‌ಲೂಮ್ ಮಾರ್ಕ್ ಮತ್ತು ಸಿಲ್ಕ್ ಮಾರ್ಕ್ ಪ್ರಮಾಣೀಕರಣ ಅನುದಾನ',
+        agency: 'ಜವಳಿ ಸಮಿತಿ ಮತ್ತು ಸಿಲ್ಕ್ ಮಾರ್ಕ್ ಆರ್ಗನೈಸೇಶನ್ ಆಫ್ ಇಂಡಿಯಾ',
+        description: 'ಪವರ್‌ಲೂಮ್ ನಕಲಿಗಳಿಂದ ರಕ್ಷಿಸಲು ಅಧಿಕೃತ ಹ್ಯಾಂಡ್‌ಲೂಮ್ ಮಾರ್ಕ್ ಮತ್ತು ಸಿಲ್ಕ್ ಮಾರ್ಕ್ ಹೊಲೊಗ್ರಾಫಿಕ್ ಟ್ಯಾಗ್‌ಗಳನ್ನು ಪಡೆಯಲು ಸಣ್ಣ ಕುಶಲಕರ್ಮಿಗಳು ಮತ್ತು ಸಹಕಾರ ಸಂಘಗಳಿಗೆ 100% ಮರುಪಾವತಿ.',
+        benefitSummary: 'ಉಚಿತ ನೋಂದಣಿ + ಪ್ರತಿ ನೇಕಾರರಿಗೆ 500 ಹೊಲೊಗ್ರಾಫಿಕ್ ಅಧಿಕೃತತೆ ಟ್ಯಾಗ್‌ಗಳು'
+      },
+      ta: {
+        title: 'கைத்தறி முத்திரை மற்றும் பட்டு முத்திரை சான்றிதழ் மானியம்',
+        agency: 'ஜவுளிக் குழு மற்றும் பட்டு முத்திரை அமைப்பு இந்தியா',
+        description: 'பவர்லூம் போலிகளிலிருந்து பாதுகாக்க அதிகாரப்பூர்வ கைத்தறி முத்திரை மற்றும் பட்டு முத்திரை ஹோலோகிராஃபிக் குறிச்சீட்டுகளைப் பெற சிறு கைவினைஞர்கள் மற்றும் கூட்டுறவு சங்கங்களுக்கு 100% திரும்பப்பெறல்.',
+        benefitSummary: 'இலவச பதிவு + ஒரு நெசவாளருக்கு 500 ஹோலோகிராஃபிக் நம்பகத்தன்மை குறிச்சீட்டுகள்'
+      }
+    }
   },
   {
     id: 'gov-scheme-3',
@@ -2820,7 +2860,27 @@ export const CURATED_GOVERNMENT_SCHEMES: GovernmentScheme[] = [
     eligibilityCrafts: ['Handloom & Textiles', 'Pottery & Ceramics', 'Woodcraft', 'Metalcraft', 'Jewellery', 'Leathercraft', 'Bamboo & Cane', 'Embroidery'],
     applicableStates: ['All India'],
     linkUrl: 'https://www.mudra.org.in/',
-    category: 'Credit'
+    category: 'Credit',
+    translations: {
+      hi: {
+        title: 'प्रधानमंत्री मुद्रा योजना (शिशु एवं किशोर)',
+        agency: 'सिडबी और अनुसूचित वाणिज्यिक बैंक',
+        description: 'एकल कारीगरों, स्वयं सहायता समूहों और ग्रामीण मास्टर शिल्पकारों के लिए थोक में कच्चे रेशम/कपास की खरीद हेतु विशेष रूप से तैयार किया गया बिना गारंटी वाला संस्थागत ऋण।',
+        benefitSummary: 'कम ब्याज पर ₹50,000 (शिशु) से ₹5,00,000 (किशोर) तक बिना गारंटी ऋण'
+      },
+      kn: {
+        title: 'ಪ್ರಧಾನ ಮಂತ್ರಿ ಮುದ್ರಾ ಯೋಜನೆ (ಶಿಶು ಮತ್ತು ಕಿಶೋರ್)',
+        agency: 'ಸಿಡ್ಬಿ ಮತ್ತು ಶೆಡ್ಯೂಲ್ಡ್ ಕಮರ್ಷಿಯಲ್ ಬ್ಯಾಂಕುಗಳು',
+        description: 'ಏಕಾಂಗಿ ಕುಶಲಕರ್ಮಿಗಳು, ಸ್ವಸಹಾಯ ಗುಂಪುಗಳು ಮತ್ತು ಗ್ರಾಮೀಣ ಮಾಸ್ಟರ್ ಕುಶಲಕರ್ಮಿಗಳಿಗೆ ಕಚ್ಚಾ ರೇಷ್ಮೆ/ಹತ್ತಿಯನ್ನು ಸಗಟು ಖರೀದಿಸಲು ವಿಶೇಷವಾಗಿ ರೂಪಿಸಲಾದ ಸಾಲ ಭದ್ರತೆ ಇಲ್ಲದ ಸಾಂಸ್ಥಿಕ ಸಾಲ.',
+        benefitSummary: 'ಕಡಿಮೆ ಬಡ್ಡಿದರದಲ್ಲಿ ₹50,000 (ಶಿಶು) ರಿಂದ ₹5,00,000 (ಕಿಶೋರ್) ವರೆಗೆ ಭದ್ರತೆ ಇಲ್ಲದ ಸಾಲ'
+      },
+      ta: {
+        title: 'பிரதம மந்திரி முத்ரா யோஜனா (ஷிசு & கிஷோர்)',
+        agency: 'சிட்பி மற்றும் திட்டமிடப்பட்ட வணிக வங்கிகள்',
+        description: 'தனி கைவினைஞர்கள், சுய உதவிக் குழுக்கள் மற்றும் கிராமப்புற தலைமை கைவினைஞர்களுக்கு மொத்தமாக மூலப் பட்டு/பருத்தி வாங்குவதற்காக வடிவமைக்கப்பட்ட உத்தரவாதம் இல்லாத நிறுவனக் கடன்.',
+        benefitSummary: 'குறைந்த வட்டியில் ₹50,000 (ஷிசு) முதல் ₹5,00,000 (கிஷோர்) வரை உத்தரவாதம் இல்லாத கடன்'
+      }
+    }
   },
   {
     id: 'gov-scheme-4',
@@ -2831,7 +2891,27 @@ export const CURATED_GOVERNMENT_SCHEMES: GovernmentScheme[] = [
     eligibilityCrafts: ['Woodcraft', 'Metalcraft', 'Pottery & Ceramics', 'Bamboo & Cane', 'Folk Painting', 'Traditional Toys'],
     applicableStates: ['All India'],
     linkUrl: 'https://pmvishwakarma.gov.in/',
-    category: 'Infrastructure'
+    category: 'Infrastructure',
+    translations: {
+      hi: {
+        title: 'पीएम विकास (विश्वकर्मा कौशल सम्मान)',
+        agency: 'सूक्ष्म, लघु एवं मध्यम उद्यम मंत्रालय',
+        description: 'पारंपरिक कारीगरों के लिए टूलकिट प्रोत्साहन, आधुनिक डिजाइन प्रशिक्षण, ब्रांड निर्माण और सीधे ई-कॉमर्स ऑनबोर्डिंग सहित संपूर्ण सहायता।',
+        benefitSummary: '₹15,000 टूलकिट अनुदान + कौशल उन्नयन प्रशिक्षण के दौरान ₹500/दिन वृत्तिका'
+      },
+      kn: {
+        title: 'ಪಿಎಂ ವಿಕಾಸ್ (ವಿಶ್ವಕರ್ಮ ಕೌಶಲ್ ಸಮ್ಮಾನ್)',
+        agency: 'ಸೂಕ್ಷ್ಮ, ಸಣ್ಣ ಮತ್ತು ಮಧ್ಯಮ ಉದ್ಯಮಗಳ ಸಚಿವಾಲಯ',
+        description: 'ಸಾಂಪ್ರದಾಯಿಕ ಕುಶಲಕರ್ಮಿಗಳಿಗೆ ಟೂಲ್‌ಕಿಟ್ ಪ್ರೋತ್ಸಾಹ, ಆಧುನಿಕ ವಿನ್ಯಾಸ ತರಬೇತಿ, ಬ್ರ್ಯಾಂಡ್ ನಿರ್ಮಾಣ ಮತ್ತು ನೇರ ಇ-ಕಾಮರ್ಸ್ ಆನ್‌ಬೋರ್ಡಿಂಗ್ ಸಂಪರ್ಕ ಸೇರಿದಂತೆ ಸಮಗ್ರ ಬೆಂಬಲ.',
+        benefitSummary: '₹15,000 ಟೂಲ್‌ಕಿಟ್ ಅನುದಾನ + ಕೌಶಲ್ಯ ಉನ್ನತೀಕರಣ ತರಬೇತಿಯ ಸಮಯದಲ್ಲಿ ₹500/ದಿನ ವಿದ್ಯಾರ್ಥಿವೇತನ'
+      },
+      ta: {
+        title: 'பிஎம் விகாஸ் (விஸ்வகர்மா கௌஷல் சம்மான்)',
+        agency: 'நுண்,சிறு & நடுத்தர தொழில் அமைச்சகம்',
+        description: 'பாரம்பரிய கைவினைஞர்களுக்கு கருவித்தொகுப்பு ஊக்கத்தொகை, நவீன வடிவமைப்பு பயிற்சி, பிராண்ட் கட்டமைப்பு மற்றும் நேரடி மின்வணிக இணைப்பு உள்ளிட்ட முழுமையான ஆதரவு.',
+        benefitSummary: '₹15,000 கருவித்தொகுப்பு மானியம் + திறன் மேம்பாட்டு பயிற்சியின்போது நாளொன்றுக்கு ₹500 உதவித்தொகை'
+      }
+    }
   },
   {
     id: 'gov-scheme-5',
@@ -2842,7 +2922,27 @@ export const CURATED_GOVERNMENT_SCHEMES: GovernmentScheme[] = [
     eligibilityCrafts: ['Handloom & Textiles', 'Woodcraft', 'Metalcraft', 'Embroidery', 'Jewellery'],
     applicableStates: ['All India'],
     linkUrl: 'https://dgft.gov.in/',
-    category: 'Export'
+    category: 'Export',
+    translations: {
+      hi: {
+        title: 'हस्तशिल्प एवं हथकरघा निर्यात प्रोत्साहन सब्सिडी (एमईआईएस/आरओडीटीईपी)',
+        agency: 'विदेश व्यापार महानिदेशालय (डीजीएफटी)',
+        description: 'भारतीय विरासत शिल्प को विश्व स्तर पर भेजने वाली पंजीकृत कारीगर सहकारी समितियों, स्वयं सहायता समूहों और निर्यातकों के लिए शुल्क वापसी और निर्यात प्रोत्साहन योजना।',
+        benefitSummary: 'एफओबी निर्यात मूल्य पर 3.5% से 6% छूट + शिल्प मेलों के लिए माल भाड़ा सब्सिडी'
+      },
+      kn: {
+        title: 'ಕರಕುಶಲ ಮತ್ತು ಕೈಮಗ್ಗ ರಫ್ತು ಉತ್ತೇಜನ ಸಬ್ಸಿಡಿ (MEIS/RoDTEP)',
+        agency: 'ವಿದೇಶ ವ್ಯಾಪಾರ ಮಹಾನಿರ್ದೇಶನಾಲಯ (DGFT)',
+        description: 'ಭಾರತೀಯ ಪಾರಂಪರಿಕ ಕರಕುಶಲ ವಸ್ತುಗಳನ್ನು ಜಾಗತಿಕವಾಗಿ ರವಾನಿಸುವ ನೋಂದಾಯಿತ ಕುಶಲಕರ್ಮಿ ಸಹಕಾರ ಸಂಘಗಳು, ಸ್ವಸಹಾಯ ಗುಂಪುಗಳು ಮತ್ತು ರಫ್ತುದಾರರಿಗೆ ಸುಂಕ ಡ್ರಾಬ್ಯಾಕ್ ಮತ್ತು ರಫ್ತು ಪ್ರೋತ್ಸಾಹಕ ಯೋಜನೆ.',
+        benefitSummary: 'FOB ರಫ್ತು ಮೌಲ್ಯದ ಮೇಲೆ 3.5% ರಿಂದ 6% ರಿಯಾಯಿತಿ + ಕರಕುಶಲ ಮೇಳಗಳಿಗೆ ಸಾಗಣೆ ಸಬ್ಸಿಡಿ'
+      },
+      ta: {
+        title: 'கைவினை மற்றும் கைத்தறி ஏற்றுமதி ஊக்குவிப்பு மானியம் (MEIS/RoDTEP)',
+        agency: 'வெளிநாட்டு வர்த்தக இயக்குநரகம் (DGFT)',
+        description: 'இந்திய பாரம்பரிய கைவினைப் பொருட்களை உலகளவில் அனுப்பும் பதிவுசெய்யப்பட்ட கைவினைஞர் கூட்டுறவு சங்கங்கள், சுய உதவிக் குழுக்கள் மற்றும் ஏற்றுமதியாளர்களுக்கான வரி திரும்பப்பெறல் மற்றும் ஏற்றுமதி ஊக்குவிப்புத் திட்டம்.',
+        benefitSummary: 'FOB ஏற்றுமதி மதிப்பில் 3.5% முதல் 6% வரை தள்ளுபடி + கைவினைக் கண்காட்சிகளுக்கான சரக்கு மானியம்'
+      }
+    }
   },
   {
     id: 'gov-scheme-6',
@@ -2853,9 +2953,53 @@ export const CURATED_GOVERNMENT_SCHEMES: GovernmentScheme[] = [
     eligibilityCrafts: ['Handloom & Textiles', 'Pottery & Ceramics', 'Woodcraft', 'Metalcraft', 'Folk Painting'],
     applicableStates: ['Karnataka', 'Telangana', 'Odisha', 'Tamil Nadu', 'All India'],
     linkUrl: 'https://ipindia.gov.in/',
-    category: 'GI & Heritage'
+    category: 'GI & Heritage',
+    translations: {
+      hi: {
+        title: 'भौगोलिक संकेत (जीआई) पंजीकरण वित्तीय सहायता',
+        agency: 'उद्योग एवं आंतरिक व्यापार संवर्धन विभाग (डीपीआईआईटी)',
+        description: 'स्थानीय प्रामाणिक शिल्प को जीआई रजिस्ट्री के तहत पंजीकृत करने और जीआई कानूनी अधिकारों को लागू करने के लिए कारीगर समितियों हेतु वित्तीय सहायता और कानूनी सहयोग।',
+        benefitSummary: 'जीआई पंजीकरण आवेदन के लिए 100% अनुदान + कानूनी बचाव कोष'
+      },
+      kn: {
+        title: 'ಭೌಗೋಳಿಕ ಸೂಚನೆ (ಜಿಐ) ನೋಂದಣಿ ಆರ್ಥಿಕ ಬೆಂಬಲ',
+        agency: 'ಕೈಗಾರಿಕೆ ಮತ್ತು ಆಂತರಿಕ ವ್ಯಾಪಾರ ಪ್ರೋತ್ಸಾಹ ಇಲಾಖೆ (DPIIT)',
+        description: 'ಸ್ಥಳೀಯ ಅಧಿಕೃತ ಕರಕುಶಲ ವಸ್ತುಗಳನ್ನು ಜಿಐ ರಿಜಿಸ್ಟ್ರಿ ಅಡಿಯಲ್ಲಿ ನೋಂದಾಯಿಸಲು ಮತ್ತು ಜಿಐ ಕಾನೂನು ಹಕ್ಕುಗಳನ್ನು ಜಾರಿಗೊಳಿಸಲು ಕುಶಲಕರ್ಮಿ ಸಂಘಗಳಿಗೆ ಆರ್ಥಿಕ ನೆರವು ಮತ್ತು ಕಾನೂನು ಬೆಂಬಲ.',
+        benefitSummary: 'ಜಿಐ ನೋಂದಣಿ ಅರ್ಜಿಗೆ 100% ಅನುದಾನ + ಕಾನೂನು ರಕ್ಷಣಾ ನಿಧಿ'
+      },
+      ta: {
+        title: 'புவிசார் குறியீடு (GI) பதிவு நிதி உதவி',
+        agency: 'தொழில் மற்றும் உள்நாட்டு வர்த்தக மேம்பாட்டுத் துறை (DPIIT)',
+        description: 'உள்ளூர் உண்மையான கைவினைப் பொருட்களை GI பதிவேட்டின் கீழ் பதிவு செய்யவும், GI சட்ட உரிமைகளை அமல்படுத்தவும் கைவினைஞர் சங்கங்களுக்கான நிதி உதவி மற்றும் சட்ட ஆதரவு.',
+        benefitSummary: 'GI பதிவு விண்ணப்பத்திற்கு 100% மானியம் + சட்டப் பாதுகாப்பு நிதி'
+      }
+    }
   }
 ];
+
+// Returns a scheme's title/agency/description/benefitSummary in the given language, falling back
+// to the base (English) fields when no translation entry exists for that language.
+export function getLocalizedScheme(scheme: GovernmentScheme, language: Language) {
+  const override = language !== 'en' ? scheme.translations?.[language as 'hi' | 'kn' | 'ta'] : undefined;
+  return {
+    title: override?.title || scheme.title,
+    agency: override?.agency || scheme.agency,
+    description: override?.description || scheme.description,
+    benefitSummary: override?.benefitSummary || scheme.benefitSummary
+  };
+}
+
+const SCHEME_CATEGORY_LABELS: Record<string, Partial<Record<Language, string>>> = {
+  'Subsidy': { en: 'Subsidy', hi: 'सब्सिडी', kn: 'ಸಬ್ಸಿಡಿ', ta: 'மானியம்' },
+  'Export': { en: 'Export', hi: 'निर्यात', kn: 'ರಫ್ತು', ta: 'ஏற்றுமதி' },
+  'Credit': { en: 'Credit', hi: 'ऋण', kn: 'ಸಾಲ', ta: 'கடன்' },
+  'Infrastructure': { en: 'Infrastructure', hi: 'अवसंरचना', kn: 'ಮೂಲಸೌಕರ್ಯ', ta: 'உள்கட்டமைப்பு' },
+  'GI & Heritage': { en: 'GI & Heritage', hi: 'जीआई एवं विरासत', kn: 'ಜಿಐ ಮತ್ತು ಪರಂಪರೆ', ta: 'GI & பாரம்பரியம்' }
+};
+
+export function getSchemeCategoryLabel(category: string, language: Language): string {
+  return SCHEME_CATEGORY_LABELS[category]?.[language] || SCHEME_CATEGORY_LABELS[category]?.en || category;
+}
 
 // Raw-material cluster/bulk-buying: a curated static list (like the schemes panel above) rather
 // than a live marketplace - artisans "join" a group buy, recorded locally.

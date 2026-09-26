@@ -4,7 +4,7 @@
  * and Offline fallback shell for 0 kbps rural connectivity.
  */
 
-const CACHE_NAME = 'taana-pwa-v3';
+const CACHE_NAME = 'taana-pwa-v4';
 
 // Core Application Shell to Pre-Cache
 const PRECACHE_ASSETS = [

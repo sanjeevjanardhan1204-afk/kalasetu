@@ -250,7 +250,7 @@ let serverTransactions: TransactionHistoryEntry[] = [
     amount: 6850,
     status: "SUCCESS",
     timestamp: "2026-07-28T10:30:00Z",
-    description: "Buyer payment secured in TantuLink Payment Protection Sandbox",
+    description: "Buyer payment secured in KalaSetu Payment Protection Sandbox",
     isDemo: true
   },
   {
@@ -271,7 +271,7 @@ let serverTransactions: TransactionHistoryEntry[] = [
     amount: 5800,
     status: "SUCCESS",
     timestamp: "2026-07-10T10:30:00Z",
-    description: "Buyer payment secured in TantuLink Payment Protection Sandbox",
+    description: "Buyer payment secured in KalaSetu Payment Protection Sandbox",
     isDemo: true
   },
   {
@@ -314,7 +314,7 @@ let serverTransactions: TransactionHistoryEntry[] = [
     amount: 4950,
     status: "SUCCESS",
     timestamp: "2026-07-22T11:00:00Z",
-    description: "Buyer payment secured in TantuLink Payment Protection Sandbox",
+    description: "Buyer payment secured in KalaSetu Payment Protection Sandbox",
     isDemo: true
   },
   {
@@ -713,12 +713,16 @@ export async function createApp() {
     try {
       const orderData = req.body;
       const clientTime = orderData.updatedAt || Date.now();
+      // Spread the full client payload first (preserves paymentProtection, quantity, cartGroupId,
+      // giInfo snapshot, etc. - the escrow/milestone data the admin panel and buyer/artisan views
+      // depend on), then fill in defaults only for whatever the client omitted.
       const newOrder: ServerOrder = {
+        ...orderData,
         id: orderData.id || `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
         product: orderData.product || serverProducts[0],
         buyerName: orderData.buyerName || "Conscious Buyer",
         buyerAddress: orderData.buyerAddress || "Bengaluru",
-        orderDate: "Just now",
+        orderDate: orderData.orderDate || "Just now",
         status: orderData.status || "Order Received",
         shippingAddress: orderData.shippingAddress || {
           street: "Direct Address",
@@ -738,7 +742,12 @@ export async function createApp() {
         version: 1
       };
 
-      serverOrders.unshift(newOrder);
+      const existingIdx = serverOrders.findIndex(o => o.id === newOrder.id);
+      if (existingIdx !== -1) {
+        serverOrders[existingIdx] = newOrder;
+      } else {
+        serverOrders.unshift(newOrder);
+      }
       upsertOrder(newOrder);
       res.status(201).json({ success: true, order: newOrder });
     } catch (err: any) {
@@ -864,7 +873,7 @@ export async function createApp() {
         status: status as 'VERIFIED' | 'REJECTED',
         verificationDate: status === "VERIFIED" ? (verificationDate || new Date().toISOString().split("T")[0]) : undefined,
         verificationSource: verificationSource || (status === "VERIFIED" ? "Geographical Indications Registry of India, Govt. of India" : undefined),
-        verifiedBy: verifiedBy || (status === "VERIFIED" ? "TantuLink Administrative Cell (admin@tantulink.demo)" : undefined),
+        verifiedBy: verifiedBy || (status === "VERIFIED" ? "KalaSetu Administrative Cell (admin@kalasetu.demo)" : undefined),
         notes: notes || undefined
       };
 
@@ -1033,6 +1042,51 @@ export async function createApp() {
         order: serverOrders[orderIdx],
         transaction: newTxn
       });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 4d-2. Admin Escrow Hold - flags an order for review, pausing further milestone releases.
+  // Reuses the existing dispute record/status (the milestone-release route above already refuses
+  // to release funds while dispute.status is OPEN/UNDER REVIEW) instead of a parallel hold flag.
+  app.post("/api/orders/:id/hold", requireRole('admin'), (req, res) => {
+    try {
+      const orderId = req.params.id;
+      const { reason } = req.body;
+
+      const orderIdx = serverOrders.findIndex(o => o.id === orderId);
+      if (orderIdx === -1) {
+        return res.status(404).json({ success: false, error: "Order not found" });
+      }
+
+      const order = serverOrders[orderIdx];
+      const now = new Date().toISOString();
+
+      const heldDispute: OrderDispute = order.dispute || {
+        id: `${order.id}-dispute`,
+        status: 'UNDER REVIEW',
+        reason: 'Other',
+        description: reason || 'Escrow release held by admin for manual review.',
+        createdAt: now,
+        updatedAt: now,
+        buyerName: order.buyerName
+      };
+      if (order.dispute) {
+        heldDispute.status = 'UNDER REVIEW';
+        heldDispute.updatedAt = now;
+        heldDispute.adminNotes = [...(heldDispute.adminNotes || []), reason || 'Held by admin for manual review.'];
+      }
+
+      serverOrders[orderIdx] = {
+        ...order,
+        dispute: heldDispute,
+        updatedAt: Date.now(),
+        version: order.version + 1
+      };
+      upsertOrder(serverOrders[orderIdx]);
+
+      res.json({ success: true, order: serverOrders[orderIdx] });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });
     }
@@ -1541,14 +1595,14 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[Taana PWA Server] Ready on http://0.0.0.0:${PORT} (${isProduction ? "production" : "development"})`);
+    console.log(`[KalaSetu PWA Server] Ready on http://0.0.0.0:${PORT} (${isProduction ? "production" : "development"})`);
   });
 
   // In production (Cloud Run), if PORT is not 3000, also bind to port 3000 if available
   if (isProduction && PORT !== 3000) {
     try {
       const secondaryServer = app.listen(3000, "0.0.0.0", () => {
-        console.log(`[Taana PWA Server] Secondary listener on http://0.0.0.0:3000`);
+        console.log(`[KalaSetu PWA Server] Secondary listener on http://0.0.0.0:3000`);
       });
       secondaryServer.on("error", () => {
         // Port 3000 already occupied or unavailable, safe to ignore

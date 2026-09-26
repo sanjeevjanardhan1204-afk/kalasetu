@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  ShieldCheck, Award, AlertTriangle, CheckCircle2, Clock, 
-  ArrowRight, RefreshCw, IndianRupee, FileText, Check, X, 
+import {
+  ShieldCheck, Award, AlertTriangle, CheckCircle2, Clock,
+  ArrowRight, RefreshCw, IndianRupee, FileText, Check, X,
   Search, ExternalLink, HelpCircle, User, ArrowLeft, LogOut,
-  Layers, ShoppingBag, Landmark, ChevronRight, Eye, ShieldAlert
+  Layers, ShoppingBag, Landmark, ChevronRight, Eye, ShieldAlert,
+  PauseCircle, Wallet
 } from 'lucide-react';
 import { Product, Order, Language, TransactionHistoryEntry } from '../types';
 import { playSyntheticChime } from '../data';
@@ -11,6 +12,7 @@ import { authHeaders } from '../utils/authClient';
 
 interface AdminDashboardProps {
   language: Language;
+  profile?: { name?: string; email?: string };
   products: Product[];
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   orders: Order[];
@@ -21,6 +23,7 @@ interface AdminDashboardProps {
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   language,
+  profile,
   products,
   setProducts,
   orders,
@@ -28,8 +31,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onSwitchMode,
   onLogout
 }) => {
-  // Navigation Tabs: 'gi' | 'disputes' | 'transactions'
-  const [activeTab, setActiveTab] = useState<'gi' | 'disputes' | 'transactions'>('gi');
+  // Navigation Tabs: 'escrow' | 'gi' | 'disputes' | 'transactions'
+  const [activeTab, setActiveTab] = useState<'escrow' | 'gi' | 'disputes' | 'transactions'>('escrow');
+
+  // Escrow release/hold states
+  const [processingMilestoneKey, setProcessingMilestoneKey] = useState<string | null>(null);
+  const [holdingOrderId, setHoldingOrderId] = useState<string | null>(null);
   
   // GI Verification states
   const [giFilter, setGiFilter] = useState<'pending' | 'all'>('pending');
@@ -58,6 +65,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Open/Active disputes list
   const activeDisputes = orders.filter(o => o.dispute && (o.dispute.status === 'OPEN' || o.dispute.status === 'UNDER REVIEW'));
   const allDisputes = orders.filter(o => o.dispute);
+
+  // Escrow oversight: every order with payment protection, real data pulled straight from the
+  // orders array (which itself is now kept in sync with the server's orders/transactions/
+  // milestones tables via polling in App.tsx, not a separate simulated dataset).
+  const escrowOrders = orders.filter(o => o.paymentProtection);
+  const isOrderHeld = (o: Order) => !!o.dispute && (o.dispute.status === 'OPEN' || o.dispute.status === 'UNDER REVIEW');
+  const escrowStatus = (o: Order): 'Disputed' | 'Released' | 'Pending Release' | 'Funded' => {
+    if (isOrderHeld(o)) return 'Disputed';
+    const milestones = o.paymentProtection?.milestones || [];
+    if (milestones.length > 0 && milestones.every(m => m.status === 'RELEASED')) return 'Released';
+    if (milestones.some(m => m.status === 'PENDING')) return 'Pending Release';
+    return 'Funded';
+  };
+  const totalHeldInEscrow = escrowOrders.reduce((sum, o) => sum + (o.paymentProtection?.pendingAmount || 0), 0);
+  const totalReleasedFromEscrow = escrowOrders.reduce((sum, o) => sum + (o.paymentProtection?.releasedAmount || 0), 0);
+  const pendingReleaseCount = escrowOrders.filter(o => escrowStatus(o) === 'Pending Release').length;
 
   // Fetch transactions on mount or tab change
   const fetchTransactions = async () => {
@@ -106,7 +129,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           status: 'VERIFIED',
           verificationSource: 'Geographical Indications Registry of India, Govt. of India',
           verificationDate: new Date().toISOString().split('T')[0],
-          verifiedBy: 'TantuLink Administrative Cell (admin@tantulink.demo)',
+          verifiedBy: 'KalaSetu Administrative Cell (admin@kalasetu.demo)',
           notes: 'Verified against national GI registry database standards.'
         })
       });
@@ -122,7 +145,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             status: 'VERIFIED' as const,
             verificationDate: new Date().toISOString().split('T')[0],
             verificationSource: 'Geographical Indications Registry of India, Govt. of India',
-            verifiedBy: 'TantuLink Administrative Cell (admin@tantulink.demo)'
+            verifiedBy: 'KalaSetu Administrative Cell (admin@kalasetu.demo)'
           }
         };
         setProducts(prev => prev.map(p => p.id === product.id ? updated : p));
@@ -138,7 +161,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         status: 'VERIFIED' as const,
         verificationDate: new Date().toISOString().split('T')[0],
         verificationSource: 'Geographical Indications Registry of India, Govt. of India',
-        verifiedBy: 'TantuLink Administrative Cell (admin@tantulink.demo)'
+        verifiedBy: 'KalaSetu Administrative Cell (admin@kalasetu.demo)'
       };
       setProducts(prev => prev.map(p => p.id === product.id ? { ...p, giInfo: updatedGi } : p));
       playSyntheticChime('success');
@@ -255,6 +278,65 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
+  // Approve & release one escrow milestone to the artisan - hits the real, admin-gated
+  // /api/orders/:id/milestones/release route (verifies the session/role server-side, updates the
+  // transaction/milestone record, and the change is picked up by the buyer's and artisan's own
+  // views the next time their existing polling loop refreshes orders).
+  const handleReleaseMilestone = async (order: Order, milestoneId: string, milestoneName: string) => {
+    const key = `${order.id}:${milestoneId}`;
+    setProcessingMilestoneKey(key);
+    playSyntheticChime('click');
+
+    try {
+      const res = await fetch(`/api/orders/${order.id}/milestones/release`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ milestoneId, milestoneName })
+      });
+      const data = await res.json();
+      if (data.success && data.order) {
+        setOrders(prev => prev.map(o => o.id === order.id ? data.order : o));
+        playSyntheticChime('success');
+        showSuccessBanner(`✓ Released ₹${(data.transaction?.amount ?? 0).toLocaleString('en-IN')} (${milestoneName}) to ${order.product.weaverName} for Order #${order.id}.`);
+        fetchTransactions();
+      } else {
+        throw new Error(data.error || 'Failed to release milestone payment');
+      }
+    } catch (err: any) {
+      playSyntheticChime('click');
+      showSuccessBanner(`✗ Could not release funds: ${err.message}`);
+    } finally {
+      setProcessingMilestoneKey(null);
+    }
+  };
+
+  // Flag/hold an order for review - reuses the existing dispute record (status UNDER REVIEW),
+  // which the milestone-release route already refuses to pay out against.
+  const handleHoldOrder = async (order: Order) => {
+    setHoldingOrderId(order.id);
+    playSyntheticChime('click');
+
+    try {
+      const res = await fetch(`/api/orders/${order.id}/hold`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ reason: 'Held for manual review by admin from the Escrow panel.' })
+      });
+      const data = await res.json();
+      if (data.success && data.order) {
+        setOrders(prev => prev.map(o => o.id === order.id ? data.order : o));
+        playSyntheticChime('success');
+        showSuccessBanner(`⏸ Order #${order.id} flagged for review. Milestone releases are paused until resolved in the Disputes tab.`);
+      } else {
+        throw new Error(data.error || 'Failed to hold order');
+      }
+    } catch (err: any) {
+      showSuccessBanner(`✗ Could not hold order: ${err.message}`);
+    } finally {
+      setHoldingOrderId(null);
+    }
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 text-charcoal font-sans" id="admin-dashboard-container">
       
@@ -274,7 +356,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </span>
             </div>
             <p className="text-xs text-cream/70 mt-0.5">
-              Logged in as: <strong className="text-amber-300 font-mono">admin@tantulink.demo</strong> • Geographical Indication & Trust Verifier
+              Logged in as: <strong className="text-amber-300 font-mono">{profile?.email || profile?.name || 'admin'}</strong> • Escrow, GI & Dispute Oversight
             </p>
           </div>
         </div>
@@ -349,7 +431,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Main Admin Navigation Tabs */}
       <div className="bg-white rounded-2xl p-1.5 border border-cream-border flex gap-1 shadow-xs" id="admin-main-tabs">
-        
+
+        {/* 0. Escrow Tab */}
+        <button
+          id="admin-tab-escrow"
+          onClick={() => {
+            playSyntheticChime('click');
+            setActiveTab('escrow');
+          }}
+          className={`flex-1 py-3 px-3 rounded-xl text-xs font-bold uppercase transition flex items-center justify-center gap-2 ${
+            activeTab === 'escrow'
+              ? 'bg-emerald-600 text-white shadow-xs'
+              : 'text-gray-600 hover:text-charcoal hover:bg-cream/40'
+          }`}
+        >
+          <Wallet className="w-4 h-4" />
+          <span>ESCROW</span>
+          {pendingReleaseCount > 0 && (
+            <span className={`text-[10px] px-2 py-0.2 rounded-full font-mono font-extrabold ${
+              activeTab === 'escrow' ? 'bg-white text-emerald-700' : 'bg-emerald-600 text-white'
+            }`}>
+              {pendingReleaseCount} PENDING
+            </span>
+          )}
+        </button>
+
         {/* 1. GI Verification Tab */}
         <button
           id="admin-tab-gi-verification"
@@ -421,6 +527,134 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </button>
 
       </div>
+
+      {/* ========================================================= */}
+      {/* SECTION 0: ESCROW / PAYMENT PROTECTION OVERSIGHT */}
+      {/* ========================================================= */}
+      {activeTab === 'escrow' && (
+        <div className="space-y-4 animate-fadeIn" id="admin-escrow-section">
+
+          {/* Running totals - real, computed from the live orders array */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-6">
+            <div className="bg-white border border-cream-border rounded-2xl py-4 sm:py-6 text-center shadow-xs">
+              <p className="font-serif font-bold text-2xl sm:text-4xl text-amber-600">
+                ₹{totalHeldInEscrow.toLocaleString('en-IN')}
+              </p>
+              <p className="text-[10px] sm:text-xs font-bold text-gray-500 mt-1 px-1">HELD IN ESCROW</p>
+            </div>
+            <div className="bg-white border border-cream-border rounded-2xl py-4 sm:py-6 text-center shadow-xs">
+              <p className="font-serif font-bold text-2xl sm:text-4xl text-emerald-600">
+                ₹{totalReleasedFromEscrow.toLocaleString('en-IN')}
+              </p>
+              <p className="text-[10px] sm:text-xs font-bold text-gray-500 mt-1 px-1">RELEASED TO ARTISANS</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 bg-white p-4 rounded-2xl border border-cream-border">
+            <div className="w-10 h-10 shrink-0 rounded-xl bg-emerald-600/10 text-emerald-700 flex items-center justify-center">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-serif font-bold text-charcoal">Escrow Oversight</h2>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Every order currently under payment protection, pulled live from the orders/milestones data. Approving a milestone here updates the real transaction record immediately - the buyer's order tracker and the artisan's dashboard pick it up on their next refresh.
+              </p>
+            </div>
+          </div>
+
+          {escrowOrders.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-cream-border p-8 text-center space-y-2">
+              <Wallet className="w-10 h-10 mx-auto text-gray-300" />
+              <p className="text-xs text-gray-500">No orders currently under payment protection.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {escrowOrders.map(order => {
+                const status = escrowStatus(order);
+                const held = isOrderHeld(order);
+                return (
+                  <div key={order.id} className="bg-white rounded-2xl border border-cream-border p-4 sm:p-5 shadow-xs space-y-3" id={`escrow-order-${order.id}`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono text-[11px] font-bold text-charcoal">#{order.id}</span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                            status === 'Disputed' ? 'bg-rose-100 text-rose-800'
+                              : status === 'Released' ? 'bg-emerald-100 text-emerald-800'
+                              : status === 'Pending Release' ? 'bg-amber-100 text-amber-800'
+                              : 'bg-indigo-custom/10 text-indigo-custom'
+                          }`}>
+                            {status === 'Pending Release' ? 'Pending Release' : status}
+                          </span>
+                          <span className="text-[10px] text-gray-400 font-mono">
+                            {order.orderDate ? new Date(order.orderDate).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}
+                          </span>
+                        </div>
+                        <p className="text-xs text-charcoal">
+                          <strong>{order.buyerName}</strong> → <strong>{order.product.weaverName}</strong> · {order.product.title}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-serif font-extrabold text-lg text-charcoal">
+                          ₹{(order.paymentProtection?.orderTotal ?? 0).toLocaleString('en-IN')}
+                        </p>
+                        <p className="text-[10px] text-gray-500">
+                          ₹{(order.paymentProtection?.releasedAmount ?? 0).toLocaleString('en-IN')} released · ₹{(order.paymentProtection?.pendingAmount ?? 0).toLocaleString('en-IN')} pending
+                        </p>
+                      </div>
+                    </div>
+
+                    {held && (
+                      <div className="bg-rose-50 border border-rose-200 rounded-xl p-2.5 text-[11px] text-rose-800 flex items-center gap-2">
+                        <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                        <span>Milestone releases are paused - resolve in the Disputes tab to continue.</span>
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap gap-2">
+                      {(order.paymentProtection?.milestones || []).map(m => {
+                        const key = `${order.id}:${m.id}`;
+                        const isProcessing = processingMilestoneKey === key;
+                        return (
+                          <div key={m.id} className="flex items-center gap-2 bg-cream/50 border border-cream-border rounded-xl px-3 py-2">
+                            <span className="text-[10px] font-bold text-charcoal">{m.name}</span>
+                            <span className="text-[10px] text-gray-500 font-mono">₹{m.amount.toLocaleString('en-IN')}</span>
+                            {m.status === 'RELEASED' ? (
+                              <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200">✓ RELEASED</span>
+                            ) : (
+                              <button
+                                id={`release-milestone-btn-${key}`}
+                                disabled={held || isProcessing}
+                                onClick={() => handleReleaseMilestone(order, m.id, m.name)}
+                                className="text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white px-2.5 py-1 rounded-lg transition flex items-center gap-1"
+                              >
+                                {isProcessing ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+                                <span>Approve & Release</span>
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {!held && status !== 'Released' && (
+                      <button
+                        id={`hold-order-btn-${order.id}`}
+                        disabled={holdingOrderId === order.id}
+                        onClick={() => handleHoldOrder(order)}
+                        className="text-[11px] font-bold text-rose-700 hover:text-rose-900 flex items-center gap-1.5 disabled:opacity-40"
+                      >
+                        {holdingOrderId === order.id ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <PauseCircle className="w-3.5 h-3.5" />}
+                        <span>Hold / Flag for Dispute</span>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ========================================================= */}
       {/* SECTION 1: GI VERIFICATION */}
@@ -916,7 +1150,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
               <div>
                 <h2 className="text-base font-serif font-bold text-charcoal">
-                  TantuLink Milestone Escrow Ledger
+                  KalaSetu Milestone Escrow Ledger
                 </h2>
                 <p className="text-xs text-gray-500 mt-0.5">
                   Demo payment and milestone tracking log maintaining tamper-proof ledger entries.
@@ -970,7 +1204,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
                             txn.type === 'PAYMENT_SECURED'
-                              ? 'bg-blue-100 text-blue-800'
+                              ? 'bg-indigo-custom/10 text-indigo-custom'
                               : txn.type === 'MILESTONE_RELEASE'
                               ? 'bg-emerald-100 text-emerald-800'
                               : 'bg-amber-100 text-amber-800'

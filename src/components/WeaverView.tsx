@@ -10,7 +10,7 @@ import { Product, Order, Language, Translation, Dimensions, GiInfo, GovernmentSc
 import {
   SAMPLE_PRODUCT_IMAGES, QA_QUESTIONS, TRANSLATIONS,
   SIMULATED_VOICE_SPEECHES, playSyntheticChime,
-  CURATED_GOVERNMENT_SCHEMES, DEMAND_INTELLIGENCE_DATA, CURATED_MATERIAL_CLUSTERS,
+  CURATED_GOVERNMENT_SCHEMES, getLocalizedScheme, getSchemeCategoryLabel, DEMAND_INTELLIGENCE_DATA, CURATED_MATERIAL_CLUSTERS,
   normalizeSpokenNumerals, parseSpokenDimensions, pickLang, computeProvenanceHash
 } from '../data';
 import { speakText, stopSpeaking, triggerSubtitleSpeak, triggerSubtitleStop } from './VoiceHelper';
@@ -261,7 +261,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
     const cgst = Math.round(gstAmount / 2);
     const sgst = gstAmount - cgst;
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${t.invoiceTitleLabel} - ${order.id}</title>
-<style>body{font-family:Arial,sans-serif;padding:32px;color:#0C0A09;}h1{font-size:20px;}table{width:100%;border-collapse:collapse;margin-top:16px;}td,th{border:1px solid #ddd;padding:8px;font-size:12px;text-align:left;}.total{font-weight:bold;}</style>
+<style>body{font-family:Arial,sans-serif;padding:32px;color:#2D2926;}h1{font-size:20px;}table{width:100%;border-collapse:collapse;margin-top:16px;}td,th{border:1px solid #ddd;padding:8px;font-size:12px;text-align:left;}.total{font-weight:bold;}</style>
 </head><body>
 <h1>${t.invoiceTitleLabel}</h1>
 <p><strong>KalaSetu</strong> — Direct Artisan Marketplace<br/>Seller: ${order.product.weaverName}, ${order.product.weaverRegion}<br/>GSTIN: ${profile?.gstin || 'URP (Unregistered Person - below GST threshold)'}</p>
@@ -271,7 +271,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
 <tr><td>${order.product.title}</td><td>${order.quantity || 1}</td><td>₹${taxableValue}</td><td>₹${cgst}</td><td>₹${sgst}</td><td>₹${order.product.price}</td></tr>
 <tr class="total"><td colspan="5">Grand Total</td><td>₹${order.product.price}</td></tr>
 </table>
-<p style="margin-top:24px;font-size:11px;color:#78716C;">This is a system-generated invoice from KalaSetu's demo/sandbox billing. Verify GSTIN and tax details with your accountant before formal filing.</p>
+<p style="margin-top:24px;font-size:11px;color:#8C8379;">This is a system-generated invoice from KalaSetu's demo/sandbox billing. Verify GSTIN and tax details with your accountant before formal filing.</p>
 </body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
@@ -1101,7 +1101,9 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       schemeFilter === cat ? 'bg-indigo-custom text-white' : 'bg-cream-dark/60 text-charcoal hover:bg-cream-dark'
                     }`}
                   >
-                    {cat}
+                    {cat === 'All'
+                      ? (language === 'kn' ? 'ಎಲ್ಲಾ' : language === 'hi' ? 'सभी' : language === 'ta' ? 'அனைத்தும்' : 'All')
+                      : getSchemeCategoryLabel(cat, language)}
                   </button>
                 ))}
               </div>
@@ -1110,27 +1112,31 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             <div className="grid gap-3 sm:grid-cols-2">
               {CURATED_GOVERNMENT_SCHEMES
                 .filter(s => schemeFilter === 'All' || s.category === schemeFilter)
-                .map(scheme => (
+                .map(scheme => {
+                  const localized = getLocalizedScheme(scheme, language);
+                  return (
                   <div key={scheme.id} className="bg-cream/40 p-4 rounded-xl border border-cream-border flex flex-col justify-between space-y-2 hover:border-indigo-custom/40 transition">
                     <div className="space-y-1">
                       <div className="flex justify-between items-start gap-2">
-                        <h4 className="font-bold text-xs text-charcoal leading-snug">{scheme.title}</h4>
+                        <h4 className="font-bold text-xs text-charcoal leading-snug">{localized.title}</h4>
                         <span className="bg-indigo-custom/10 text-indigo-custom text-[9px] font-extrabold px-1.5 py-0.5 rounded shrink-0">
-                          {scheme.category}
+                          {getSchemeCategoryLabel(scheme.category, language)}
                         </span>
                       </div>
-                      <p className="text-[10px] text-gray-500 font-semibold">{scheme.agency}</p>
-                      <p className="text-[11px] text-gray-700 leading-relaxed pt-1">{scheme.description}</p>
+                      <p className="text-[10px] text-gray-500 font-semibold">{localized.agency}</p>
+                      <p className="text-[11px] text-gray-700 leading-relaxed pt-1">{localized.description}</p>
                     </div>
 
                     <div className="bg-white p-2.5 rounded-lg border border-cream-dark space-y-1 mt-2">
-                      <span className="text-[9px] uppercase font-bold text-emerald-700 block">Benefit Summary:</span>
-                      <p className="text-[11px] font-bold text-charcoal">{scheme.benefitSummary}</p>
+                      <span className="text-[9px] uppercase font-bold text-emerald-700 block">
+                        {language === 'kn' ? 'ಪ್ರಯೋಜನ ಸಾರಾಂಶ:' : language === 'hi' ? 'लाभ सारांश:' : language === 'ta' ? 'நன்மை சுருக்கம்:' : 'Benefit Summary:'}
+                      </span>
+                      <p className="text-[11px] font-bold text-charcoal">{localized.benefitSummary}</p>
                     </div>
 
                     <div className="flex justify-between items-center pt-2 text-[10px]">
                       <span className="text-gray-500 font-mono truncate max-w-[150px]">
-                        Eligible: {scheme.eligibilityCrafts.slice(0, 2).join(', ')}
+                        {language === 'kn' ? 'ಅರ್ಹತೆ' : language === 'hi' ? 'पात्र' : language === 'ta' ? 'தகுதி' : 'Eligible'}: {scheme.eligibilityCrafts.slice(0, 2).join(', ')}
                       </span>
                       <a
                         href={scheme.linkUrl}
@@ -1138,12 +1144,15 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                         rel="noopener noreferrer"
                         className="bg-indigo-custom hover:bg-indigo-light text-white px-2.5 py-1 rounded-md font-bold flex items-center gap-1 transition shrink-0"
                       >
-                        <span>Apply / Details</span>
+                        <span>
+                          {language === 'kn' ? 'ಅರ್ಜಿ / ವಿವರಗಳು' : language === 'hi' ? 'आवेदन / विवरण' : language === 'ta' ? 'விண்ணப்பம் / விவரங்கள்' : 'Apply / Details'}
+                        </span>
                         <ExternalLink className="w-3 h-3" />
                       </a>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
             </div>
           </div>
 
@@ -1330,7 +1339,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       variant="horizontal-only"
                     />
 
-                    {/* Feature 2: TantuLink Payment Protection Escrow Tracker */}
+                    {/* Feature 2: KalaSetu Payment Protection Escrow Tracker */}
                     <PaymentProtectionTracker
                       order={order}
                       onUpdateOrder={(updated) => setOrders(prev => prev.map(o => o.id === updated.id ? updated : o))}

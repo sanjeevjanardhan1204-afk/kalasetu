@@ -1,5 +1,5 @@
 /**
- * Taana Last-Write-Wins (LWW) Offline Queue & Synchronization Engine
+ * KalaSetu Last-Write-Wins (LWW) Offline Queue & Synchronization Engine
  * Implements deterministic optimistic concurrency control for rural edge devices.
  */
 

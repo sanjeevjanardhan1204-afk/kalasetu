@@ -56,6 +56,14 @@ export interface GovernmentScheme {
   applicableStates?: string[];
   linkUrl: string;
   category: 'Subsidy' | 'Export' | 'Credit' | 'Infrastructure' | 'GI & Heritage';
+  // Localized overrides for the 4 active UI languages (English lives in the base fields above
+  // and is the fallback when a language has no entry here).
+  translations?: Partial<Record<'hi' | 'kn' | 'ta', {
+    title: string;
+    agency: string;
+    description: string;
+    benefitSummary: string;
+  }>>;
 }
 
 // Raw-material cluster/bulk-buying: a shared bulk-purchase request other artisans in the same

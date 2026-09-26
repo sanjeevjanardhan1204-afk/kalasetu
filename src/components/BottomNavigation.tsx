@@ -1,5 +1,5 @@
 /**
- * Taana Mobile Bottom Navigation System
+ * KalaSetu Mobile Bottom Navigation System
  * Provides mobile-first ergonomics with haptic audio feedback,
  * active view tracking, offline outbox badge indicators, and prominent voice triggers.
  */
