@@ -125,6 +125,7 @@ export interface Product {
   material: string;
   price: number;
   dimensions: Dimensions;
+  additionalInfo?: string;
   specialFeatures: string;
   description: string;
   images: string[];
@@ -182,7 +183,7 @@ export interface PricingRecommendation {
   explanation: string;
   materialCost: number;
   labourHours: number;
-  craftComplexity: 'Standard' | 'Medium' | 'Masterpiece';
+  hourlyWageRate: number;
   category: string;
   craftType: string;
   productionDays: number;
@@ -259,6 +260,7 @@ export interface TransactionHistoryEntry {
   timestamp: string;
   description: string;
   isDemo: true;
+  releasedBy?: string;
 }
 
 export interface QualityCheck {

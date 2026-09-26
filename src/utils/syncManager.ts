@@ -11,6 +11,13 @@ const CONFLICT_LOGS_STORAGE_KEY = 'taana_sync_conflicts_v3';
 const LAST_SYNC_KEY = 'taana_last_sync_timestamp';
 
 /**
+ * Get the timestamp of the last successful order/product sync, if any.
+ */
+export function getLastSyncTimestamp(): string | null {
+  return localStorage.getItem(LAST_SYNC_KEY);
+}
+
+/**
  * Get all queued outbox mutations
  */
 export function getQueuedOutbox(): OfflineOutboxItem[] {

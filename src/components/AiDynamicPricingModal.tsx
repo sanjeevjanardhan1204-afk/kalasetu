@@ -8,7 +8,7 @@ interface AiDynamicPricingModalProps {
   currentPrice: number;
   initialMaterialCost?: number;
   initialLabourHours?: number;
-  initialComplexity?: 'Standard' | 'Medium' | 'Masterpiece';
+  initialHourlyWageRate?: number;
   category?: string;
   craftType?: string;
   language?: Language;
@@ -20,7 +20,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
   currentPrice,
   initialMaterialCost = 2500,
   initialLabourHours = 40,
-  initialComplexity = 'Medium',
+  initialHourlyWageRate = 65,
   category = 'Sarees',
   craftType = 'Pit-loom Weaving',
   language = 'en',
@@ -28,15 +28,15 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
   onClose
 }) => {
   const copy = pickLang({
-    en: { title: 'AI Dynamic Fair-Pricing', subtitle: 'Cost-Plus Heritage Valuation Engine', inputs: 'Craft Costing Inputs:', material: 'Raw Material Cost (₹):', labour: 'Artisan Labor Hours:', complexity: 'Craft Complexity:', current: 'Current / Draft Price:', calculate: 'Calculate Fair Price Recommendation', loading: 'Analyzing Craft Cost Benchmarks...', recommendation: 'Recommended Fair Valuation:', range: 'Fair Market Range:', earnings: 'Artisan Net (92%)', logic: 'Economic Logic & Wage Benchmark:', apply: 'Apply', keep: 'Keep', notice: 'Recommendation does not change the price automatically. Tap below to accept or keep your original price.' },
-    kn: { title: 'ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆಯ ನ್ಯಾಯಯುತ ಬೆಲೆ', subtitle: 'ವೆಚ್ಚ ಮತ್ತು ಪರಂಪರೆ ಮೌಲ್ಯಮಾಪನ', inputs: 'ಕರಕುಶಲ ವೆಚ್ಚದ ವಿವರಗಳು:', material: 'ಕಚ್ಚಾ ವಸ್ತು ವೆಚ್ಚ (₹):', labour: 'ಕುಶಲಕರ್ಮಿಯ ಕೆಲಸದ ಗಂಟೆಗಳು:', complexity: 'ಕರಕುಶಲ ಸಂಕೀರ್ಣತೆ:', current: 'ಪ್ರಸ್ತುತ / ಕರಡು ಬೆಲೆ:', calculate: 'ನ್ಯಾಯಯುತ ಬೆಲೆ ಶಿಫಾರಸು ಲೆಕ್ಕಿಸಿ', loading: 'ಕರಕುಶಲ ವೆಚ್ಚದ ಮಾನದಂಡಗಳನ್ನು ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...', recommendation: 'ಶಿಫಾರಸು ಮಾಡಿದ ನ್ಯಾಯಯುತ ಮೌಲ್ಯ:', range: 'ನ್ಯಾಯಯುತ ಮಾರುಕಟ್ಟೆ ವ್ಯಾಪ್ತಿ:', earnings: 'ಕುಶಲಕರ್ಮಿಯ ನಿವ್ವಳ ಆದಾಯ (೯೨%)', logic: 'ಆರ್ಥಿಕ ಲೆಕ್ಕಾಚಾರ ಮತ್ತು ವೇತನ ಮಾನದಂಡ:', apply: 'ಉತ್ಪನ್ನಕ್ಕೆ ಅನ್ವಯಿಸಿ', keep: 'ಉಳಿಸಿ', notice: 'ಶಿಫಾರಸು ಬೆಲೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬದಲಾಯಿಸುವುದಿಲ್ಲ. ಕೆಳಗಿನ ಆಯ್ಕೆಯಿಂದ ಒಪ್ಪಿಕೊಳ್ಳಿ ಅಥವಾ ಮೂಲ ಬೆಲೆ ಉಳಿಸಿ.' },
-    hi: { title: 'एआई उचित मूल्य निर्धारण', subtitle: 'लागत और विरासत मूल्यांकन इंजन', inputs: 'शिल्प लागत विवरण:', material: 'कच्ची सामग्री लागत (₹):', labour: 'कारीगर के श्रम घंटे:', complexity: 'शिल्प जटिलता:', current: 'वर्तमान / ड्राफ्ट मूल्य:', calculate: 'उचित मूल्य सुझाव की गणना करें', loading: 'शिल्प लागत मानकों का विश्लेषण हो रहा है...', recommendation: 'सुझाया गया उचित मूल्य:', range: 'उचित बाजार सीमा:', earnings: 'कारीगर की शुद्ध कमाई (92%)', logic: 'आर्थिक गणना और मजदूरी मानक:', apply: 'उत्पाद पर लागू करें', keep: 'रखें', notice: 'सुझाव से मूल्य अपने आप नहीं बदलेगा। नीचे स्वीकार करें या मूल मूल्य रखें।' },
-    ta: { title: 'AI நியாயமான விலை நிர்ணயம்', subtitle: 'செலவு + பாரம்பரிய மதிப்பீட்டு இயந்திரம்', inputs: 'கைவினை செலவு உள்ளீடுகள்:', material: 'மூலப்பொருள் செலவு (₹):', labour: 'கைவினைஞர் உழைப்பு நேரம்:', complexity: 'கைவினை சிக்கல்தன்மை:', current: 'தற்போதைய / வரைவு விலை:', calculate: 'நியாயமான விலை பரிந்துரையைக் கணக்கிடவும்', loading: 'கைவினை செலவு அளவுகோல்களை பகுப்பாய்வு செய்கிறது...', recommendation: 'பரிந்துரைக்கப்பட்ட நியாயமான மதிப்பு:', range: 'நியாயமான சந்தை வரம்பு:', earnings: 'கைவினைஞர் நிகர வருமானம் (92%)', logic: 'பொருளாதார தர்க்கம் & ஊதிய அளவுகோல்:', apply: 'பயன்படுத்து', keep: 'வைத்திரு', notice: 'பரிந்துரை விலையை தானாக மாற்றாது. கீழே ஏற்கவும் அல்லது அசல் விலையை வைத்திருக்கவும்.' }
+    en: { title: 'AI Dynamic Fair-Pricing', subtitle: 'Cost-Plus Heritage Valuation Engine', inputs: 'Craft Costing Inputs:', material: 'Raw Material Cost (₹):', labour: 'Artisan Labor Hours:', complexity: 'Hourly Wage Rate (₹):', current: 'Current / Draft Price:', calculate: 'Calculate Fair Price Recommendation', loading: 'Analyzing Craft Cost Benchmarks...', recommendation: 'Recommended Fair Valuation:', range: 'Fair Market Range:', earnings: 'Artisan Net (92%)', logic: 'Economic Logic & Wage Benchmark:', apply: 'Apply', keep: 'Keep', notice: 'Recommendation does not change the price automatically. Tap below to accept or keep your original price.' },
+    kn: { title: 'ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆಯ ನ್ಯಾಯಯುತ ಬೆಲೆ', subtitle: 'ವೆಚ್ಚ ಮತ್ತು ಪರಂಪರೆ ಮೌಲ್ಯಮಾಪನ', inputs: 'ಕರಕುಶಲ ವೆಚ್ಚದ ವಿವರಗಳು:', material: 'ಕಚ್ಚಾ ವಸ್ತು ವೆಚ್ಚ (₹):', labour: 'ಕುಶಲಕರ್ಮಿಯ ಕೆಲಸದ ಗಂಟೆಗಳು:', complexity: 'ಗಂಟೆಗೆ ಕೂಲಿ ದರ (₹):', current: 'ಪ್ರಸ್ತುತ / ಕರಡು ಬೆಲೆ:', calculate: 'ನ್ಯಾಯಯುತ ಬೆಲೆ ಶಿಫಾರಸು ಲೆಕ್ಕಿಸಿ', loading: 'ಕರಕುಶಲ ವೆಚ್ಚದ ಮಾನದಂಡಗಳನ್ನು ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...', recommendation: 'ಶಿಫಾರಸು ಮಾಡಿದ ನ್ಯಾಯಯುತ ಮೌಲ್ಯ:', range: 'ನ್ಯಾಯಯುತ ಮಾರುಕಟ್ಟೆ ವ್ಯಾಪ್ತಿ:', earnings: 'ಕುಶಲಕರ್ಮಿಯ ನಿವ್ವಳ ಆದಾಯ (೯೨%)', logic: 'ಆರ್ಥಿಕ ಲೆಕ್ಕಾಚಾರ ಮತ್ತು ವೇತನ ಮಾನದಂಡ:', apply: 'ಉತ್ಪನ್ನಕ್ಕೆ ಅನ್ವಯಿಸಿ', keep: 'ಉಳಿಸಿ', notice: 'ಶಿಫಾರಸು ಬೆಲೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬದಲಾಯಿಸುವುದಿಲ್ಲ. ಕೆಳಗಿನ ಆಯ್ಕೆಯಿಂದ ಒಪ್ಪಿಕೊಳ್ಳಿ ಅಥವಾ ಮೂಲ ಬೆಲೆ ಉಳಿಸಿ.' },
+    hi: { title: 'एआई उचित मूल्य निर्धारण', subtitle: 'लागत और विरासत मूल्यांकन इंजन', inputs: 'शिल्प लागत विवरण:', material: 'कच्ची सामग्री लागत (₹):', labour: 'कारीगर के श्रम घंटे:', complexity: 'प्रति घंटा मजदूरी दर (₹):', current: 'वर्तमान / ड्राफ्ट मूल्य:', calculate: 'उचित मूल्य सुझाव की गणना करें', loading: 'शिल्प लागत मानकों का विश्लेषण हो रहा है...', recommendation: 'सुझाया गया उचित मूल्य:', range: 'उचित बाजार सीमा:', earnings: 'कारीगर की शुद्ध कमाई (92%)', logic: 'आर्थिक गणना और मजदूरी मानक:', apply: 'उत्पाद पर लागू करें', keep: 'रखें', notice: 'सुझाव से मूल्य अपने आप नहीं बदलेगा। नीचे स्वीकार करें या मूल मूल्य रखें।' },
+    ta: { title: 'AI நியாயமான விலை நிர்ணயம்', subtitle: 'செலவு + பாரம்பரிய மதிப்பீட்டு இயந்திரம்', inputs: 'கைவினை செலவு உள்ளீடுகள்:', material: 'மூலப்பொருள் செலவு (₹):', labour: 'கைவினைஞர் உழைப்பு நேரம்:', complexity: 'மணிநேர கூலி விகிதம் (₹):', current: 'தற்போதைய / வரைவு விலை:', calculate: 'நியாயமான விலை பரிந்துரையைக் கணக்கிடவும்', loading: 'கைவினை செலவு அளவுகோல்களை பகுப்பாய்வு செய்கிறது...', recommendation: 'பரிந்துரைக்கப்பட்ட நியாயமான மதிப்பு:', range: 'நியாயமான சந்தை வரம்பு:', earnings: 'கைவினைஞர் நிகர வருமானம் (92%)', logic: 'பொருளாதார தர்க்கம் & ஊதிய அளவுகோல்:', apply: 'பயன்படுத்து', keep: 'வைத்திரு', notice: 'பரிந்துரை விலையை தானாக மாற்றாது. கீழே ஏற்கவும் அல்லது அசல் விலையை வைத்திருக்கவும்.' }
   }, language);
   // Input parameters
   const [materialCost, setMaterialCost] = useState<number>(initialMaterialCost);
   const [labourHours, setLabourHours] = useState<number>(initialLabourHours);
-  const [craftComplexity, setCraftComplexity] = useState<'Standard' | 'Medium' | 'Masterpiece'>(initialComplexity);
+  const [hourlyWageRate, setHourlyWageRate] = useState<number>(initialHourlyWageRate);
   const [productionDays, setProductionDays] = useState<number>(5);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [recommendation, setRecommendation] = useState<PricingRecommendation | null>(null);
@@ -53,7 +53,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
         body: JSON.stringify({
           materialCost,
           labourHours,
-          craftComplexity,
+          hourlyWageRate,
           category,
           craftType,
           productionDays,
@@ -70,19 +70,16 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
       }
     } catch (e) {
       console.warn('Using client-side pricing fallback', e);
-      // Fallback deterministic calculation
-      const hourlyBenchmark = craftComplexity === 'Masterpiece' ? 85 : craftComplexity === 'Medium' ? 65 : 50;
-      const complexityMultiplier = craftComplexity === 'Masterpiece' ? 1.35 : craftComplexity === 'Medium' ? 1.20 : 1.10;
-      const directCost = Number(materialCost) + (Number(labourHours) * hourlyBenchmark);
-      const calculatedFairPrice = Math.round((directCost * complexityMultiplier) / 50) * 50;
-      
+      // Fair Price = Raw Material Cost + (Artisan Work Hours x Hourly Wage Rate)
+      const calculatedFairPrice = Math.round((Number(materialCost) + (Number(labourHours) * Number(hourlyWageRate))) / 50) * 50;
+
       const rangeMin = Math.round((calculatedFairPrice * 0.92) / 50) * 50;
       const rangeMax = Math.round((calculatedFairPrice * 1.08) / 50) * 50;
       const platformFee = Math.round(calculatedFairPrice * 0.03);
       const otherCosts = Math.round(calculatedFairPrice * 0.05);
       const estimatedArtisanEarnings = calculatedFairPrice - platformFee - otherCosts;
 
-      const explanation = `Fair-price benchmark for ${craftComplexity.toLowerCase()} ${craftType}: Includes ₹${materialCost.toLocaleString()} raw materials + ${labourHours} artisan hours at ₹${hourlyBenchmark}/hr master labor rate. With a ${Math.round((complexityMultiplier - 1) * 100)}% heritage skill premium, fair direct market valuation ranges from ₹${rangeMin.toLocaleString()} to ₹${rangeMax.toLocaleString()}.`;
+      const explanation = `Fair price for this ${craftType}: ₹${materialCost.toLocaleString()} raw materials + ${labourHours} artisan hours at ₹${hourlyWageRate}/hr = ₹${calculatedFairPrice.toLocaleString()}.`;
 
       const fallbackRec: PricingRecommendation = {
         currentPrice,
@@ -96,7 +93,7 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
         explanation,
         materialCost: Number(materialCost),
         labourHours: Number(labourHours),
-        craftComplexity,
+        hourlyWageRate: Number(hourlyWageRate),
         category,
         craftType,
         productionDays,
@@ -201,15 +198,15 @@ export const AiDynamicPricingModal: React.FC<AiDynamicPricingModalProps> = ({
               <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">
                 {copy.complexity}
               </label>
-              <select
-                value={craftComplexity}
-                onChange={(e) => setCraftComplexity(e.target.value as any)}
+              <input
+                type="number"
+                min={1}
+                onWheel={(e) => e.currentTarget.blur()}
+                onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
+                value={hourlyWageRate}
+                onChange={(e) => setHourlyWageRate(Math.max(1, Number(e.target.value) || 1))}
                 className="w-full bg-cream/40 border border-cream-border rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-terracotta"
-              >
-                <option value="Standard">Standard (Plain weave)</option>
-                <option value="Medium">Medium (Jacquard / Zari)</option>
-                <option value="Masterpiece">Masterpiece (Intricate Brocade)</option>
-              </select>
+              />
             </div>
 
             <div>

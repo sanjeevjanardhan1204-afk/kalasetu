@@ -13,10 +13,28 @@ interface VoiceHelperProps {
 // Global speech player and voice helper state
 let currentAudio: HTMLAudioElement | null = null;
 
-function getBestVoice(shortLang: string): { voice: SpeechSynthesisVoice | null, lang: string } {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return { voice: null, lang: 'en-US' };
-  
-  const voices = window.speechSynthesis.getVoices();
+// Chrome/Vercel-hosted pages often report zero voices on the very first call because
+// getVoices() resolves asynchronously; without waiting for 'voiceschanged' the fallback
+// silently picks the browser default voice instead of a real kn-IN/ta-IN one.
+let cachedVoices: SpeechSynthesisVoice[] | null = null;
+function waitForVoices(): Promise<SpeechSynthesisVoice[]> {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return Promise.resolve([]);
+  const immediate = window.speechSynthesis.getVoices();
+  if (immediate.length > 0) return Promise.resolve(immediate);
+  if (cachedVoices) return Promise.resolve(cachedVoices);
+
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => resolve(window.speechSynthesis.getVoices()), 1000);
+    window.speechSynthesis.onvoiceschanged = () => {
+      clearTimeout(timeout);
+      const voices = window.speechSynthesis.getVoices();
+      cachedVoices = voices;
+      resolve(voices);
+    };
+  });
+}
+
+function getBestVoice(shortLang: string, voices: SpeechSynthesisVoice[]): { voice: SpeechSynthesisVoice | null, lang: string } {
   if (voices.length === 0) {
     return { voice: null, lang: shortLang === 'kn' ? 'kn-IN' : shortLang === 'hi' ? 'hi-IN' : shortLang === 'ta' ? 'ta-IN' : 'en-IN' };
   }
@@ -65,7 +83,7 @@ export function speakText(text: string, lang: Language, onStart?: () => void, on
 
   // Define clean fallback to standard Web Speech API (runs 100% on-device and offline!)
   let hasFallenBack = false;
-  const fallbackToWebSpeech = () => {
+  const fallbackToWebSpeech = async () => {
     if (hasFallenBack) return;
     hasFallenBack = true;
 
@@ -82,18 +100,20 @@ export function speakText(text: string, lang: Language, onStart?: () => void, on
       }
 
       const utterance = new SpeechSynthesisUtterance(text);
-      
-      // Select best available voice, preventing Chrome from falling completely silent
-      const voiceInfo = getBestVoice(shortLang);
+
+      // Wait for the real voice list (fixes silent fallback to the browser's
+      // default voice on the first call of a fresh production page load).
+      const voices = await waitForVoices();
+      const voiceInfo = getBestVoice(shortLang, voices);
       if (voiceInfo.voice) {
         utterance.voice = voiceInfo.voice;
       }
       utterance.lang = voiceInfo.lang;
-      
+
       utterance.volume = 1.0;
       utterance.rate = 0.85; // Slower, legible cadence for rural users
       utterance.pitch = 1.0;
-      
+
       if (onStart) utterance.onstart = onStart;
       if (onEnd) {
         utterance.onend = onEnd;

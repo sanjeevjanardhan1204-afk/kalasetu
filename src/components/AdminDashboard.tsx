@@ -1235,6 +1235,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         </td>
                         <td className="p-3.5 text-gray-600 text-[11px] max-w-xs">
                           {txn.description}
+                          {txn.releasedBy && (
+                            <span className="block text-[9px] text-gray-400 font-mono mt-0.5">by {txn.releasedBy}</span>
+                          )}
                         </td>
                       </tr>
                     ))}

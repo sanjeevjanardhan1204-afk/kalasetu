@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Language, Order } from '../types';
 import { playSyntheticChime } from '../data';
+import { getLastSyncTimestamp } from '../utils/syncManager';
 import { OrderTrackingProgressBar } from './OrderTrackingProgressBar';
 import { BackButton } from './BackButton';
 
@@ -21,6 +22,7 @@ interface AccountModalProps {
   onResetOnboarding: () => void;
   orders: Order[];
   onOpenLogin?: () => void;
+  offline?: boolean;
 }
 
 export const AccountModal: React.FC<AccountModalProps> = ({
@@ -31,10 +33,12 @@ export const AccountModal: React.FC<AccountModalProps> = ({
   onClose,
   onResetOnboarding,
   orders,
-  onOpenLogin
+  onOpenLogin,
+  offline = false
 }) => {
   // State for expanding the offline archive list
   const [showOfflineArchive, setShowOfflineArchive] = useState<boolean>(false);
+  const lastSyncedAt = getLastSyncTimestamp();
 
   // Selected receipt order state for the digital popup/slip
   const [activeReceiptOrder, setActiveReceiptOrder] = useState<Order | null>(null);
@@ -44,8 +48,18 @@ export const AccountModal: React.FC<AccountModalProps> = ({
   const [simulatedPaymentSuccess, setSimulatedPaymentSuccess] = useState<boolean>(false);
   const [copiedUPI, setCopiedUPI] = useState<boolean>(false);
 
-  // Filter or retrieve cached orders
-  const cachedOrders = orders || [];
+  // When offline, read the persisted snapshot directly instead of the live prop
+  // so this genuinely reflects "what's cached", not just whatever's in memory.
+  const cachedOrders = offline
+    ? (() => {
+        try {
+          const raw = localStorage.getItem('taana_cached_orders');
+          return raw ? (JSON.parse(raw) as Order[]) : (orders || []);
+        } catch {
+          return orders || [];
+        }
+      })()
+    : (orders || []);
 
   // Simple QR Code pattern generated via CSS grids to look 100% real and premium
   const renderMockQRCode = () => {
@@ -512,7 +526,8 @@ export const AccountModal: React.FC<AccountModalProps> = ({
           </div>
         </div>
 
-        {/* Offline Order Archive Section */}
+        {/* Offline Order Archive Section — artisan-only; buyers have no order-fulfillment archive to cache */}
+        {isWeaver && (
         <div
           id="offline-order-archive-card"
           className="bg-white rounded-2xl border border-cream-border overflow-hidden shadow-xs"
@@ -531,7 +546,8 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                   </span>
                 </div>
                 <p className="text-[10px] text-gray-500 font-medium">
-                  {t.offlineArchiveSubtitle}
+                  {offline ? 'Offline data' : t.offlineArchiveSubtitle}
+                  {lastSyncedAt ? ` · Last synced at ${lastSyncedAt}` : ''}
                 </p>
               </div>
             </div>
@@ -663,6 +679,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
             </div>
           )}
         </div>
+        )}
 
         {/* Data Saver Mode Toggle Block */}
         <div className="bg-white rounded-2xl border border-cream-border p-4 sm:p-5 space-y-2.5 text-xs shadow-xs">

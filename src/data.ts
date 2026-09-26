@@ -125,7 +125,7 @@ export const MOCK_PRODUCTS: Product[] = [
       explanation: 'High knot-density Amru floral brocade with genuine silver-gold zari thread requires 96 artisan hours. Based on raw silk yarn index (₹6,800/kg) and master weaver skill benchmark, this piece commands premium heirloom pricing.',
       materialCost: 5200,
       labourHours: 96,
-      craftComplexity: 'Masterpiece',
+      hourlyWageRate: 79,
       category: 'Sarees',
       craftType: 'Pit-loom Brocade',
       productionDays: 18,
@@ -2497,7 +2497,15 @@ export const SELECTABLE_LANGUAGES: { code: Language; label: string }[] = SUPPORT
   ({ code }) => code === 'en' || code === 'hi' || code === 'kn' || code === 'ta'
 );
 
-export const QA_QUESTIONS = [
+export const QA_QUESTIONS: {
+  key: string;
+  label: { en: string } & Partial<Record<Language, string>>;
+  hint: { en: string } & Partial<Record<Language, string>>;
+  examples?: { en: string[] } & Partial<Record<Language, string[]>>;
+  isOptional?: boolean;
+  isPrice?: boolean;
+  isMeasurements?: boolean;
+}[] = [
   {
     key: 'title',
     label: {
@@ -2541,20 +2549,20 @@ export const QA_QUESTIONS = [
     }
   },
   {
-    key: 'dimensions',
+    key: 'additionalInfo',
     label: {
-      en: 'What are its length and width?',
-      kn: 'ಇದರ ಉದ್ದ ಮತ್ತು ಅಗಲ ಎಷ್ಟು?',
-      hi: 'इसकी लंबाई और चौड़ाई क्या है?',
-      ta: 'இதன் நீளமும் அகலமும் என்ன?'
+      en: 'Anything else buyers should know? (optional)',
+      kn: 'ಖರೀದಿದಾರರು ತಿಳಿದುಕೊಳ್ಳಬೇಕಾದ ಬೇರೆ ಏನಾದರೂ ಇದೆಯೇ? (ಐಚ್ಛಿಕ)',
+      hi: 'क्या खरीदारों को कुछ और बताना चाहेंगे? (वैकल्पिक)',
+      ta: 'வாங்குபவர்கள் அறிய வேண்டிய வேறு ஏதேனும் உள்ளதா? (விருப்பத்தேர்வு)'
     },
     hint: {
-      en: 'Enter measurements (e.g., saree is usually 5.5m by 1.1m)',
-      kn: 'ಅಳತೆಗಳನ್ನು ನಮೂದಿಸಿ (ಉದಾ: ಸೀರೆ ಸಾಮಾನ್ಯವಾಗಿ ೫.೫ ಮೀಟರ್ ಉದ್ದ ಮತ್ತು ೧.೧ ಮೀಟರ್ ಅಗಲವಿರುತ್ತದೆ)',
-      hi: 'माप दर्ज करें (जैसे: साड़ी आमतौर पर 5.5 मीटर लंबी और 1.1 मीटर चौड़ी होती है)',
-      ta: 'அளவுகளை உள்ளிடவும் (எ.கா: புடவை பொதுவாக 5.5 மீட்டர் நீளமும் 1.1 மீட்டர் அகலமும் கொண்டது)'
+      en: 'Size, weight, care tips, or any other detail (e.g., saree is 5.5m long, fits most heights)',
+      kn: 'ಗಾತ್ರ, ತೂಕ, ಆರೈಕೆ ಸಲಹೆಗಳು ಅಥವಾ ಇತರ ವಿವರ',
+      hi: 'आकार, वज़न, देखभाल के सुझाव या कोई अन्य विवरण',
+      ta: 'அளவு, எடை, பராமரிப்பு குறிப்புகள் அல்லது வேறு விவரம்'
     },
-    isMeasurements: true
+    isOptional: true
   },
   {
     key: 'specialFeatures',
@@ -2596,6 +2604,13 @@ export const QA_QUESTIONS = [
 ];
 
 // High fidelity voice synthesis fallback sounds using Web Audio API in case browser synthesis isn't active
+// Data Saver: shrink an Unsplash image's own resize/quality params instead of
+// fetching the full-size version. No-op for any other host (already-small photos etc).
+export function optimizeImageUrl(url: string, dataSaver: boolean): string {
+  if (!dataSaver || !url || !url.includes('images.unsplash.com')) return url;
+  return url.replace(/([?&])w=\d+/, '$1w=200').replace(/([?&])q=\d+/, '$1q=30');
+}
+
 export function playSyntheticChime(type: 'success' | 'record' | 'stop' | 'click' | 'speech') {
   try {
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;

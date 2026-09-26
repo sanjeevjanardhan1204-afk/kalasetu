@@ -94,10 +94,40 @@ db.exec(`
     updated_at INTEGER NOT NULL
   );
 
+  CREATE TABLE IF NOT EXISTS demand_tests (
+    id TEXT PRIMARY KEY,
+    artisan_id TEXT NOT NULL,
+    data TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS demand_test_responses (
+    demand_test_id TEXT NOT NULL,
+    buyer_id TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    PRIMARY KEY (demand_test_id, buyer_id)
+  );
+
+  CREATE TABLE IF NOT EXISTS material_clusters (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS material_cluster_members (
+    cluster_id TEXT NOT NULL,
+    artisan_id TEXT NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 1,
+    joined_at INTEGER NOT NULL,
+    PRIMARY KEY (cluster_id, artisan_id)
+  );
+
   CREATE INDEX IF NOT EXISTS idx_orders_product ON orders(product_id);
   CREATE INDEX IF NOT EXISTS idx_transactions_order ON transactions(order_id);
   CREATE INDEX IF NOT EXISTS idx_disputes_order ON disputes(order_id);
   CREATE INDEX IF NOT EXISTS idx_milestones_order ON milestones(order_id);
+  CREATE INDEX IF NOT EXISTS idx_demand_responses_test ON demand_test_responses(demand_test_id);
+  CREATE INDEX IF NOT EXISTS idx_cluster_members_cluster ON material_cluster_members(cluster_id);
 `);
 
 // --- Generic upsert helpers used by server.ts's write-through persistence calls ---
@@ -209,6 +239,68 @@ export function upsertGiRecord(productId: string, gi: { status?: string }) {
     data: JSON.stringify(gi),
     updated_at: Date.now()
   });
+}
+
+// --- Demand testing ---
+
+export function createDemandTest(t: { id: string; artisanId: string; [key: string]: any }) {
+  db.prepare(`INSERT INTO demand_tests (id, artisan_id, data, created_at) VALUES (@id, @artisan_id, @data, @created_at)`).run({
+    id: t.id,
+    artisan_id: t.artisanId,
+    data: JSON.stringify(t),
+    created_at: Date.now()
+  });
+}
+
+export function loadAllDemandTests<T>(): T[] {
+  return db.prepare('SELECT data FROM demand_tests ORDER BY rowid DESC').all()
+    .map((row: any) => JSON.parse(row.data));
+}
+
+export function countDemandTestResponses(demandTestId: string): number {
+  return (db.prepare('SELECT COUNT(*) as c FROM demand_test_responses WHERE demand_test_id = ?').get(demandTestId) as any).c;
+}
+
+export function addDemandTestResponse(demandTestId: string, buyerId: string): boolean {
+  try {
+    db.prepare('INSERT INTO demand_test_responses (demand_test_id, buyer_id, created_at) VALUES (?, ?, ?)').run(demandTestId, buyerId, Date.now());
+    return true;
+  } catch {
+    return false; // already responded - idempotent no-op
+  }
+}
+
+// --- Material cluster (buy-materials-together) group buying ---
+
+export function upsertMaterialCluster(c: { id: string; [key: string]: any }) {
+  db.prepare(`
+    INSERT INTO material_clusters (id, data, updated_at) VALUES (@id, @data, @updated_at)
+    ON CONFLICT(id) DO UPDATE SET data=excluded.data, updated_at=excluded.updated_at
+  `).run({ id: c.id, data: JSON.stringify(c), updated_at: Date.now() });
+}
+
+export function loadAllMaterialClusters<T>(): T[] {
+  return db.prepare('SELECT data FROM material_clusters ORDER BY rowid ASC').all()
+    .map((row: any) => JSON.parse(row.data));
+}
+
+export function clusterMemberCount(clusterId: string): number {
+  return (db.prepare('SELECT COALESCE(SUM(quantity),0) as q FROM material_cluster_members WHERE cluster_id = ?').get(clusterId) as any).q;
+}
+
+export function clusterMemberIds(clusterId: string): string[] {
+  return (db.prepare('SELECT artisan_id FROM material_cluster_members WHERE cluster_id = ?').all(clusterId) as any[]).map(r => r.artisan_id);
+}
+
+export function joinMaterialCluster(clusterId: string, artisanId: string, quantity: number) {
+  db.prepare(`
+    INSERT INTO material_cluster_members (cluster_id, artisan_id, quantity, joined_at) VALUES (?, ?, ?, ?)
+    ON CONFLICT(cluster_id, artisan_id) DO UPDATE SET quantity=excluded.quantity
+  `).run(clusterId, artisanId, quantity, Date.now());
+}
+
+export function leaveMaterialCluster(clusterId: string, artisanId: string) {
+  db.prepare('DELETE FROM material_cluster_members WHERE cluster_id = ? AND artisan_id = ?').run(clusterId, artisanId);
 }
 
 // --- Accounts / auth ---

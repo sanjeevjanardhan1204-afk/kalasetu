@@ -6,7 +6,7 @@ import {
   Clock, X, Award, ShieldAlert, FileText, ShoppingBag, Plus, Minus, Flag, Send, Star
 } from 'lucide-react';
 import { Product, Order, Language, Translation, SearchFilters, IssueReport, ReturnReason, ReturnResolutionType, ReturnStatus, ProductReview, ChatMessage } from '../types';
-import { TRANSLATIONS, parseConversationalSearch, playSyntheticChime } from '../data';
+import { TRANSLATIONS, parseConversationalSearch, playSyntheticChime, optimizeImageUrl } from '../data';
 import { speakText, triggerSubtitleSpeak, triggerSubtitleStop } from './VoiceHelper';
 import { OrderTrackingProgressBar } from './OrderTrackingProgressBar';
 import { GiModal } from './GiModal';
@@ -873,7 +873,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto bg-cream pb-24 min-h-[85vh] relative px-4 sm:px-6" id="buyer-view-container">
+    <div className="max-w-screen-2xl mx-auto bg-cream pb-24 min-h-[85vh] relative px-4 sm:px-6" id="buyer-view-container">
 
       {/* 1. BROWSE SCREEN */}
       {activeTab === 'browse' && (
@@ -1177,9 +1177,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   >
                     <div className="aspect-square relative bg-cream">
                       <img
-                        src={product.images[0]}
-                        alt={product.title} 
+                        src={optimizeImageUrl(product.images[0], dataSaver)}
+                        alt={product.title}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                         referrerPolicy="no-referrer"
                       />
                       <span className="absolute bottom-2 left-2 bg-charcoal/90 text-cream text-[10px] px-2.5 py-0.5 rounded-full uppercase font-bold tracking-wider">
@@ -1299,9 +1300,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     className="bg-cream/45 border border-cream-border/30 rounded-xl p-2 flex gap-2 items-center cursor-pointer hover:border-indigo-custom/30 hover:bg-cream/70 transition shadow-2xs group"
                   >
                     <img
-                      src={product.images[0]}
+                      src={optimizeImageUrl(product.images[0], dataSaver)}
                       alt={product.title}
                       className="w-10 h-10 object-cover rounded-lg flex-shrink-0"
+                      loading="lazy"
                       referrerPolicy="no-referrer"
                     />
                     <div className="min-w-0 flex-1">
@@ -1357,7 +1359,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             {/* Product Image Carousel block */}
             <div className="rounded-3xl overflow-hidden aspect-video relative shadow-xs border border-cream-border">
               <img
-                src={(selectedProduct.aiEnhanced && selectedProduct.enhancedImages?.[0]) || selectedProduct.images[0]}
+                src={optimizeImageUrl((selectedProduct.aiEnhanced && selectedProduct.enhancedImages?.[0]) || selectedProduct.images[0], dataSaver)}
                 alt=""
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -1493,6 +1495,12 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   <p className="font-bold text-charcoal text-[10px] uppercase">Care Instructions:</p>
                   <p className="text-[11px] mt-0.5 text-gray-500 italic">{selectedProduct.careInstructions}</p>
                 </div>
+                {selectedProduct.additionalInfo && (
+                  <div className="border-t border-cream-border/60 pt-2 mt-1">
+                    <p className="font-bold text-charcoal text-[10px] uppercase">Additional Information:</p>
+                    <p className="text-[11px] mt-0.5 text-gray-500">{selectedProduct.additionalInfo}</p>
+                  </div>
+                )}
               </div>
 
               {/* Strict specification check verification */}

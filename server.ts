@@ -14,9 +14,13 @@ import {
   upsertOrder, loadAllOrders,
   upsertTransaction, loadAllTransactions,
   upsertGiRecord,
-  findAccountByEmail, seedDemoAccountsIfEmpty
+  findAccountByEmail, seedDemoAccountsIfEmpty,
+  createDemandTest, loadAllDemandTests, countDemandTestResponses, addDemandTestResponse,
+  upsertMaterialCluster, loadAllMaterialClusters, clusterMemberCount, clusterMemberIds,
+  joinMaterialCluster, leaveMaterialCluster
 } from "./src/db/database";
 import { verifyPassword, issueSessionToken, attachSession, requireAuth, requireRole } from "./src/auth";
+import { CURATED_MATERIAL_CLUSTERS } from "./src/data";
 
 // In-Memory Server State with Persistent Seed
 interface ServerProduct {
@@ -183,7 +187,7 @@ let serverProducts: ServerProduct[] = [
       explanation: "High knot-density Amru floral brocade with genuine silver-gold zari thread requires 96 artisan hours. Based on raw silk yarn index (₹6,800/kg) and master weaver skill benchmark, this piece commands premium heirloom pricing.",
       materialCost: 5200,
       labourHours: 96,
-      craftComplexity: "Masterpiece",
+      hourlyWageRate: 79,
       category: "Sarees",
       craftType: "Pit-loom Brocade",
       productionDays: 18,
@@ -565,6 +569,12 @@ if (loadAllTransactions().length === 0) {
   serverTransactions = loadAllTransactions<TransactionHistoryEntry>();
 }
 
+if (loadAllMaterialClusters().length === 0) {
+  // One-time seed from the curated static list (data.ts) into a real, joinable table.
+  const DEFAULT_TARGET_ARTISANS = 10;
+  CURATED_MATERIAL_CLUSTERS.forEach(c => upsertMaterialCluster({ ...c, targetArtisans: DEFAULT_TARGET_ARTISANS, status: 'open' }));
+}
+
 const seededAdmin = seedDemoAccountsIfEmpty();
 if (seededAdmin) {
   console.log('\n[KalaSetu] First run detected - seeded demo accounts in data/kalasetu.db:');
@@ -898,7 +908,7 @@ export async function createApp() {
       const {
         materialCost = 2500,
         labourHours = 40,
-        craftComplexity = "Medium",
+        hourlyWageRate = 65,
         category = "Sarees",
         craftType = "Pit-loom Weaving",
         productionDays = 5,
@@ -907,22 +917,20 @@ export async function createApp() {
 
       const numMaterialCost = Number(materialCost) || 2500;
       const numLabourHours = Number(labourHours) || 40;
+      const numHourlyWageRate = Number(hourlyWageRate) || 65;
       const numCurrentPrice = Number(currentPrice) || 4500;
       const numDays = Number(productionDays) || 5;
 
-      // Deterministic Fair Artisan Benchmark Engine
-      const hourlyBenchmark = craftComplexity === "Masterpiece" ? 85 : craftComplexity === "Medium" ? 65 : 50;
-      const complexityMultiplier = craftComplexity === "Masterpiece" ? 1.35 : craftComplexity === "Medium" ? 1.20 : 1.10;
-      const directCost = numMaterialCost + (numLabourHours * hourlyBenchmark);
-      const calculatedFairPrice = Math.round((directCost * complexityMultiplier) / 50) * 50;
-      
+      // Fair Price = Raw Material Cost + (Artisan Work Hours x Hourly Wage Rate)
+      const calculatedFairPrice = Math.round((numMaterialCost + (numLabourHours * numHourlyWageRate)) / 50) * 50;
+
       const rangeMin = Math.round((calculatedFairPrice * 0.92) / 50) * 50;
       const rangeMax = Math.round((calculatedFairPrice * 1.08) / 50) * 50;
       const platformFee = Math.round(calculatedFairPrice * 0.03); // 3%
       const otherCosts = Math.round(calculatedFairPrice * 0.05); // 5% logistics & craft packaging
       const estimatedArtisanEarnings = calculatedFairPrice - platformFee - otherCosts;
 
-      const explanation = `Fair-price benchmark for ${craftComplexity.toLowerCase()} ${craftType}: Includes ₹${numMaterialCost.toLocaleString()} raw materials + ${numLabourHours} artisan hours at ₹${hourlyBenchmark}/hr master labor rate. With a ${Math.round((complexityMultiplier - 1) * 100)}% heritage skill premium, fair direct market valuation ranges from ₹${rangeMin.toLocaleString()} to ₹${rangeMax.toLocaleString()}.`;
+      const explanation = `Fair price for this ${craftType}: ₹${numMaterialCost.toLocaleString()} raw materials + ${numLabourHours} artisan hours at ₹${numHourlyWageRate}/hr = ₹${calculatedFairPrice.toLocaleString()}.`;
 
       const recommendation: PricingRecommendation = {
         currentPrice: numCurrentPrice,
@@ -936,7 +944,7 @@ export async function createApp() {
         explanation,
         materialCost: numMaterialCost,
         labourHours: numLabourHours,
-        craftComplexity: craftComplexity as 'Standard' | 'Medium' | 'Masterpiece',
+        hourlyWageRate: numHourlyWageRate,
         category: String(category),
         craftType: String(craftType),
         productionDays: numDays,
@@ -1022,7 +1030,8 @@ export async function createApp() {
         status: "SUCCESS",
         timestamp: now,
         description: `Milestone (${milestone.percentage}% ${milestone.name}) released to artisan`,
-        isDemo: true
+        isDemo: true,
+        releasedBy: req.session!.email
       };
 
       serverTransactions.unshift(newTxn);
@@ -1483,6 +1492,66 @@ export async function createApp() {
     });
   });
 
+  // Demand Testing: an artisan floats a product idea, buyers register real interest.
+  app.post("/api/demand-tests", requireRole('artisan'), (req, res) => {
+    const { title, description, price, imageUrl } = req.body || {};
+    if (!title || !String(title).trim()) {
+      return res.status(400).json({ success: false, error: "Title is required" });
+    }
+    const test = {
+      id: randomId('demand'),
+      artisanId: req.session!.sub,
+      artisanName: req.session!.name,
+      title: String(title).trim(),
+      description: description ? String(description).trim() : '',
+      price: Number(price) || 0,
+      imageUrl: imageUrl || null,
+      createdAt: new Date().toISOString()
+    };
+    createDemandTest(test);
+    res.json({ success: true, demandTest: { ...test, interestedCount: 0 } });
+  });
+
+  app.get("/api/demand-tests", (req, res) => {
+    const tests = loadAllDemandTests<any>().map(t => ({ ...t, interestedCount: countDemandTestResponses(t.id) }));
+    res.json({ success: true, demandTests: tests });
+  });
+
+  app.post("/api/demand-tests/:id/interested", requireAuth, (req, res) => {
+    addDemandTestResponse(req.params.id, req.session!.sub); // idempotent: unique constraint silently no-ops repeats
+    res.json({ success: true, interestedCount: countDemandTestResponses(req.params.id) });
+  });
+
+  // Buy Materials Together: shared, backend-tracked group-buy membership/progress.
+  app.get("/api/clusters", (req, res) => {
+    const clusters = loadAllMaterialClusters<any>().map(c => ({
+      ...c,
+      joinedCount: clusterMemberCount(c.id),
+      joinedArtisanIds: clusterMemberIds(c.id)
+    }));
+    res.json({ success: true, clusters });
+  });
+
+  app.post("/api/clusters/:id/join", requireRole('artisan'), (req, res) => {
+    const clusters = loadAllMaterialClusters<any>();
+    const cluster = clusters.find(c => c.id === req.params.id);
+    if (!cluster) return res.status(404).json({ success: false, error: "Group buy not found" });
+
+    joinMaterialCluster(cluster.id, req.session!.sub, Number(req.body?.quantity) || 1);
+    const joinedCount = clusterMemberCount(cluster.id);
+    if (joinedCount >= (cluster.targetArtisans || 10) && cluster.status !== 'confirmed') {
+      cluster.status = 'confirmed';
+      upsertMaterialCluster(cluster);
+    }
+    res.json({ success: true, cluster: { ...cluster, joinedCount, joinedArtisanIds: clusterMemberIds(cluster.id) } });
+  });
+
+  app.post("/api/clusters/:id/leave", requireRole('artisan'), (req, res) => {
+    leaveMaterialCluster(req.params.id, req.session!.sub);
+    const joinedCount = clusterMemberCount(req.params.id);
+    res.json({ success: true, joinedCount, joinedArtisanIds: clusterMemberIds(req.params.id) });
+  });
+
   // 7. TTS Proxy Route with Chunk Concatenation
   app.get("/api/tts", async (req, res) => {
     try {
@@ -1530,21 +1599,32 @@ export async function createApp() {
 
       for (const chunk of chunks) {
         const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${shortLang}&client=tw-ob&q=${encodeURIComponent(chunk)}`;
-        const response = await fetch(url, {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Referer": "https://translate.google.com/"
-          }
-        });
+        try {
+          // Fail fast instead of hanging until the serverless platform's own timeout —
+          // that silent stall (not a clean error) is what makes the client's audio.onerror
+          // never fire in time, leaving playback dead on production with no fallback.
+          const response = await fetch(url, {
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              "Referer": "https://translate.google.com/"
+            },
+            signal: AbortSignal.timeout(8000)
+          });
 
-        if (response.ok) {
-          const arrayBuffer = await response.arrayBuffer();
-          audioBuffers.push(Buffer.from(arrayBuffer));
+          if (response.ok) {
+            const arrayBuffer = await response.arrayBuffer();
+            audioBuffers.push(Buffer.from(arrayBuffer));
+          } else {
+            console.error(`TTS chunk fetch failed for lang=${shortLang}: HTTP ${response.status}`);
+          }
+        } catch (chunkErr: any) {
+          console.error(`TTS chunk fetch threw for lang=${shortLang}:`, chunkErr?.message || chunkErr);
         }
       }
 
       if (audioBuffers.length === 0) {
-        throw new Error("Failed to generate audio for any text chunk");
+        res.status(502).send(`Failed to generate TTS audio for lang=${shortLang}`);
+        return;
       }
 
       const combinedBuffer = Buffer.concat(audioBuffers);

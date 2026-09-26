@@ -11,7 +11,7 @@ import {
   SAMPLE_PRODUCT_IMAGES, QA_QUESTIONS, TRANSLATIONS,
   SIMULATED_VOICE_SPEECHES, playSyntheticChime,
   CURATED_GOVERNMENT_SCHEMES, getLocalizedScheme, getSchemeCategoryLabel, DEMAND_INTELLIGENCE_DATA, CURATED_MATERIAL_CLUSTERS,
-  normalizeSpokenNumerals, parseSpokenDimensions, pickLang, computeProvenanceHash
+  normalizeSpokenNumerals, parseSpokenDimensions, pickLang, computeProvenanceHash, optimizeImageUrl
 } from '../data';
 import { speakText, stopSpeaking, triggerSubtitleSpeak, triggerSubtitleStop } from './VoiceHelper';
 import { WeaverSuccessTips } from './WeaverSuccessTips';
@@ -111,6 +111,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   // overwrites what the artisan actually captured, and colour/pattern/material are never altered
   // beyond a small contrast/brightness normalization.
   const photoFileInputRef = React.useRef<HTMLInputElement>(null);
+  const cameraCaptureInputRef = React.useRef<HTMLInputElement>(null);
   const [enhancedPhoto, setEnhancedPhoto] = useState<string | null>(null);
   const [photoIsAiEnhanced, setPhotoIsAiEnhanced] = useState(false);
   const [photoQualityWarnings, setPhotoQualityWarnings] = useState<string[]>([]);
@@ -517,13 +518,13 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
     let summaryText = '';
     
     if (language === 'kn') {
-      summaryText = `ದಯವಿಟ್ಟು ನಿಮ್ಮ ಉತ್ಪನ್ನದ ಪಟ್ಟಿಯನ್ನು ಖಚಿತಪಡಿಸಿ. ಉತ್ಪನ್ನದ ಹೆಸರು: ${qaAnswers.title || 'ಕೈಮಗ್ಗ ಉತ್ಪನ್ನ'}. ಬಳಸಿದ ಬಟ್ಟೆ: ${qaAnswers.material || 'ಶುದ್ಧ ಹತ್ತಿ'}. ಉದ್ದ: ${dimensions.length}, ಅಗಲ: ${dimensions.width}. ವಿಶೇಷತೆ: ${qaAnswers.specialFeatures || 'ಸಾಂಪ್ರದಾಯಿಕ ಕೈಮಗ್ಗ ನೇಯ್ಗೆ'}. ನಿಗದಿಪಡಿಸಿದ ಬೆಲೆ: ${qaAnswers.price || 'ಮೂರು ಸಾವಿರ'} ರೂಪಾಯಿಗಳು.`;
+      summaryText = `ದಯವಿಟ್ಟು ನಿಮ್ಮ ಉತ್ಪನ್ನದ ಪಟ್ಟಿಯನ್ನು ಖಚಿತಪಡಿಸಿ. ಉತ್ಪನ್ನದ ಹೆಸರು: ${qaAnswers.title || 'ಕೈಮಗ್ಗ ಉತ್ಪನ್ನ'}. ಬಳಸಿದ ಬಟ್ಟೆ: ${qaAnswers.material || 'ಶುದ್ಧ ಹತ್ತಿ'}. ವಿಶೇಷತೆ: ${qaAnswers.specialFeatures || 'ಸಾಂಪ್ರದಾಯಿಕ ಕೈಮಗ್ಗ ನೇಯ್ಗೆ'}. ನಿಗದಿಪಡಿಸಿದ ಬೆಲೆ: ${qaAnswers.price || 'ಮೂರು ಸಾವಿರ'} ರೂಪಾಯಿಗಳು.`;
     } else if (language === 'hi') {
-      summaryText = `कृपया अपने उत्पाद विवरण की पुष्टि करें। उत्पाद का नाम: ${qaAnswers.title || 'हथकरघा साड़ी'}. सामग्री: ${qaAnswers.material || 'शुद्ध सूत'}. लंबाई: ${dimensions.length}, चौड़ाई: ${dimensions.width}. विशेषता: ${qaAnswers.specialFeatures || 'पारंपरिक बुनाई'}. कीमत: ${qaAnswers.price || 'चार हजार'} रुपये।`;
+      summaryText = `कृपया अपने उत्पाद विवरण की पुष्टि करें। उत्पाद का नाम: ${qaAnswers.title || 'हथकरघा साड़ी'}. सामग्री: ${qaAnswers.material || 'शुद्ध सूत'}. विशेषता: ${qaAnswers.specialFeatures || 'पारंपरिक बुनाई'}. कीमत: ${qaAnswers.price || 'चार हजार'} रुपये।`;
     } else if (language === 'ta') {
-      summaryText = `உங்கள் தயாரிப்பு பட்டியலை உறுதிப்படுத்தவும். தயாரிப்பு பெயர்: ${qaAnswers.title || 'கைத்தறி பொருள்'}. பயன்படுத்திய துணி: ${qaAnswers.material || 'தூய பருத்தி'}. நீளம்: ${dimensions.length}, அகலம்: ${dimensions.width}. சிறப்பம்சம்: ${qaAnswers.specialFeatures || 'பாரம்பரிய கைத்தறி நெசவு'}. நிர்ணயித்த விலை: ${qaAnswers.price || 'மூவாயிரம்'} ரூபாய்.`;
+      summaryText = `உங்கள் தயாரிப்பு பட்டியலை உறுதிப்படுத்தவும். தயாரிப்பு பெயர்: ${qaAnswers.title || 'கைத்தறி பொருள்'}. பயன்படுத்திய துணி: ${qaAnswers.material || 'தூய பருத்தி'}. சிறப்பம்சம்: ${qaAnswers.specialFeatures || 'பாரம்பரிய கைத்தறி நெசவு'}. நிர்ணயித்த விலை: ${qaAnswers.price || 'மூவாயிரம்'} ரூபாய்.`;
     } else {
-      summaryText = `Please review your listing. Product name is ${qaAnswers.title || 'Handloom item'}. Made of ${qaAnswers.material || 'pure cotton'}. Measurements are length ${dimensions.length} and width ${dimensions.width}. Special features: ${qaAnswers.specialFeatures || 'Traditional weave'}. Listed price is ${qaAnswers.price || 'three thousand'} rupees.`;
+      summaryText = `Please review your listing. Product name is ${qaAnswers.title || 'Handloom item'}. Made of ${qaAnswers.material || 'pure cotton'}. Special features: ${qaAnswers.specialFeatures || 'Traditional weave'}. Listed price is ${qaAnswers.price || 'three thousand'} rupees.`;
     }
 
     triggerSubtitleSpeak(summaryText);
@@ -546,6 +547,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       material: qaAnswers.material || 'Pure Khadi Cotton',
       price: parseInt(normalizeSpokenNumerals(qaAnswers.price)) || 3500,
       dimensions: dimensions,
+      additionalInfo: qaAnswers.additionalInfo || undefined,
       specialFeatures: qaAnswers.specialFeatures || 'Woven using natural vegetable dyes and custom heritage borders.',
       description: `A stunning handloom creation featuring organic textures. Crafted with care over multiple days of precise manual tension on wooden frames.`,
       images: [selectedPhoto || SAMPLE_PRODUCT_IMAGES[0], SAMPLE_PRODUCT_IMAGES[1]],
@@ -643,7 +645,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto bg-cream pb-24 min-h-[85vh] relative" id="weaver-view-container">
+    <div className="max-w-screen-2xl mx-auto bg-cream pb-24 min-h-[85vh] relative" id="weaver-view-container">
 
       {activeSubTab === 'dashboard' ? (
         <div className="px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
@@ -1442,9 +1444,10 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                 <div key={product.id} className="bg-white rounded-2xl border border-cream-border overflow-hidden shadow-xs flex flex-col">
                   <div className="aspect-square relative bg-cream">
                     <img
-                      src={product.images[0]}
+                      src={optimizeImageUrl(product.images[0], dataSaver)}
                       alt={product.title}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                       referrerPolicy="no-referrer"
                     />
                     <span className="absolute top-2 left-2 bg-charcoal/80 text-cream text-[9px] px-1.5 py-0.5 rounded-full uppercase font-bold tracking-wider">
@@ -1697,16 +1700,33 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       ref={photoFileInputRef}
                       type="file"
                       accept="image/*"
+                      className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePhotoFileSelected(f); }}
+                    />
+                    <input
+                      ref={cameraCaptureInputRef}
+                      type="file"
+                      accept="image/*"
                       capture="environment"
                       className="hidden"
                       onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePhotoFileSelected(f); }}
                     />
-                    <button
-                      onClick={() => photoFileInputRef.current?.click()}
-                      className="bg-terracotta hover:bg-terracotta-dark text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition"
-                    >
-                      Upload Photo
-                    </button>
+                    <div className="flex items-center justify-center gap-2.5">
+                      <button
+                        onClick={() => photoFileInputRef.current?.click()}
+                        className="bg-terracotta hover:bg-terracotta-dark text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-1.5"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        Upload Photo
+                      </button>
+                      <button
+                        onClick={() => cameraCaptureInputRef.current?.click()}
+                        className="bg-white hover:bg-cream-dark text-terracotta border border-terracotta/40 text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition flex items-center gap-1.5"
+                      >
+                        <Camera className="w-3.5 h-3.5" />
+                        Take Picture
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -2102,22 +2122,18 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                     <span className="text-gray-400 uppercase font-semibold block text-[10px] tracking-wider">Yarn Material:</span>
                     <p className="font-semibold text-charcoal">{qaAnswers.material || 'Organic Loom Yarn'}</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <span className="text-gray-400 uppercase font-semibold block text-[10px] tracking-wider">Exact Length:</span>
-                      <p className="font-semibold text-charcoal">{dimensions.length}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-400 uppercase font-semibold block text-[10px] tracking-wider">Exact Width:</span>
-                      <p className="font-semibold text-charcoal">{dimensions.width}</p>
-                    </div>
-                  </div>
                   <div>
                     <span className="text-gray-400 uppercase font-semibold block text-[10px] tracking-wider">What Makes It Special:</span>
                     <p className="font-semibold text-charcoal italic leading-relaxed font-serif">
                       "{qaAnswers.specialFeatures || 'Woven carefully on a wooden frame loom with local artisan threads.'}"
                     </p>
                   </div>
+                  {qaAnswers.additionalInfo && (
+                    <div>
+                      <span className="text-gray-400 uppercase font-semibold block text-[10px] tracking-wider">Additional Information:</span>
+                      <p className="font-semibold text-charcoal">{qaAnswers.additionalInfo}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -2427,6 +2443,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             material: qaAnswers.material || "Khadi Silk Cotton",
             price: parseInt(normalizeSpokenNumerals(qaAnswers.price)) || 3500,
             dimensions: dimensions,
+            additionalInfo: qaAnswers.additionalInfo || undefined,
             specialFeatures: qaAnswers.specialFeatures || "",
             description: "",
             images: [selectedPhoto || SAMPLE_PRODUCT_IMAGES[0]],

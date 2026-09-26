@@ -573,7 +573,7 @@ export default function App() {
       {/* Main Responsive Website Container */}
       <div 
         id="taana-app-container"
-        className="w-full max-w-7xl mx-auto bg-cream flex flex-col min-h-screen relative shadow-md border-x border-cream-border"
+        className="w-full max-w-screen-2xl mx-auto bg-cream flex flex-col min-h-screen relative shadow-md border-x border-cream-border"
       >
 
         {showAdminLoginScreen ? (
@@ -1023,6 +1023,7 @@ export default function App() {
             onClose={() => setShowAccountModal(false)}
             onResetOnboarding={handleResetOnboarding}
             orders={orders}
+            offline={networkMode === 'offline'}
           />
         )}
 
