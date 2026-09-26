@@ -826,7 +826,67 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     useThisPhotoLabel: 'Use This Photo',
     enhancePhotoLabel: 'Clean Up Background',
     downloadInvoice: 'Download Invoice',
-    invoiceTitleLabel: 'Tax Invoice'
+    invoiceTitleLabel: 'Tax Invoice',
+    landingNavShop: 'Shop',
+    landingNavSell: 'Sell',
+    landingNavSignIn: 'Sign In',
+    landingNavGetStarted: 'Get Started',
+    landingHeroTitleLine1: "Direct from India's Artisans,",
+    landingHeroTitleAccent: 'Straight to You',
+    landingHeroSubtitle: 'KalaSetu connects rural craftspeople with buyers who value authentic, handmade work - in your own language, with fair pricing and protected payments.',
+    landingHeroCtaPrimary: 'Start Shopping',
+    landingHeroCtaSecondary: 'Become an Artisan Seller',
+    landingStatProducts: 'Handcrafted Products Listed',
+    landingStatOrders: 'Direct Orders Fulfilled',
+    landingStatRegions: 'Craft Regions Represented',
+    landingCategoriesTitle: 'Explore by Craft',
+    landingCategoriesSubtitle: 'Real inventory from our onboarded artisans, updated live',
+    landingCategoryCount: '{n} products',
+    landingFeaturedTitle: 'Featured Handloom & Craft Pieces',
+    landingFeaturedSubtitle: 'Fresh listings straight from artisan profiles',
+    landingFeaturedCta: 'View All Products',
+    landingFeaturedEmpty: 'No products listed yet - check back soon as artisans join KalaSetu.',
+    landingHowTitle: 'Start Selling in Minutes',
+    landingHowSubtitle: 'Speak about your craft in your language - KalaSetu handles the rest',
+    landingHowStep1Title: 'Speak or Type Your Listing',
+    landingHowStep1Desc: 'Describe your product by voice in your own language; KalaSetu structures it into a full listing for you to review.',
+    landingHowStep2Title: 'Get a Fair Price Suggestion',
+    landingHowStep2Desc: 'Tell us your material cost and hours worked - our pricing tool suggests a fair, transparent price you can accept or change.',
+    landingHowStep3Title: 'Publish and Get Paid Directly',
+    landingHowStep3Desc: 'Your listing goes live instantly. Payments are protected in escrow and released to you at each milestone of the order.',
+    landingHowCta: 'Start Selling Today',
+    landingTrustTitle: 'Built on Trust',
+    landingTrustSubtitle: 'Every transaction is protected, every claim is checked',
+    landingTrust1Title: 'Payment Protection',
+    landingTrust1Desc: 'Buyer payments are held safely and released to the artisan in stages as the order is confirmed, crafted, and delivered.',
+    landingTrust2Title: 'GI Verification',
+    landingTrust2Desc: 'Geographical Indication claims are reviewed before a product shows a verified badge - never assumed.',
+    landingTrust3Title: 'Verified-Purchase Reviews',
+    landingTrust3Desc: 'Only buyers who actually completed an order can leave a review, and new artisans are never buried for having too few yet.',
+    landingTrust4Title: 'Multilingual, Always',
+    landingTrust4Desc: 'Every screen, voice prompt, and confirmation works in your own language - not just English.',
+    landingArtisansTitle: 'Meet the Artisans on KalaSetu',
+    landingArtisansSubtitle: 'Real makers, real crafts, listed directly on the platform',
+    landingArtisansEmpty: 'Artisan profiles will appear here as they list their first product.',
+    landingGrowTitle: 'Tools to Grow Your Craft Business',
+    landingGrowSubtitle: 'Everything beyond the sale, handled for you',
+    landingGrow1Title: 'AI Photo Helper',
+    landingGrow1Desc: 'Upload a photo and get instant feedback on lighting and focus, plus an enhanced version you can show buyers alongside the original.',
+    landingGrow2Title: 'Demand & Scheme Insights',
+    landingGrow2Desc: 'See which crafts are trending and which government schemes and subsidies apply to your craft and region.',
+    landingGrow3Title: 'Clear Payouts, On Your Terms',
+    landingGrow3Desc: 'Choose UPI or bank transfer, set your minimum payout amount, and see exactly when funds are released.',
+    landingFaqTitle: 'Frequently Asked Questions',
+    landingFaq1Q: 'Is payment through KalaSetu really safe?',
+    landingFaq1A: 'Payments are held in escrow and released to the artisan in three stages as your order is confirmed, crafted, and delivered. This is currently a sandbox/demo implementation, not a licensed payment processor.',
+    landingFaq2Q: "Can I sell if I don't have a great camera or can't type well?",
+    landingFaq2A: 'Yes - you can speak your product listing aloud in your own language, and KalaSetu turns it into a structured listing for you to review before publishing.',
+    landingFaq3Q: "What happens if I'm not satisfied with a product?",
+    landingFaq3A: 'You can raise a dispute or a separate return/replacement request directly from your order, with evidence, and an admin reviews it.',
+    landingFaq4Q: 'Do I need to speak English to use KalaSetu?',
+    landingFaq4A: 'No. English, Hindi, Kannada, and Tamil are fully supported today across text and voice, with more languages on the way.',
+    landingFooterTagline: 'A direct, multilingual marketplace connecting Indian artisans with buyers who value authentic, handmade work.',
+    landingFooterRights: '© 2026 KalaSetu. All rights reserved.'
   },
   kn: {
     weaverView: 'ಕುಶಲಕರ್ಮಿ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
@@ -985,7 +1045,67 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     useThisPhotoLabel: 'ಈ ಫೋಟೋ ಬಳಸಿ',
     enhancePhotoLabel: 'ಹಿನ್ನೆಲೆ ಸ್ವಚ್ಛಗೊಳಿಸಿ',
     downloadInvoice: 'ಇನ್‌ವಾಯ್ಸ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ',
-    invoiceTitleLabel: 'ತೆರಿಗೆ ಇನ್‌ವಾಯ್ಸ್'
+    invoiceTitleLabel: 'ತೆರಿಗೆ ಇನ್‌ವಾಯ್ಸ್',
+    landingNavShop: 'ಮಳಿಗೆ',
+    landingNavSell: 'ಮಾರಾಟ ಮಾಡಿ',
+    landingNavSignIn: 'ಸೈನ್ ಇನ್',
+    landingNavGetStarted: 'ಪ್ರಾರಂಭಿಸಿ',
+    landingHeroTitleLine1: 'ಭಾರತದ ಕುಶಲಕರ್ಮಿಗಳಿಂದ ನೇರವಾಗಿ,',
+    landingHeroTitleAccent: 'ನಿಮಗಾಗಿ',
+    landingHeroSubtitle: 'ಕಲಾಸೇತು ಗ್ರಾಮೀಣ ಕುಶಲಕರ್ಮಿಗಳನ್ನು ಅಧಿಕೃತ, ಕೈಯಿಂದ ತಯಾರಿಸಿದ ಕೆಲಸಕ್ಕೆ ಮಹತ್ವ ನೀಡುವ ಖರೀದಿದಾರರೊಂದಿಗೆ ಸಂಪರ್ಕಿಸುತ್ತದೆ - ನಿಮ್ಮ ಸ್ವಂತ ಭಾಷೆಯಲ್ಲಿ, ನ್ಯಾಯಯುತ ಬೆಲೆ ಮತ್ತು ಸುರಕ್ಷಿತ ಪಾವತಿಗಳೊಂದಿಗೆ.',
+    landingHeroCtaPrimary: 'ಈಗಲೇ ಖರೀದಿಸಿ',
+    landingHeroCtaSecondary: 'ಕುಶಲಕರ್ಮಿ ಮಾರಾಟಗಾರರಾಗಿ',
+    landingStatProducts: 'ಪಟ್ಟಿ ಮಾಡಿದ ಕೈಕಸುಬು ಉತ್ಪನ್ನಗಳು',
+    landingStatOrders: 'ಪೂರ್ಣಗೊಂಡ ನೇರ ಆರ್ಡರ್‌ಗಳು',
+    landingStatRegions: 'ಪ್ರತಿನಿಧಿಸಲಾದ ಕರಕುಶಲ ಪ್ರದೇಶಗಳು',
+    landingCategoriesTitle: 'ಕರಕುಶಲ ಪ್ರಕಾರದ ಮೂಲಕ ಅನ್ವೇಷಿಸಿ',
+    landingCategoriesSubtitle: 'ನಮ್ಮ ನೋಂದಾಯಿತ ಕುಶಲಕರ್ಮಿಗಳಿಂದ ನೈಜ ದಾಸ್ತಾನು, ನೇರ ಪ್ರಸಾರದಲ್ಲಿ ನವೀಕರಿಸಲಾಗಿದೆ',
+    landingCategoryCount: '{n} ಉತ್ಪನ್ನಗಳು',
+    landingFeaturedTitle: 'ವಿಶೇಷ ಕೈಮಗ್ಗ ಮತ್ತು ಕರಕುಶಲ ವಸ್ತುಗಳು',
+    landingFeaturedSubtitle: 'ಕುಶಲಕರ್ಮಿ ಪ್ರೊಫೈಲ್‌ಗಳಿಂದ ನೇರವಾಗಿ ಹೊಸ ಪಟ್ಟಿಗಳು',
+    landingFeaturedCta: 'ಎಲ್ಲಾ ಉತ್ಪನ್ನಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+    landingFeaturedEmpty: 'ಇನ್ನೂ ಯಾವುದೇ ಉತ್ಪನ್ನಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡಿಲ್ಲ - ಕುಶಲಕರ್ಮಿಗಳು ಕಲಾಸೇತು ಸೇರಿದಂತೆ ಶೀಘ್ರದಲ್ಲೇ ಮತ್ತೆ ಪರಿಶೀಲಿಸಿ.',
+    landingHowTitle: 'ನಿಮಿಷಗಳಲ್ಲಿ ಮಾರಾಟ ಪ್ರಾರಂಭಿಸಿ',
+    landingHowSubtitle: 'ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ನಿಮ್ಮ ಕರಕುಶಲದ ಬಗ್ಗೆ ಮಾತನಾಡಿ - ಉಳಿದದ್ದನ್ನು ಕಲಾಸೇತು ನಿರ್ವಹಿಸುತ್ತದೆ',
+    landingHowStep1Title: 'ನಿಮ್ಮ ಪಟ್ಟಿಯನ್ನು ಮಾತನಾಡಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ',
+    landingHowStep1Desc: 'ನಿಮ್ಮ ಸ್ವಂತ ಭಾಷೆಯಲ್ಲಿ ಧ್ವನಿ ಮೂಲಕ ನಿಮ್ಮ ಉತ್ಪನ್ನವನ್ನು ವಿವರಿಸಿ; ಕಲಾಸೇತು ಅದನ್ನು ಪರಿಶೀಲಿಸಲು ಪೂರ್ಣ ಪಟ್ಟಿಯಾಗಿ ರಚಿಸುತ್ತದೆ.',
+    landingHowStep2Title: 'ನ್ಯಾಯಯುತ ಬೆಲೆ ಸಲಹೆ ಪಡೆಯಿರಿ',
+    landingHowStep2Desc: 'ನಿಮ್ಮ ವಸ್ತು ವೆಚ್ಚ ಮತ್ತು ಕೆಲಸದ ಗಂಟೆಗಳನ್ನು ತಿಳಿಸಿ - ನಮ್ಮ ಬೆಲೆ ಸಾಧನ ನೀವು ಒಪ್ಪಬಹುದಾದ ಅಥವಾ ಬದಲಾಯಿಸಬಹುದಾದ ನ್ಯಾಯಯುತ, ಪಾರದರ್ಶಕ ಬೆಲೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.',
+    landingHowStep3Title: 'ಪ್ರಕಟಿಸಿ ಮತ್ತು ನೇರವಾಗಿ ಪಾವತಿ ಪಡೆಯಿರಿ',
+    landingHowStep3Desc: 'ನಿಮ್ಮ ಪಟ್ಟಿ ತಕ್ಷಣ ಲೈವ್ ಆಗುತ್ತದೆ. ಪಾವತಿಗಳು ಎಸ್ಕ್ರೋದಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿರುತ್ತವೆ ಮತ್ತು ಆರ್ಡರ್‌ನ ಪ್ರತಿ ಹಂತದಲ್ಲಿ ನಿಮಗೆ ಬಿಡುಗಡೆಯಾಗುತ್ತವೆ.',
+    landingHowCta: 'ಇಂದೇ ಮಾರಾಟ ಪ್ರಾರಂಭಿಸಿ',
+    landingTrustTitle: 'ವಿಶ್ವಾಸದ ಮೇಲೆ ನಿರ್ಮಿಸಲಾಗಿದೆ',
+    landingTrustSubtitle: 'ಪ್ರತಿ ವಹಿವಾಟು ಸುರಕ್ಷಿತವಾಗಿದೆ, ಪ್ರತಿ ಹಕ್ಕು ಪರಿಶೀಲಿಸಲಾಗಿದೆ',
+    landingTrust1Title: 'ಪಾವತಿ ರಕ್ಷಣೆ',
+    landingTrust1Desc: 'ಆರ್ಡರ್ ದೃಢೀಕರಿಸಿದಂತೆ, ತಯಾರಿಸಿದಂತೆ ಮತ್ತು ವಿತರಿಸಿದಂತೆ ಖರೀದಿದಾರರ ಪಾವತಿಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಇರಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಹಂತಗಳಲ್ಲಿ ಕುಶಲಕರ್ಮಿಗೆ ಬಿಡುಗಡೆ ಮಾಡಲಾಗುತ್ತದೆ.',
+    landingTrust2Title: 'ಜಿಐ ಪರಿಶೀಲನೆ',
+    landingTrust2Desc: 'ಉತ್ಪನ್ನವು ಪರಿಶೀಲಿತ ಬ್ಯಾಡ್ಜ್ ತೋರಿಸುವ ಮೊದಲು ಭೌಗೋಳಿಕ ಸೂಚನೆ ಹಕ್ಕುಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ - ಎಂದಿಗೂ ಊಹಿಸಲಾಗುವುದಿಲ್ಲ.',
+    landingTrust3Title: 'ಪರಿಶೀಲಿತ-ಖರೀದಿ ವಿಮರ್ಶೆಗಳು',
+    landingTrust3Desc: 'ವಾಸ್ತವವಾಗಿ ಆರ್ಡರ್ ಪೂರ್ಣಗೊಳಿಸಿದ ಖರೀದಿದಾರರು ಮಾತ್ರ ವಿಮರ್ಶೆ ನೀಡಬಹುದು, ಮತ್ತು ಇನ್ನೂ ಕಡಿಮೆ ವಿಮರ್ಶೆಗಳನ್ನು ಹೊಂದಿರುವ ಕಾರಣ ಹೊಸ ಕುಶಲಕರ್ಮಿಗಳನ್ನು ಎಂದಿಗೂ ಮರೆಮಾಡಲಾಗುವುದಿಲ್ಲ.',
+    landingTrust4Title: 'ಯಾವಾಗಲೂ ಬಹುಭಾಷಾ',
+    landingTrust4Desc: 'ಪ್ರತಿ ಪರದೆ, ಧ್ವನಿ ಸೂಚನೆ ಮತ್ತು ದೃಢೀಕರಣ ನಿಮ್ಮ ಸ್ವಂತ ಭಾಷೆಯಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ - ಕೇವಲ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಅಲ್ಲ.',
+    landingArtisansTitle: 'ಕಲಾಸೇತುವಿನ ಕುಶಲಕರ್ಮಿಗಳನ್ನು ಭೇಟಿಯಾಗಿ',
+    landingArtisansSubtitle: 'ನೈಜ ತಯಾರಕರು, ನೈಜ ಕರಕುಶಲಗಳು, ವೇದಿಕೆಯಲ್ಲಿ ನೇರವಾಗಿ ಪಟ್ಟಿ ಮಾಡಲಾಗಿದೆ',
+    landingArtisansEmpty: 'ಕುಶಲಕರ್ಮಿಗಳು ತಮ್ಮ ಮೊದಲ ಉತ್ಪನ್ನವನ್ನು ಪಟ್ಟಿ ಮಾಡಿದಾಗ ಪ್ರೊಫೈಲ್‌ಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.',
+    landingGrowTitle: 'ನಿಮ್ಮ ಕರಕುಶಲ ವ್ಯಾಪಾರವನ್ನು ಬೆಳೆಸುವ ಸಾಧನಗಳು',
+    landingGrowSubtitle: 'ಮಾರಾಟದ ಆಚೆಗಿನ ಎಲ್ಲವನ್ನೂ ನಿಮಗಾಗಿ ನಿರ್ವಹಿಸಲಾಗಿದೆ',
+    landingGrow1Title: 'AI ಫೋಟೋ ಸಹಾಯಕ',
+    landingGrow1Desc: 'ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ ಮತ್ತು ಬೆಳಕು ಮತ್ತು ಫೋಕಸ್ ಬಗ್ಗೆ ತಕ್ಷಣ ಪ್ರತಿಕ್ರಿಯೆ ಪಡೆಯಿರಿ, ಜೊತೆಗೆ ಮೂಲದ ಜೊತೆ ತೋರಿಸಬಹುದಾದ ವರ್ಧಿತ ಆವೃತ್ತಿ.',
+    landingGrow2Title: 'ಬೇಡಿಕೆ ಮತ್ತು ಯೋಜನೆ ಒಳನೋಟಗಳು',
+    landingGrow2Desc: 'ಯಾವ ಕರಕುಶಲಗಳು ಟ್ರೆಂಡಿಂಗ್ ಆಗಿವೆ ಮತ್ತು ನಿಮ್ಮ ಕರಕುಶಲ ಮತ್ತು ಪ್ರದೇಶಕ್ಕೆ ಯಾವ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು ಮತ್ತು ಸಬ್ಸಿಡಿಗಳು ಅನ್ವಯಿಸುತ್ತವೆ ಎಂಬುದನ್ನು ನೋಡಿ.',
+    landingGrow3Title: 'ಸ್ಪಷ್ಟ ಪಾವತಿಗಳು, ನಿಮ್ಮ ನಿಯಮಗಳಲ್ಲಿ',
+    landingGrow3Desc: 'UPI ಅಥವಾ ಬ್ಯಾಂಕ್ ವರ್ಗಾವಣೆ ಆಯ್ಕೆಮಾಡಿ, ನಿಮ್ಮ ಕನಿಷ್ಠ ಪಾವತಿ ಮೊತ್ತವನ್ನು ಹೊಂದಿಸಿ ಮತ್ತು ಹಣ ಯಾವಾಗ ಬಿಡುಗಡೆಯಾಗುತ್ತದೆ ಎಂದು ನಿಖರವಾಗಿ ನೋಡಿ.',
+    landingFaqTitle: 'ಪದೇ ಪದೇ ಕೇಳಲಾಗುವ ಪ್ರಶ್ನೆಗಳು',
+    landingFaq1Q: 'ಕಲಾಸೇತು ಮೂಲಕ ಪಾವತಿ ನಿಜವಾಗಿಯೂ ಸುರಕ್ಷಿತವೇ?',
+    landingFaq1A: 'ನಿಮ್ಮ ಆರ್ಡರ್ ದೃಢೀಕರಿಸಿದಂತೆ, ತಯಾರಿಸಿದಂತೆ ಮತ್ತು ವಿತರಿಸಿದಂತೆ ಪಾವತಿಗಳನ್ನು ಎಸ್ಕ್ರೋದಲ್ಲಿ ಇರಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಮೂರು ಹಂತಗಳಲ್ಲಿ ಕುಶಲಕರ್ಮಿಗೆ ಬಿಡುಗಡೆ ಮಾಡಲಾಗುತ್ತದೆ. ಇದು ಪ್ರಸ್ತುತ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್/ಡೆಮೊ ಅನುಷ್ಠಾನ, ಪರವಾನಗಿ ಪಡೆದ ಪಾವತಿ ಪ್ರೊಸೆಸರ್ ಅಲ್ಲ.',
+    landingFaq2Q: 'ನನ್ನ ಬಳಿ ಉತ್ತಮ ಕ್ಯಾಮೆರಾ ಇಲ್ಲದಿದ್ದರೆ ಅಥವಾ ಟೈಪ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗದಿದ್ದರೆ ನಾನು ಮಾರಾಟ ಮಾಡಬಹುದೇ?',
+    landingFaq2A: 'ಹೌದು - ನೀವು ನಿಮ್ಮ ಸ್ವಂತ ಭಾಷೆಯಲ್ಲಿ ಗಟ್ಟಿಯಾಗಿ ನಿಮ್ಮ ಉತ್ಪನ್ನ ಪಟ್ಟಿಯನ್ನು ಮಾತನಾಡಬಹುದು, ಮತ್ತು ಪ್ರಕಟಿಸುವ ಮೊದಲು ಪರಿಶೀಲಿಸಲು ಕಲಾಸೇತು ಅದನ್ನು ರಚನಾತ್ಮಕ ಪಟ್ಟಿಯಾಗಿ ಪರಿವರ್ತಿಸುತ್ತದೆ.',
+    landingFaq3Q: 'ಒಂದು ಉತ್ಪನ್ನದಿಂದ ನಾನು ತೃಪ್ತನಾಗದಿದ್ದರೆ ಏನಾಗುತ್ತದೆ?',
+    landingFaq3A: 'ನೀವು ನಿಮ್ಮ ಆರ್ಡರ್‌ನಿಂದ ನೇರವಾಗಿ ಪುರಾವೆಗಳೊಂದಿಗೆ ವಿವಾದ ಅಥವಾ ಪ್ರತ್ಯೇಕ ಹಿಂತಿರುಗಿಸುವಿಕೆ/ಬದಲಾವಣೆ ವಿನಂತಿಯನ್ನು ಎತ್ತಬಹುದು, ಮತ್ತು ನಿರ್ವಾಹಕರು ಅದನ್ನು ಪರಿಶೀಲಿಸುತ್ತಾರೆ.',
+    landingFaq4Q: 'ಕಲಾಸೇತು ಬಳಸಲು ನಾನು ಇಂಗ್ಲಿಷ್ ಮಾತನಾಡಬೇಕೇ?',
+    landingFaq4A: 'ಇಲ್ಲ. ಇಂಗ್ಲಿಷ್, ಹಿಂದಿ, ಕನ್ನಡ ಮತ್ತು ತಮಿಳು ಇಂದು ಪಠ್ಯ ಮತ್ತು ಧ್ವನಿಯಲ್ಲಿ ಸಂಪೂರ್ಣವಾಗಿ ಬೆಂಬಲಿತವಾಗಿವೆ, ಇನ್ನಷ್ಟು ಭಾಷೆಗಳು ಶೀಘ್ರದಲ್ಲೇ ಬರುತ್ತಿವೆ.',
+    landingFooterTagline: 'ಅಧಿಕೃತ, ಕೈಯಿಂದ ತಯಾರಿಸಿದ ಕೆಲಸಕ್ಕೆ ಮಹತ್ವ ನೀಡುವ ಖರೀದಿದಾರರೊಂದಿಗೆ ಭಾರತೀಯ ಕುಶಲಕರ್ಮಿಗಳನ್ನು ಸಂಪರ್ಕಿಸುವ ನೇರ, ಬಹುಭಾಷಾ ಮಾರುಕಟ್ಟೆ.',
+    landingFooterRights: '© 2026 ಕಲಾಸೇತು. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.'
   },
   hi: {
     weaverView: 'कारीगर डैशबोर्ड',
@@ -1144,7 +1264,67 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     useThisPhotoLabel: 'यह फोटो इस्तेमाल करें',
     enhancePhotoLabel: 'बैकग्राउंड साफ करें',
     downloadInvoice: 'इनवॉइस डाउनलोड करें',
-    invoiceTitleLabel: 'टैक्स इनवॉइस'
+    invoiceTitleLabel: 'टैक्स इनवॉइस',
+    landingNavShop: 'खरीदें',
+    landingNavSell: 'बेचें',
+    landingNavSignIn: 'साइन इन',
+    landingNavGetStarted: 'शुरू करें',
+    landingHeroTitleLine1: 'भारत के कारीगरों से सीधे,',
+    landingHeroTitleAccent: 'आप तक',
+    landingHeroSubtitle: 'कलासेतु ग्रामीण कारीगरों को उन खरीदारों से जोड़ता है जो असली, हाथ से बने काम को महत्व देते हैं - आपकी अपनी भाषा में, उचित कीमत और सुरक्षित भुगतान के साथ।',
+    landingHeroCtaPrimary: 'अभी खरीदें',
+    landingHeroCtaSecondary: 'कारीगर विक्रेता बनें',
+    landingStatProducts: 'सूचीबद्ध हस्तशिल्प उत्पाद',
+    landingStatOrders: 'पूरे हुए सीधे ऑर्डर',
+    landingStatRegions: 'प्रतिनिधित्व वाले शिल्प क्षेत्र',
+    landingCategoriesTitle: 'शिल्प के अनुसार खोजें',
+    landingCategoriesSubtitle: 'हमारे पंजीकृत कारीगरों से वास्तविक स्टॉक, लाइव अपडेट किया गया',
+    landingCategoryCount: '{n} उत्पाद',
+    landingFeaturedTitle: 'विशेष हथकरघा और शिल्प वस्तुएं',
+    landingFeaturedSubtitle: 'कारीगर प्रोफाइल से सीधे ताज़ा लिस्टिंग',
+    landingFeaturedCta: 'सभी उत्पाद देखें',
+    landingFeaturedEmpty: 'अभी तक कोई उत्पाद सूचीबद्ध नहीं है - कारीगरों के जुड़ने पर जल्द ही वापस देखें।',
+    landingHowTitle: 'मिनटों में बेचना शुरू करें',
+    landingHowSubtitle: 'अपनी भाषा में अपने शिल्प के बारे में बोलें - बाकी काम कलासेतु संभालता है',
+    landingHowStep1Title: 'अपनी लिस्टिंग बोलें या टाइप करें',
+    landingHowStep1Desc: 'अपनी भाषा में आवाज़ द्वारा अपने उत्पाद का वर्णन करें; कलासेतु इसे समीक्षा के लिए पूरी लिस्टिंग में बदल देता है।',
+    landingHowStep2Title: 'उचित मूल्य सुझाव पाएं',
+    landingHowStep2Desc: 'हमें अपनी सामग्री लागत और काम के घंटे बताएं - हमारा मूल्य निर्धारण उपकरण एक उचित, पारदर्शी कीमत सुझाता है जिसे आप स्वीकार या बदल सकते हैं।',
+    landingHowStep3Title: 'प्रकाशित करें और सीधे भुगतान पाएं',
+    landingHowStep3Desc: 'आपकी लिस्टिंग तुरंत लाइव हो जाती है। भुगतान एस्क्रो में सुरक्षित रहते हैं और ऑर्डर के हर चरण पर आपको जारी किए जाते हैं।',
+    landingHowCta: 'आज ही बेचना शुरू करें',
+    landingTrustTitle: 'विश्वास पर बना',
+    landingTrustSubtitle: 'हर लेन-देन सुरक्षित है, हर दावे की जांच होती है',
+    landingTrust1Title: 'भुगतान सुरक्षा',
+    landingTrust1Desc: 'ऑर्डर की पुष्टि, निर्माण और डिलीवरी होने पर खरीदार के भुगतान को सुरक्षित रखा जाता है और चरणों में कारीगर को जारी किया जाता है।',
+    landingTrust2Title: 'जीआई सत्यापन',
+    landingTrust2Desc: 'उत्पाद पर सत्यापित बैज दिखाने से पहले भौगोलिक संकेत के दावों की समीक्षा की जाती है - कभी भी माना नहीं जाता।',
+    landingTrust3Title: 'सत्यापित-खरीद समीक्षाएं',
+    landingTrust3Desc: 'केवल वे खरीदार जिन्होंने वास्तव में ऑर्डर पूरा किया है, समीक्षा छोड़ सकते हैं, और नए कारीगरों को कम समीक्षाओं के कारण कभी दबाया नहीं जाता।',
+    landingTrust4Title: 'हमेशा बहुभाषी',
+    landingTrust4Desc: 'हर स्क्रीन, आवाज़ संकेत और पुष्टिकरण आपकी अपनी भाषा में काम करता है - केवल अंग्रेज़ी में नहीं।',
+    landingArtisansTitle: 'कलासेतु के कारीगरों से मिलें',
+    landingArtisansSubtitle: 'असली निर्माता, असली शिल्प, सीधे मंच पर सूचीबद्ध',
+    landingArtisansEmpty: 'कारीगर अपना पहला उत्पाद सूचीबद्ध करने पर उनकी प्रोफाइल यहां दिखाई देगी।',
+    landingGrowTitle: 'आपके शिल्प व्यवसाय को बढ़ाने के उपकरण',
+    landingGrowSubtitle: 'बिक्री से परे सब कुछ, आपके लिए संभाला गया',
+    landingGrow1Title: 'AI फोटो सहायक',
+    landingGrow1Desc: 'एक फोटो अपलोड करें और रोशनी और फोकस पर तुरंत प्रतिक्रिया पाएं, साथ ही मूल के साथ दिखाने के लिए एक बेहतर संस्करण।',
+    landingGrow2Title: 'मांग और योजना जानकारी',
+    landingGrow2Desc: 'देखें कि कौन से शिल्प चलन में हैं और आपके शिल्प और क्षेत्र पर कौन सी सरकारी योजनाएं और सब्सिडी लागू होती हैं।',
+    landingGrow3Title: 'स्पष्ट भुगतान, आपकी शर्तों पर',
+    landingGrow3Desc: 'UPI या बैंक ट्रांसफर चुनें, अपनी न्यूनतम भुगतान राशि सेट करें, और देखें कि धन कब जारी होता है।',
+    landingFaqTitle: 'अक्सर पूछे जाने वाले प्रश्न',
+    landingFaq1Q: 'क्या कलासेतु के माध्यम से भुगतान वाकई सुरक्षित है?',
+    landingFaq1A: 'आपके ऑर्डर की पुष्टि, निर्माण और डिलीवरी होने पर भुगतान एस्क्रो में रखे जाते हैं और तीन चरणों में कारीगर को जारी किए जाते हैं। यह वर्तमान में एक सैंडबॉक्स/डेमो कार्यान्वयन है, लाइसेंस प्राप्त भुगतान प्रोसेसर नहीं।',
+    landingFaq2Q: 'अगर मेरे पास अच्छा कैमरा नहीं है या टाइप करना नहीं आता, तो क्या मैं बेच सकता हूं?',
+    landingFaq2A: 'हां - आप अपनी भाषा में ज़ोर से अपनी उत्पाद लिस्टिंग बोल सकते हैं, और प्रकाशित करने से पहले समीक्षा के लिए कलासेतु इसे संरचित लिस्टिंग में बदल देता है।',
+    landingFaq3Q: 'अगर मैं किसी उत्पाद से संतुष्ट नहीं हूं तो क्या होगा?',
+    landingFaq3A: 'आप अपने ऑर्डर से सीधे सबूत के साथ विवाद या अलग वापसी/बदलाव अनुरोध उठा सकते हैं, और एक व्यवस्थापक इसकी समीक्षा करता है।',
+    landingFaq4Q: 'क्या मुझे कलासेतु का उपयोग करने के लिए अंग्रेज़ी बोलनी होगी?',
+    landingFaq4A: 'नहीं। अंग्रेज़ी, हिंदी, कन्नड़ और तमिल आज पाठ और आवाज़ दोनों में पूरी तरह समर्थित हैं, और भी भाषाएं जल्द आ रही हैं।',
+    landingFooterTagline: 'असली, हाथ से बने काम को महत्व देने वाले खरीदारों से भारतीय कारीगरों को जोड़ने वाला एक सीधा, बहुभाषी बाज़ार।',
+    landingFooterRights: '© 2026 कलासेतु। सर्वाधिकार सुरक्षित।'
   },
   as: {
     weaverView: 'শিল্পী ডেছব’ৰ্ড',
@@ -2080,7 +2260,171 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     orderConfirmed: 'ஆர்டர் உறுதி செய்யப்பட்டது!',
     trackStatus: 'ஆர்டர் முன்னேற்றத்தைக் கண்காணிக்கவும்',
     recommendationsTitle: 'இந்த கைவினையிலிருந்து மேலும்',
-    recommendationsEmpty: 'இந்த வகையின் கூடுதல் பொருட்கள் விரைவில் கிடைக்கும்.'
+    recommendationsEmpty: 'இந்த வகையின் கூடுதல் பொருட்கள் விரைவில் கிடைக்கும்.',
+    recommendationsWhy: 'நீங்கள் பார்வையிட்ட பொருட்களின் அதே கைவினை வகையைச் சேர்ந்தது என்பதால் காட்டப்படுகிறது',
+    searchNothingFound: 'பொருத்தமான பொருள் கிடைக்கவில்லை',
+    searchNothingFoundHint: 'ஒரு வடிகட்டியை நீக்கி முயற்சிக்கவும் அல்லது வேறு வழியில் விவரிக்கவும் - பொருந்தாத ஒன்றைக் காட்டுவதை விட உங்களுக்குத் தெளிவாகச் சொல்வதே சிறந்தது.',
+    addToCart: 'கார்ட்டில் சேர்க்கவும்',
+    addedToCart: 'கார்ட்டில் சேர்க்கப்பட்டது',
+    cart: 'கார்ட்',
+    cartEmpty: 'உங்கள் கார்ட் காலியாக உள்ளது',
+    cartEmptyHint: 'சந்தையை உலாவி உங்களுக்குப் பிடித்த பொருட்களைச் சேர்க்கவும் - அவை இங்கே தோன்றும்.',
+    cartFromArtisan: 'இவரிடமிருந்து',
+    cartGrandTotal: 'மொத்த தொகை',
+    cartProceedToCheckout: 'செக்அவுட்டிற்குச் செல்லவும்',
+    cartRemove: 'அகற்று',
+    cartOrderSplitNotice: 'உங்கள் பொருட்கள் {n} வெவ்வேறு கைவினைஞர்களிடமிருந்து வந்துள்ளன. உங்களுக்கு ஒரே ஆர்டர் குறிப்பு கிடைக்கும்; பணம் செலுத்துதல், கண்காணிப்பு மற்றும் ஒவ்வொரு கைவினைஞருக்கும் பணம் செலுத்துதலை நாங்கள் தனித்தனியாக நிர்வகிக்கிறோம்.',
+    orderReference: 'ஆர்டர் குறிப்பு',
+    shipmentsFromArtisans: 'வெவ்வேறு கைவினைஞர்களிடமிருந்து அனுப்புகைகள்',
+    wishlist: 'விருப்பப் பட்டியல்',
+    wishlistEmpty: 'உங்கள் விருப்பப் பட்டியல் காலியாக உள்ளது',
+    wishlistEmptyHint: 'எந்த பொருளிலும் இதயம் ஐகானை அழுத்தி பிறகு பார்க்க இங்கே சேமிக்கவும்.',
+    addToWishlist: 'விருப்பப் பட்டியலில் சேமிக்கவும்',
+    removeFromWishlist: 'விருப்பப் பட்டியலிலிருந்து அகற்று',
+    reviews: 'விமர்சனங்கள்',
+    writeReview: 'விமர்சனம் எழுதுங்கள்',
+    verifiedPurchase: 'சரிபார்க்கப்பட்ட வாங்குதல்',
+    reviewNeedsPurchase: 'உங்கள் ஆர்டர் டெலிவரி ஆன பிறகு இந்தப் பொருளை நீங்கள் விமர்சிக்கலாம்.',
+    reviewSubmitted: 'நன்றி! உங்கள் விமர்சனம் வெளியிடப்பட்டது.',
+    reportReview: 'புகார் அளிக்கவும்',
+    reviewReportedThanks: 'நன்றி - இந்த விமர்சனத்தை நாங்கள் பரிசோதிப்போம்.',
+    noReviewsYet: 'இதுவரை விமர்சனங்கள் இல்லை',
+    noReviewsYetHint: 'இது ஒரு புதிய பட்டியல் - சரிபார்க்கப்பட்ட விமர்சனம் அளிக்கும் முதல் வாங்குபவராக இருங்கள்.',
+    returnOrReplace: 'திரும்பக் கொடுங்கள் அல்லது மாற்றுங்கள்',
+    returnStatus: 'திரும்பக் கொடுக்கும் நிலை',
+    returnReasonLabel: 'என்ன தவறு நடந்தது?',
+    returnNote: 'மேலும் விவரிக்கவும் (விருப்பம்)',
+    returnSubmit: 'திரும்பக் கொடுக்கும் கோரிக்கையை சமர்ப்பிக்கவும்',
+    returnSubmitted: 'உங்கள் திரும்பக் கொடுக்கும் கோரிக்கை சமர்ப்பிக்கப்பட்டது. நிலையை இங்கே புதுப்பிப்போம்.',
+    returnNotAvailable: 'உங்கள் ஆர்டர் டெலிவரி ஆனது என குறிக்கப்பட்டதும் திரும்பக் கொடுத்தல் திறக்கும்.',
+    chatWithArtisan: 'கைவினைஞருடன் அரட்டை',
+    chatEmpty: 'இதுவரை செய்திகள் இல்லை - உங்கள் ஆர்டர் பற்றி கைவினைஞரிடம் கேளுங்கள்.',
+    chatPlaceholder: 'செய்தியை தட்டச்சு செய்யவும்...',
+    chatSend: 'அனுப்பு',
+    chatReportMessage: 'புகார் அளிக்கவும்',
+    chatReportedThanks: 'நன்றி, இந்த செய்தி புகாரளிக்கப்பட்டது.',
+    chatOffPlatformWarning: 'உங்கள் பாதுகாப்பிற்காக, பணம் செலுத்துதல் மற்றும் தொடர்பு விவரங்களை கலாசேதுவிற்குள் வைத்திருங்கள். இந்த செய்தி ஆப்பிற்கு வெளியே பணம் செலுத்துதல் அல்லது தொடர்பைக் குறிப்பிடுவது போல் தெரிகிறது.',
+    genericErrorTitle: 'ஏதோ சரியாக ஏற்றப்படவில்லை',
+    genericErrorHint: 'இது பொதுவாக தற்காலிகமானது. மீண்டும் முயற்சிக்கவும்.',
+    retry: 'மீண்டும் முயற்சிக்கவும்',
+    editProduct: 'திருத்து',
+    duplicateProduct: 'நகலெடு',
+    saveAsDraft: 'வரைவாக சேமிக்கவும்',
+    publishProduct: 'வெளியிடு',
+    unpublishProduct: 'வெளியீட்டை நிறுத்து',
+    archiveProduct: 'காப்பகப்படுத்து',
+    statusDraft: 'வரைவு',
+    statusUnpublished: 'வெளியிடப்படவில்லை',
+    statusArchived: 'காப்பகப்படுத்தப்பட்டது',
+    confirmArchive: 'இந்தப் பொருளை காப்பகப்படுத்தவா? வாங்குபவர்கள் இனி இதைப் பார்க்க மாட்டார்கள், ஆனால் உங்கள் பழைய ஆர்டர்கள் பாதுகாப்பாக இருக்கும்.',
+    variants: 'அளவு / நிறம் / பொருள்',
+    addVariant: 'ஒரு விருப்பத்தைச் சேர்க்கவும்',
+    variantSize: 'அளவு',
+    variantColor: 'நிறம்',
+    variantMaterial: 'பொருள்',
+    variantExtraPrice: 'கூடுதல் விலை (₹)',
+    variantStock: 'எத்தனை கையிருப்பில் உள்ளன',
+    removeVariant: 'அகற்று',
+    discountsAndOffers: 'தள்ளுபடிகள் & சலுகைகள்',
+    discountPercentLabel: 'தள்ளுபடி (%)',
+    saleEndsOn: 'சலுகை முடியும் தேதி',
+    bulkPricingTiers: 'மொத்த விலை (அதிகம் வாங்கினால் மலிவு)',
+    addBulkTier: 'மொத்த விலை சேர்க்கவும்',
+    bulkMinQty: 'இவ்வளவு துண்டுகளில் இருந்து',
+    bulkPricePerUnit: 'ஒரு துண்டுக்கான விலை (₹)',
+    payoutSettings: 'உங்களுக்கு பணம் எப்படி கிடைக்கிறது',
+    payoutMethodLabel: 'பணம் பெறும் முறை',
+    bankAccountOption: 'வங்கிக் கணக்கு',
+    upiOption: 'UPI',
+    payoutSchedule: 'உங்களுக்கு பணம் எப்போது கிடைக்கும்',
+    payoutScheduleText: 'ஒவ்வொரு ஆர்டர் கட்டத்திலும் (உறுதி, தயாரிப்பு, டெலிவரி) பணம் தானாகவே உங்கள் தேர்ந்தெடுக்கப்பட்ட முறைக்கு விடுவிக்கப்படும்.',
+    minPayoutThresholdLabel: 'குறைந்தபட்ச பணம் செலுத்தும் தொகை',
+    provenanceRecord: 'முதல்-பட்டியல் பதிவு',
+    provenanceRecordedOn: 'பதிவு செய்யப்பட்ட தேதி',
+    provenanceExplain: 'இது உங்கள் அசல் புகைப்படங்கள் மற்றும் விளக்கத்தின் காலமுத்திரை பதிவு. யாராவது பின்னர் உங்கள் வடிவமைப்பை நகலெடுத்தால், நீங்கள் முதலில் பட்டியலிட்டதை இது நிரூபிக்கும்.',
+    materialCluster: 'சேர்ந்து பொருட்களை வாங்குங்கள்',
+    materialClusterHint: 'சிறந்த விலைக்கு மூலப்பொருட்களை மொத்தமாக வாங்க அருகிலுள்ள மற்ற கைவினைஞர்களுடன் சேருங்கள்.',
+    joinClusterRequest: 'இந்த குழு வாங்குதலில் சேருங்கள்',
+    joinedClusterRequest: 'நீங்கள் இந்த குழு வாங்குதலில் சேர்ந்துவிட்டீர்கள்',
+    clusterDeadlineLabel: 'இதற்குள் சேருங்கள்',
+    clusterTargetLabel: 'இலக்கு அளவு',
+    whatsappIntegration: 'WhatsApp அறிவிப்புகள்',
+    whatsappNumberLabel: 'உங்கள் WhatsApp எண்',
+    whatsappEnableAlerts: 'ஆர்டர் அறிவிப்புகளை எனக்கு WhatsApp இல் அனுப்பவும்',
+    whatsappComingSoonNote: 'KalaSetu-க்கான WhatsApp அறிவிப்புகள் தயாராகி வருகின்றன, இன்னும் செயலில் இல்லை. உங்கள் கடையை நிர்வகிக்க ஆப் எப்போதும் முழுமையான இடம்; தயாரானதும் WhatsApp விரைவு அறிவிப்புகளுக்கான ஒரு குறுக்குவழியாக இருக்கும்.',
+    attachProcessVideo: 'ஒரு குறுகிய தயாரிப்பு வீடியோவை இணைக்கவும் (விருப்பம்)',
+    videoAttachedLabel: 'வீடியோ இணைக்கப்பட்டது',
+    aiCameraTitle: 'ஸ்மார்ட் புகைப்பட உதவியாளர்',
+    aiEnhancedBadge: 'AI-மேம்படுத்தப்பட்டது',
+    viewOriginalPhoto: 'அசல்',
+    viewEnhancedPhoto: 'மேம்படுத்தப்பட்டது',
+    photoBlurWarning: 'இந்த புகைப்படம் சற்று மங்கலாக உள்ளது. கேமராவை நிலையாகப் பிடிக்க முயற்சிக்கவும்.',
+    photoDarkWarning: 'இந்த புகைப்படம் சற்று இருட்டாக உள்ளது. சிறந்த வெளிச்சத்திற்குச் செல்ல முயற்சிக்கவும்.',
+    retakePhotoLabel: 'மீண்டும் புகைப்படம் எடுக்கவும்',
+    useThisPhotoLabel: 'இந்த புகைப்படத்தைப் பயன்படுத்தவும்',
+    enhancePhotoLabel: 'பின்னணியை சுத்தம் செய்யவும்',
+    downloadInvoice: 'இன்வாய்ஸை பதிவிறக்கவும்',
+    invoiceTitleLabel: 'வரி இன்வாய்ஸ்',
+    landingNavShop: 'கடை',
+    landingNavSell: 'விற்பனை செய்யுங்கள்',
+    landingNavSignIn: 'உள்நுழையவும்',
+    landingNavGetStarted: 'தொடங்குங்கள்',
+    landingHeroTitleLine1: 'இந்திய கைவினைஞர்களிடமிருந்து நேரடியாக,',
+    landingHeroTitleAccent: 'உங்களுக்கு',
+    landingHeroSubtitle: 'உண்மையான, கையால் செய்யப்பட்ட வேலையை மதிக்கும் வாங்குபவர்களுடன் கிராமப்புற கைவினைஞர்களை கலாசேது இணைக்கிறது - உங்கள் சொந்த மொழியில், நியாயமான விலை மற்றும் பாதுகாக்கப்பட்ட பணம் செலுத்துதலுடன்.',
+    landingHeroCtaPrimary: 'இப்போதே வாங்குங்கள்',
+    landingHeroCtaSecondary: 'கைவினை விற்பனையாளராகுங்கள்',
+    landingStatProducts: 'பட்டியலிடப்பட்ட கைவினைப் பொருட்கள்',
+    landingStatOrders: 'முடிக்கப்பட்ட நேரடி ஆர்டர்கள்',
+    landingStatRegions: 'பிரதிநிதித்துவப்படுத்தப்பட்ட கைவினை பகுதிகள்',
+    landingCategoriesTitle: 'கைவினை வகை மூலம் ஆராயுங்கள்',
+    landingCategoriesSubtitle: 'எங்கள் பதிவுசெய்யப்பட்ட கைவினைஞர்களிடமிருந்து உண்மையான இருப்பு, நேரடியாக புதுப்பிக்கப்படுகிறது',
+    landingCategoryCount: '{n} பொருட்கள்',
+    landingFeaturedTitle: 'சிறப்பு கைத்தறி & கைவினைப் பொருட்கள்',
+    landingFeaturedSubtitle: 'கைவினைஞர் சுயவிவரங்களிலிருந்து நேரடியாக புதிய பட்டியல்கள்',
+    landingFeaturedCta: 'அனைத்து பொருட்களையும் பார்க்கவும்',
+    landingFeaturedEmpty: 'இதுவரை பொருட்கள் எதுவும் பட்டியலிடப்படவில்லை - கைவினைஞர்கள் கலாசேதுவில் சேரும்போது விரைவில் மீண்டும் பார்க்கவும்.',
+    landingHowTitle: 'நிமிடங்களில் விற்பனையைத் தொடங்குங்கள்',
+    landingHowSubtitle: 'உங்கள் மொழியில் உங்கள் கைவினையைப் பற்றி பேசுங்கள் - மீதியை கலாசேது கவனித்துக் கொள்கிறது',
+    landingHowStep1Title: 'உங்கள் பட்டியலைப் பேசுங்கள் அல்லது தட்டச்சு செய்யுங்கள்',
+    landingHowStep1Desc: 'உங்கள் சொந்த மொழியில் குரல் மூலம் உங்கள் தயாரிப்பை விவரிக்கவும்; கலாசேது அதை பரிசீலிக்க ஒரு முழு பட்டியலாக கட்டமைக்கிறது.',
+    landingHowStep2Title: 'நியாயமான விலை பரிந்துரையைப் பெறுங்கள்',
+    landingHowStep2Desc: 'உங்கள் பொருள் செலவு மற்றும் வேலை செய்த நேரத்தைச் சொல்லுங்கள் - எங்கள் விலை நிர்ணய கருவி நீங்கள் ஏற்கக்கூடிய அல்லது மாற்றக்கூடிய நியாயமான, வெளிப்படையான விலையை பரிந்துரைக்கிறது.',
+    landingHowStep3Title: 'வெளியிட்டு நேரடியாக பணம் பெறுங்கள்',
+    landingHowStep3Desc: 'உங்கள் பட்டியல் உடனடியாக செயலில் வரும். பணம் செலுத்துதல்கள் எஸ்க்ரோவில் பாதுகாக்கப்பட்டு ஆர்டரின் ஒவ்வொரு கட்டத்திலும் உங்களுக்கு வழங்கப்படும்.',
+    landingHowCta: 'இன்றே விற்பனையைத் தொடங்குங்கள்',
+    landingTrustTitle: 'நம்பிக்கையின் அடிப்படையில் கட்டப்பட்டது',
+    landingTrustSubtitle: 'ஒவ்வொரு பரிவர்த்தனையும் பாதுகாக்கப்படுகிறது, ஒவ்வொரு கூற்றும் சரிபார்க்கப்படுகிறது',
+    landingTrust1Title: 'பணம் செலுத்தும் பாதுகாப்பு',
+    landingTrust1Desc: 'ஆர்டர் உறுதிப்படுத்தப்பட்டு, தயாரிக்கப்பட்டு, டெலிவரி செய்யப்படும்போது வாங்குபவர் பணம் பாதுகாப்பாக வைக்கப்பட்டு கட்டங்களாக கைவினைஞருக்கு வழங்கப்படும்.',
+    landingTrust2Title: 'GI சரிபார்ப்பு',
+    landingTrust2Desc: 'ஒரு பொருள் சரிபார்க்கப்பட்ட பேட்ஜைக் காட்டுவதற்கு முன் புவிசார் குறியீடு கோரிக்கைகள் மதிப்பாய்வு செய்யப்படுகின்றன - ஒருபோதும் அனுமானிக்கப்படுவதில்லை.',
+    landingTrust3Title: 'சரிபார்க்கப்பட்ட-வாங்குதல் விமர்சனங்கள்',
+    landingTrust3Desc: 'உண்மையில் ஆர்டரை முடித்த வாங்குபவர்கள் மட்டுமே விமர்சனம் அளிக்க முடியும், மேலும் புதிய கைவினைஞர்கள் இதுவரை குறைவான விமர்சனங்களைக் கொண்டிருப்பதற்காக ஒருபோதும் மறைக்கப்பட மாட்டார்கள்.',
+    landingTrust4Title: 'எப்போதும் பன்மொழி',
+    landingTrust4Desc: 'ஒவ்வொரு திரையும், குரல் உரையாடலும், உறுதிப்படுத்தலும் உங்கள் சொந்த மொழியில் வேலை செய்கிறது - ஆங்கிலத்தில் மட்டும் அல்ல.',
+    landingArtisansTitle: 'கலாசேதுவில் உள்ள கைவினைஞர்களை சந்திக்கவும்',
+    landingArtisansSubtitle: 'உண்மையான தயாரிப்பாளர்கள், உண்மையான கைவினைகள், தளத்தில் நேரடியாக பட்டியலிடப்பட்டுள்ளன',
+    landingArtisansEmpty: 'கைவினைஞர்கள் தங்கள் முதல் பொருளை பட்டியலிடும்போது சுயவிவரங்கள் இங்கே தோன்றும்.',
+    landingGrowTitle: 'உங்கள் கைவினை வணிகத்தை வளர்க்கும் கருவிகள்',
+    landingGrowSubtitle: 'விற்பனைக்கு அப்பாற்பட்ட அனைத்தும், உங்களுக்காக கவனிக்கப்படுகிறது',
+    landingGrow1Title: 'AI புகைப்பட உதவியாளர்',
+    landingGrow1Desc: 'ஒரு புகைப்படத்தை பதிவேற்றி வெளிச்சம் மற்றும் ஃபோகஸ் பற்றி உடனடி கருத்தைப் பெறுங்கள், மேலும் அசலுடன் காட்ட ஒரு மேம்படுத்தப்பட்ட பதிப்பு.',
+    landingGrow2Title: 'தேவை & திட்ட நுண்ணறிவுகள்',
+    landingGrow2Desc: 'எந்த கைவினைகள் டிரெண்டிங்கில் உள்ளன மற்றும் உங்கள் கைவினை மற்றும் பகுதிக்கு எந்த அரசு திட்டங்கள் மற்றும் மானியங்கள் பொருந்தும் என்பதைப் பார்க்கவும்.',
+    landingGrow3Title: 'தெளிவான பணம் செலுத்துதல், உங்கள் விதிமுறைகளில்',
+    landingGrow3Desc: 'UPI அல்லது வங்கி பரிமாற்றத்தைத் தேர்ந்தெடுக்கவும், உங்கள் குறைந்தபட்ச பணம் செலுத்தும் தொகையை அமைக்கவும், பணம் எப்போது வழங்கப்படுகிறது என்பதை சரியாகப் பார்க்கவும்.',
+    landingFaqTitle: 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
+    landingFaq1Q: 'கலாசேது மூலம் பணம் செலுத்துதல் உண்மையில் பாதுகாப்பானதா?',
+    landingFaq1A: 'உங்கள் ஆர்டர் உறுதிப்படுத்தப்பட்டு, தயாரிக்கப்பட்டு, டெலிவரி செய்யப்படும்போது பணம் எஸ்க்ரோவில் வைக்கப்பட்டு மூன்று கட்டங்களாக கைவினைஞருக்கு வழங்கப்படும். இது தற்போது ஒரு சாண்ட்பாக்ஸ்/டெமோ செயல்படுத்தல், உரிமம் பெற்ற பணம் செலுத்தும் செயலி அல்ல.',
+    landingFaq2Q: 'எனக்கு நல்ல கேமரா இல்லை அல்லது தட்டச்சு செய்ய முடியாவிட்டால் நான் விற்கலாமா?',
+    landingFaq2A: 'ஆம் - நீங்கள் உங்கள் சொந்த மொழியில் உங்கள் தயாரிப்பு பட்டியலை உரக்கப் பேசலாம், வெளியிடுவதற்கு முன் பரிசீலிக்க கலாசேது அதை கட்டமைக்கப்பட்ட பட்டியலாக மாற்றுகிறது.',
+    landingFaq3Q: 'ஒரு பொருளில் நான் திருப்தியடையவில்லை என்றால் என்ன ஆகும்?',
+    landingFaq3A: 'நீங்கள் உங்கள் ஆர்டரிலிருந்து நேரடியாக ஆதாரத்துடன் ஒரு சர்ச்சை அல்லது தனி திரும்பப் பெறுதல்/மாற்றுதல் கோரிக்கையை எழுப்பலாம், ஒரு நிர்வாகி அதை மதிப்பாய்வு செய்வார்.',
+    landingFaq4Q: 'கலாசேதுவைப் பயன்படுத்த நான் ஆங்கிலம் பேச வேண்டுமா?',
+    landingFaq4A: 'இல்லை. ஆங்கிலம், இந்தி, கன்னடம் மற்றும் தமிழ் இன்று உரை மற்றும் குரலில் முழுமையாக ஆதரிக்கப்படுகின்றன, மேலும் பல மொழிகள் விரைவில் வரும்.',
+    landingFooterTagline: 'உண்மையான, கையால் செய்யப்பட்ட வேலையை மதிக்கும் வாங்குபவர்களுடன் இந்திய கைவினைஞர்களை இணைக்கும் நேரடி, பன்மொழி சந்தை.',
+    landingFooterRights: '© 2026 கலாசேது. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.'
   },
   te: {
     weaverView: 'కళాకారుడు డాష్‌బోర్డ్',
@@ -2136,12 +2480,22 @@ export const TRANSLATIONS: Record<Language, Translation> = {
   }
 };
 
-// Every selectable language, in Master Spec Section 10 order, with its own native display name
-// (English is always the base/fallback and stays first).
+// Every architecturally-wired language (Master Spec Section 10 order), with its own native
+// display name. This list is intentionally NOT rendered as user-facing picker options right now
+// (see SELECTABLE_LANGUAGES below) - it stays here so the full 22-language data/fallback
+// architecture remains intact and ready for a later phase without being touched.
 export const SUPPORTED_LANGUAGES: { code: Language; label: string }[] = [
   'en', 'as', 'bn', 'brx', 'doi', 'gu', 'hi', 'kn', 'ks', 'kok',
   'mai', 'ml', 'mni', 'mr', 'ne', 'or', 'pa', 'sa', 'sat', 'sd', 'ta', 'te'
 ].map((code) => ({ code: code as Language, label: TRANSLATIONS[code as Language].languageName }));
+
+// Languages actually offered as choices in the UI today: only the ones with real, complete
+// translation + voice support (English, Hindi, Kannada, Tamil). The other 18 SUPPORTED_LANGUAGES
+// remain fully wired in TRANSLATIONS/pickLang() for a later phase; this constant is the only
+// thing gating them out of pickers, so restoring them later is a one-line change here.
+export const SELECTABLE_LANGUAGES: { code: Language; label: string }[] = SUPPORTED_LANGUAGES.filter(
+  ({ code }) => code === 'en' || code === 'hi' || code === 'kn' || code === 'ta'
+);
 
 export const QA_QUESTIONS = [
   {
@@ -2149,17 +2503,20 @@ export const QA_QUESTIONS = [
     label: {
       en: 'What have you made?',
       kn: 'ನೀವು ಏನು ತಯಾರಿಸಿದ್ದೀರಿ?',
-      hi: 'आपने क्या बनाया है?'
+      hi: 'आपने क्या बनाया है?',
+      ta: 'நீங்கள் என்ன தயாரித்தீர்கள்?'
     },
     hint: {
       en: 'Describe your product (e.g. Silk Saree, Cotton Veshti, Shawl...)',
       kn: 'ನಿಮ್ಮ ಉತ್ಪನ್ನವನ್ನು ವಿವರಿಸಿ (ಉದಾ: ರೇಷ್ಮೆ ಸೀರೆ, ಹತ್ತಿ ಪಂಚೆ, ಶಾಲು...)',
-      hi: 'अपने उत्पाद का नाम बताएं (जैसे: रेशमी साड़ी, सूती धोती, शॉल...)'
+      hi: 'अपने उत्पाद का नाम बताएं (जैसे: रेशमी साड़ी, सूती धोती, शॉल...)',
+      ta: 'உங்கள் தயாரிப்பை விவரிக்கவும் (எ.கா: பட்டு புடவை, பருத்தி வேட்டி, சால்வை...)'
     },
     examples: {
       en: ['Ilkal Cotton Saree', 'Pochampally Ikat Dress Material', 'Kasavu Mundu'],
       kn: ['ಇಳಕಲ್ ಹತ್ತಿ ಸೀರೆ', 'ಪೋಚಂಪಲ್ಲಿ ಇಕ್ಕತ್ ಬಟ್ಟೆ', 'ಕಸವು ಮುಂಡು'],
-      hi: ['इल्कल सूती साड़ी', 'पोचंपल्ली इकत सूट मटेरियल', 'कासावू मुंडू']
+      hi: ['इल्कल सूती साड़ी', 'पोचंपल्ली इकत सूट मटेरियल', 'कासावू मुंडू'],
+      ta: ['இல்கல் பருத்தி புடவை', 'போச்சம்பள்ளி இக்கத் துணி', 'கசவு முண்டு']
     }
   },
   {
@@ -2167,17 +2524,20 @@ export const QA_QUESTIONS = [
     label: {
       en: 'What material did you use?',
       kn: 'ನೀವು ಯಾವ ಬಟ್ಟೆ/ದಾರ ಬಳಸಿದ್ದೀರಿ?',
-      hi: 'आपने किस सामग्री (कपड़े/धागे) का उपयोग किया है?'
+      hi: 'आपने किस सामग्री (कपड़े/धागे) का उपयोग किया है?',
+      ta: 'நீங்கள் என்ன துணி/நூல் பயன்படுத்தினீர்கள்?'
     },
     hint: {
       en: 'Mention the yarn (e.g. Mulberry Silk, Organic Cotton, Zari, Wool...)',
       kn: 'ದಾರವನ್ನು ಉಲ್ಲೇಖಿಸಿ (ಉದಾ: ರೇಷ್ಮೆ ದಾರ, ಸಾವಯವ ಹತ್ತಿ, ಜರಿ, ಉಣ್ಣೆ...)',
-      hi: 'धागा बताएं (जैसे: शहतूत रेशम, जैविक कपास, जरी, ऊन...)'
+      hi: 'धागा बताएं (जैसे: शहतूत रेशम, जैविक कपास, जरी, ऊन...)',
+      ta: 'நூலைக் குறிப்பிடவும் (எ.கா: முல்பெரி பட்டு, இயற்கை பருத்தி, ஜரி, கம்பளி...)'
     },
     examples: {
       en: ['Pure Mulberry Silk and fine Gold Zari', '80% Local Cotton and 20% Silk', 'Unbleached Organic Cotton'],
       kn: ['ಶುದ್ಧ ರೇಷ್ಮೆ ಮತ್ತು ನಿಖರ ಚಿನ್ನದ ಜರಿ', '೮೦% ಹತ್ತಿ ಮತ್ತು ೨೦% ರೇಷ್ಮೆ', 'ಸಾವಯವ ಹತ್ತಿ'],
-      hi: ['शुद्ध शहतूत रेशम और बढ़िया सोने की जरी', '80% स्थानीय कपास और 20% रेशम', 'बिना ब्लीच किया हुआ जैविक कपास']
+      hi: ['शुद्ध शहतूत रेशम और बढ़िया सोने की जरी', '80% स्थानीय कपास और 20% रेशम', 'बिना ब्लीच किया हुआ जैविक कपास'],
+      ta: ['தூய முல்பெரி பட்டு மற்றும் நுட்பமான தங்க ஜரி', '80% உள்ளூர் பருத்தி மற்றும் 20% பட்டு', 'வெளுக்கப்படாத இயற்கை பருத்தி']
     }
   },
   {
@@ -2185,12 +2545,14 @@ export const QA_QUESTIONS = [
     label: {
       en: 'What are its length and width?',
       kn: 'ಇದರ ಉದ್ದ ಮತ್ತು ಅಗಲ ಎಷ್ಟು?',
-      hi: 'इसकी लंबाई और चौड़ाई क्या है?'
+      hi: 'इसकी लंबाई और चौड़ाई क्या है?',
+      ta: 'இதன் நீளமும் அகலமும் என்ன?'
     },
     hint: {
       en: 'Enter measurements (e.g., saree is usually 5.5m by 1.1m)',
       kn: 'ಅಳತೆಗಳನ್ನು ನಮೂದಿಸಿ (ಉದಾ: ಸೀರೆ ಸಾಮಾನ್ಯವಾಗಿ ೫.೫ ಮೀಟರ್ ಉದ್ದ ಮತ್ತು ೧.೧ ಮೀಟರ್ ಅಗಲವಿರುತ್ತದೆ)',
-      hi: 'माप दर्ज करें (जैसे: साड़ी आमतौर पर 5.5 मीटर लंबी और 1.1 मीटर चौड़ी होती है)'
+      hi: 'माप दर्ज करें (जैसे: साड़ी आमतौर पर 5.5 मीटर लंबी और 1.1 मीटर चौड़ी होती है)',
+      ta: 'அளவுகளை உள்ளிடவும் (எ.கா: புடவை பொதுவாக 5.5 மீட்டர் நீளமும் 1.1 மீட்டர் அகலமும் கொண்டது)'
     },
     isMeasurements: true
   },
@@ -2199,17 +2561,20 @@ export const QA_QUESTIONS = [
     label: {
       en: 'What makes this piece special or unique?',
       kn: 'ಇದರ ವಿಶೇಷತೆ ಅಥವಾ ವಿಶಿಷ್ಟತೆ ಏನು?',
-      hi: 'यह कपड़ा क्यों विशेष या अनोखा है?'
+      hi: 'यह कपड़ा क्यों विशेष या अनोखा है?',
+      ta: 'இது எதனால் சிறப்பானது அல்லது தனித்துவமானது?'
     },
     hint: {
       en: 'Explain the weave, border, color, or inspiration (e.g., hand-loomed with natural dyes, double ikat geometry)',
       kn: 'ನೇಯ್ಗೆ ಶೈಲಿ, ಬಾರ್ಡರ್ ಅಥವಾ ಬಣ್ಣಗಳ ಕಥೆ ಹೇಳಿ (ಉದಾ: ನೈಸರ್ಗಿಕ ಬಣ್ಣಗಳು, ದೇವಸ್ಥಾನದ ಜರಿ ಬಾರ್ಡರ್)',
-      hi: 'बुनाई, बॉर्डर, रंग या डिजाइन की कहानी बताएं (जैसे: प्राकृतिक रंगों से हाथ से बुना, मंदिर का जरी बॉर्डर)'
+      hi: 'बुनाई, बॉर्डर, रंग या डिजाइन की कहानी बताएं (जैसे: प्राकृतिक रंगों से हाथ से बुना, मंदिर का जरी बॉर्डर)',
+      ta: 'நெசவு, பார்டர், நிறம் அல்லது உத்வேகத்தை விளக்கவும் (எ.கா: இயற்கை சாயங்களால் கைத்தறியில் நெய்யப்பட்டது, டபுள் இக்கத் வடிவமைப்பு)'
     },
     examples: {
       en: ['Traditional double-ikat pattern with chemical-free indigo dye.', 'Unique Tope Teni pallu joined with interlocking loops.', 'Woven only during early morning hours to keep yarn tension perfect.'],
       kn: ['ನೈಸರ್ಗಿಕ ಇಂಡಿಗೋ ಬಣ್ಣದೊಂದಿಗೆ ಸಾಂಪ್ರದಾಯಿಕ ಡಬಲ್-ಇಕ್ಕತ್ ವಿನ್ಯಾಸ.', 'ಮಧ್ಯೆ ಇಂಟರ್‌ಲಾಕ್ ನೇಯ್ಗೆಯಿಂದ ಜೋಡಿಸಿದ ತೋಪ್ ತೇಣಿ ಪಲ್ಲು.', 'ದಾರದ ಬಿಗಿತವನ್ನು ಕಾಪಾಡಲು ಬೆಳಗಿನ ಜಾವ ಮಾತ್ರ ನೇಯ್ದದ್ದು.'],
-      hi: ['बिना रसायनों के नील रंग का उपयोग और पारंपरिक डबल-इकत पैटर्न।', 'विशेष टोप तेनी पल्लू जिसे इंटरलॉकिंग लूप के साथ जोड़ा गया है।', 'धागे का खिंचाव सही रखने के लिए सुबह के समय ही बुनाई की गई है।']
+      hi: ['बिना रसायनों के नील रंग का उपयोग और पारंपरिक डबल-इकत पैटर्न।', 'विशेष टोप तेनी पल्लू जिसे इंटरलॉकिंग लूप के साथ जोड़ा गया है।', 'धागे का खिंचाव सही रखने के लिए सुबह के समय ही बुनाई की गई है।'],
+      ta: ['இரசாயனமில்லா நீலி சாயத்துடன் பாரம்பரிய டபுள்-இக்கத் வடிவமைப்பு.', 'இணைப்பு வளையங்களுடன் இணைக்கப்பட்ட தனித்துவமான தோப்பு தேனி பல்லு.', 'நூல் இறுக்கத்தை சரியாக வைத்திருக்க அதிகாலை நேரத்தில் மட்டுமே நெய்யப்பட்டது.']
     }
   },
   {
@@ -2217,12 +2582,14 @@ export const QA_QUESTIONS = [
     label: {
       en: 'What price would you like to sell it for?',
       kn: 'ನೀವು ಇದನ್ನು ಎಷ್ಟು ಬೆಲೆಗೆ ಮಾರಾಟ ಮಾಡಲು ಬಯಸುತ್ತೀರಿ?',
-      hi: 'आप इसे किस कीमत पर बेचना चाहते हैं?'
+      hi: 'आप इसे किस कीमत पर बेचना चाहते हैं?',
+      ta: 'இதை என்ன விலைக்கு விற்க விரும்புகிறீர்கள்?'
     },
     hint: {
       en: 'We recommend ₹3,000 to ₹6,000 for standard handlooms. Input numbers only.',
       kn: 'ಸಾಮಾನ್ಯ ಕೈಮಗ್ಗ ಸೀರೆಗಳಿಗೆ ₹೩,೦೦೦ ರಿಂದ ₹೬,೦೦೦ ಶಿಫಾರಸು ಮಾಡುತ್ತೇವೆ. ಕೇವಲ ಸಂಖ್ಯೆಗಳನ್ನು ನಮೂದಿಸಿ.',
-      hi: 'हम मानक हथकरघा के लिए ₹3,000 से ₹6,000 की सलाह देते हैं। केवल अंक लिखें।'
+      hi: 'हम मानक हथकरघा के लिए ₹3,000 से ₹6,000 की सलाह देते हैं। केवल अंक लिखें।',
+      ta: 'நிலையான கைத்தறி பொருட்களுக்கு ₹3,000 முதல் ₹6,000 வரை பரிந்துரைக்கிறோம். எண்களை மட்டும் உள்ளிடவும்.'
     },
     isPrice: true
   }
@@ -2309,10 +2676,10 @@ export function pickLang<T>(dict: { en: T } & Record<string, T | undefined>, lan
 // Converts Devanagari (०-९) and Kannada (೦-೯) digit characters to ASCII so voice transcripts
 // in any supported script can still be parsed as numbers by parseInt/parseFloat.
 export function normalizeSpokenNumerals(text: string): string {
-  return text.replace(/[०-९೦-೯]/g, (ch) => {
+  return text.replace(/[०-९೦-೯௦-௯]/g, (ch) => {
     const code = ch.codePointAt(0)!;
-    // Devanagari digits: U+0966-U+096F, Kannada digits: U+0CE6-U+0CEF
-    const base = code >= 0x0CE6 ? 0x0CE6 : 0x0966;
+    // Devanagari digits: U+0966-U+096F, Tamil digits: U+0BE6-U+0BEF, Kannada digits: U+0CE6-U+0CEF
+    const base = code >= 0x0CE6 ? 0x0CE6 : code >= 0x0BE6 ? 0x0BE6 : 0x0966;
     return String(code - base);
   });
 }
@@ -2325,7 +2692,7 @@ export function parseSpokenDimensions(text: string): { length: string; width: st
   const numbers = normalized.match(/\d+(\.\d+)?/g);
   if (!numbers || numbers.length === 0) return null;
 
-  const unitMatch = normalized.match(/meter|metre|मीटर|ಮೀಟರ್|inch|इंच|ಇಂಚ್|feet|foot|फुट|ಅಡಿ/i);
+  const unitMatch = normalized.match(/meter|metre|मीटर|ಮೀಟರ್|மீட்டர்|inch|इंच|ಇಂಚ್|இஞ்ச்|feet|foot|फुट|ಅಡಿ|அடி/i);
   const unit = unitMatch ? unitMatch[0] : 'meters';
 
   const length = `${numbers[0]} ${unit}`;

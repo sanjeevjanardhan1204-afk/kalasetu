@@ -62,19 +62,19 @@ export const DataSaverToast: React.FC<DataSaverToastProps> = ({
   };
 
   return (
-    <div 
+    <div
       id="data-saver-toast-container"
-      className="bg-[#FEF3C7] border-b-2 border-amber-300 text-amber-900 px-4 py-2.5 transition-all relative z-40"
+      className="bg-mustard/20 border-b-2 border-mustard/50 text-charcoal px-4 sm:px-6 py-3 transition-all relative z-40"
     >
-      <div className="flex items-center justify-between gap-2.5">
-        <div className="flex items-center gap-2 text-xs">
-          <WifiOff className="w-4 h-4 text-amber-700 shrink-0" />
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 text-xs">
+          <WifiOff className="w-4 h-4 text-terracotta shrink-0" />
           <div>
             <p className="font-extrabold flex items-center gap-1.5 leading-none">
               <span>{t.active}</span>
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-mustard"></span>
             </p>
-            <p className="text-[10px] text-amber-800 font-medium mt-0.5 leading-tight">
+            <p className="text-[11px] text-medium-beige font-medium mt-1 leading-tight">
               {t.subText}
             </p>
           </div>
@@ -83,18 +83,18 @@ export const DataSaverToast: React.FC<DataSaverToastProps> = ({
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={handleToggleExpand}
-            className="text-[10px] font-bold text-amber-800 bg-amber-200/50 hover:bg-amber-200 px-2.5 py-1 rounded-lg flex items-center gap-1 transition"
+            className="text-[10px] font-bold text-charcoal bg-white/60 hover:bg-white px-2.5 py-1 rounded-lg flex items-center gap-1 transition"
           >
             <span>{isExpanded ? t.hide : t.collapse}</span>
             {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           </button>
-          
+
           <button
             onClick={() => {
               playSyntheticChime('success');
               onDisable();
             }}
-            className="text-[10px] font-black text-white bg-amber-700 hover:bg-amber-800 px-2.5 py-1 rounded-lg transition"
+            className="text-[10px] font-black text-white bg-terracotta hover:bg-terracotta-dark px-2.5 py-1 rounded-lg transition"
           >
             {t.disable}
           </button>
@@ -102,9 +102,9 @@ export const DataSaverToast: React.FC<DataSaverToastProps> = ({
       </div>
 
       {isExpanded && (
-        <div className="mt-2 pt-2 border-t border-amber-200 text-[10px] text-amber-800 space-y-1.5 font-medium leading-relaxed">
-          <p className="font-bold uppercase tracking-wider text-amber-900 text-[9px] flex items-center gap-1">
-            <ZapOff className="w-3 h-3 text-amber-700" />
+        <div className="mt-2 pt-2 border-t border-mustard/40 text-[10px] text-medium-beige space-y-1.5 font-medium leading-relaxed">
+          <p className="font-bold uppercase tracking-wider text-charcoal text-[9px] flex items-center gap-1">
+            <ZapOff className="w-3 h-3 text-terracotta" />
             <span>{t.whyTitle}</span>
           </p>
           <ul className="list-disc list-inside space-y-1 pl-1">

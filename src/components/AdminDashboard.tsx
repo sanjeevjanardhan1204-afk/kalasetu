@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Product, Order, Language, TransactionHistoryEntry } from '../types';
 import { playSyntheticChime } from '../data';
+import { authHeaders } from '../utils/authClient';
 
 interface AdminDashboardProps {
   language: Language;
@@ -62,7 +63,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const fetchTransactions = async () => {
     setIsLoadingTxns(true);
     try {
-      const res = await fetch('/api/transactions');
+      const res = await fetch('/api/transactions', { headers: { ...authHeaders() } });
       const data = await res.json();
       if (data.success && Array.isArray(data.transactions)) {
         setTransactions(data.transactions);
@@ -100,7 +101,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     try {
       const res = await fetch(`/api/products/${product.id}/gi/verify`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({
           status: 'VERIFIED',
           verificationSource: 'Geographical Indications Registry of India, Govt. of India',
@@ -157,7 +158,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     try {
       const res = await fetch(`/api/products/${product.id}/gi/verify`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({
           status: 'REJECTED',
           notes: rejectionReason || 'Documentation could not be validated against the active GI repository.'
@@ -211,7 +212,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     try {
       const res = await fetch(`/api/orders/${orderId}/disputes/resolve`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ action, amount, notes })
       });
 
@@ -255,12 +256,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-3 sm:p-6 space-y-6 text-charcoal font-sans" id="admin-dashboard-container">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 text-charcoal font-sans" id="admin-dashboard-container">
       
       {/* Top Admin Identification Banner */}
-      <div className="bg-charcoal text-cream rounded-3xl p-4 sm:p-6 shadow-xl border-2 border-terracotta/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-charcoal text-cream rounded-2xl p-4 sm:p-6 shadow-md border-2 border-terracotta/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-terracotta text-white flex items-center justify-center font-bold text-xl shadow-md shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-terracotta text-white flex items-center justify-center font-bold text-xl shadow-xs shrink-0">
             <Landmark className="w-6 h-6" />
           </div>
           <div>
@@ -325,12 +326,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {actionSuccessMsg && (
         <div 
           id="admin-action-success-banner"
-          className="bg-emerald-50 border-2 border-emerald-500 text-emerald-950 p-4 rounded-2xl flex items-center gap-3 shadow-md animate-fadeIn"
+          className="bg-emerald-50 border-2 border-emerald-500 text-emerald-950 p-4 rounded-2xl flex items-center gap-3 shadow-xs animate-fadeIn"
         >
           <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
           <p className="text-xs font-bold">{actionSuccessMsg}</p>
         </div>
       )}
+
+      {/* Stat Overview - Landing-style stat tiles */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-6" id="admin-stat-overview">
+        {[
+          { value: pendingGiProducts.length, label: 'PENDING GI' },
+          { value: activeDisputes.length, label: 'ACTIVE DISPUTES' },
+          { value: transactions.length, label: 'LEDGER ENTRIES' }
+        ].map((s, i) => (
+          <div key={i} className="bg-white border border-cream-border rounded-2xl py-4 sm:py-6 text-center shadow-xs">
+            <p className="font-serif font-bold text-2xl sm:text-4xl text-terracotta">{s.value}</p>
+            <p className="text-[10px] sm:text-xs font-bold text-gray-500 mt-1 px-1">{s.label}</p>
+          </div>
+        ))}
+      </div>
 
       {/* Main Admin Navigation Tabs */}
       <div className="bg-white rounded-2xl p-1.5 border border-cream-border flex gap-1 shadow-xs" id="admin-main-tabs">
@@ -344,7 +359,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           }}
           className={`flex-1 py-3 px-3 rounded-xl text-xs font-bold uppercase transition flex items-center justify-center gap-2 ${
             activeTab === 'gi'
-              ? 'bg-terracotta text-white shadow-sm'
+              ? 'bg-terracotta text-white shadow-xs'
               : 'text-gray-600 hover:text-charcoal hover:bg-cream/40'
           }`}
         >
@@ -368,7 +383,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           }}
           className={`flex-1 py-3 px-3 rounded-xl text-xs font-bold uppercase transition flex items-center justify-center gap-2 ${
             activeTab === 'disputes'
-              ? 'bg-charcoal text-white shadow-sm'
+              ? 'bg-charcoal text-white shadow-xs'
               : 'text-gray-600 hover:text-charcoal hover:bg-cream/40'
           }`}
         >
@@ -392,7 +407,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           }}
           className={`flex-1 py-3 px-3 rounded-xl text-xs font-bold uppercase transition flex items-center justify-center gap-2 ${
             activeTab === 'transactions'
-              ? 'bg-indigo-custom text-white shadow-sm'
+              ? 'bg-indigo-custom text-white shadow-xs'
               : 'text-gray-600 hover:text-charcoal hover:bg-cream/40'
           }`}
         >
@@ -415,14 +430,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           
           {/* Subheader & filter */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-cream-border">
-            <div>
-              <h2 className="text-base font-serif font-bold text-charcoal flex items-center gap-2">
-                <Award className="w-5 h-5 text-terracotta" />
-                Geographical Indication (GI) Submissions
-              </h2>
-              <p className="text-xs text-gray-500">
-                Review submitted GI proof documents and certify authentic regional handlooms.
-              </p>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-terracotta/10 text-terracotta flex items-center justify-center">
+                <Award className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-serif font-bold text-charcoal">
+                  Geographical Indication (GI) Submissions
+                </h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Review submitted GI proof documents and certify authentic regional handlooms.
+                </p>
+              </div>
             </div>
 
             <div className="flex items-center gap-1.5 bg-cream/40 p-1 rounded-xl border border-cream-border shrink-0">
@@ -453,7 +472,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
           {/* Submissions List */}
           {displayedGiProducts.length === 0 ? (
-            <div className="bg-white rounded-3xl border border-cream-border p-8 text-center space-y-3">
+            <div className="bg-white rounded-2xl border border-cream-border p-8 text-center space-y-3">
               <Award className="w-12 h-12 mx-auto text-gray-300" />
               <h3 className="font-serif font-bold text-base text-charcoal">
                 {giFilter === 'pending' ? 'No Pending GI Submissions' : 'No GI Tagged Products Found'}
@@ -485,7 +504,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div
                     key={product.id}
                     id={`admin-gi-card-${product.id}`}
-                    className={`bg-white rounded-3xl border-2 p-5 shadow-xs transition hover:border-terracotta/40 space-y-4 ${
+                    className={`bg-white rounded-2xl border-2 p-5 shadow-xs transition hover:border-terracotta/40 space-y-4 ${
                       isPending ? 'border-amber-300 bg-amber-50/20' : isVerified ? 'border-emerald-200' : 'border-rose-200'
                     }`}
                   >
@@ -545,7 +564,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               id={`admin-verify-btn-${product.id}`}
                               disabled={isProcessing}
                               onClick={() => handleVerifyGi(product)}
-                              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+                              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
                             >
                               {isProcessing ? (
                                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -666,14 +685,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="space-y-4 animate-fadeIn" id="admin-disputes-section">
           
           <div className="bg-white p-4 rounded-2xl border border-cream-border flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-serif font-bold text-charcoal flex items-center gap-2">
-                <ShieldAlert className="w-5 h-5 text-amber-600" />
-                Customer & Artisan Disputes
-              </h2>
-              <p className="text-xs text-gray-500">
-                Arbitrate escrow dispute cases with direct milestone release, buyer refunds, or information requests.
-              </p>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                <ShieldAlert className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-serif font-bold text-charcoal">
+                  Customer & Artisan Disputes
+                </h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Arbitrate escrow dispute cases with direct milestone release, buyer refunds, or information requests.
+                </p>
+              </div>
             </div>
             <span className="bg-amber-100 text-amber-900 border border-amber-300 font-mono text-xs font-bold px-3 py-1 rounded-xl">
               {activeDisputes.length} Active Disputes
@@ -681,7 +704,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           {allDisputes.length === 0 ? (
-            <div className="bg-white rounded-3xl border border-cream-border p-8 text-center space-y-3">
+            <div className="bg-white rounded-2xl border border-cream-border p-8 text-center space-y-3">
               <CheckCircle2 className="w-12 h-12 mx-auto text-emerald-500" />
               <h3 className="font-serif font-bold text-base text-charcoal">
                 No Disputes Currently Logged
@@ -702,7 +725,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div
                     key={order.id}
                     id={`admin-dispute-card-${order.id}`}
-                    className={`bg-white rounded-3xl border-2 p-5 shadow-xs transition space-y-4 ${
+                    className={`bg-white rounded-2xl border-2 p-5 shadow-xs transition space-y-4 ${
                       isResolved ? 'border-gray-200' : 'border-amber-400 bg-amber-50/15'
                     }`}
                   >
@@ -887,14 +910,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="space-y-4 animate-fadeIn" id="admin-transactions-section">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-cream-border">
-            <div>
-              <h2 className="text-base font-serif font-bold text-charcoal flex items-center gap-2">
-                <Landmark className="w-5 h-5 text-indigo-custom" />
-                TantuLink Milestone Escrow Ledger
-              </h2>
-              <p className="text-xs text-gray-500">
-                Demo payment and milestone tracking log maintaining tamper-proof ledger entries.
-              </p>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-indigo-custom/10 text-indigo-custom flex items-center justify-center">
+                <Landmark className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-serif font-bold text-charcoal">
+                  TantuLink Milestone Escrow Ledger
+                </h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Demo payment and milestone tracking log maintaining tamper-proof ledger entries.
+                </p>
+              </div>
             </div>
 
             <button
@@ -912,12 +939,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
           {/* Transactions Table / Cards */}
           {transactions.length === 0 ? (
-            <div className="bg-white rounded-3xl border border-cream-border p-8 text-center space-y-2">
+            <div className="bg-white rounded-2xl border border-cream-border p-8 text-center space-y-2">
               <Landmark className="w-10 h-10 mx-auto text-gray-300" />
               <p className="text-xs text-gray-500">No transaction entries found in sandbox ledger.</p>
             </div>
           ) : (
-            <div className="bg-white rounded-3xl border border-cream-border overflow-hidden shadow-xs">
+            <div className="bg-white rounded-2xl border border-cream-border overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
@@ -994,7 +1021,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           id="admin-reject-gi-modal"
           className="fixed inset-0 z-50 bg-charcoal/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fadeIn"
         >
-          <div className="bg-cream border-2 border-rose-500 rounded-3xl p-6 text-left max-w-md w-full shadow-2xl space-y-4">
+          <div className="bg-cream border-2 border-rose-500 rounded-2xl p-6 text-left max-w-md w-full shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-cream-border pb-3">
               <h3 className="font-serif font-bold text-base text-rose-900 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-rose-600" />
@@ -1051,7 +1078,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           id="admin-partial-refund-modal"
           className="fixed inset-0 z-50 bg-charcoal/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fadeIn"
         >
-          <div className="bg-cream border-2 border-amber-500 rounded-3xl p-6 text-left max-w-md w-full shadow-2xl space-y-4">
+          <div className="bg-cream border-2 border-amber-500 rounded-2xl p-6 text-left max-w-md w-full shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-cream-border pb-3">
               <h3 className="font-serif font-bold text-base text-charcoal flex items-center gap-2">
                 <IndianRupee className="w-5 h-5 text-amber-600" />
@@ -1115,7 +1142,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           id="admin-request-info-modal"
           className="fixed inset-0 z-50 bg-charcoal/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fadeIn"
         >
-          <div className="bg-cream border-2 border-charcoal rounded-3xl p-6 text-left max-w-md w-full shadow-2xl space-y-4">
+          <div className="bg-cream border-2 border-charcoal rounded-2xl p-6 text-left max-w-md w-full shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-cream-border pb-3">
               <h3 className="font-serif font-bold text-base text-charcoal flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-indigo-custom" />

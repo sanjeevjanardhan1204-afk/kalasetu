@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, CheckCircle2, Clock, IndianRupee, AlertCircle, ArrowRight, Lock, ExternalLink, Zap } from 'lucide-react';
 import { Language, Order, PaymentProtection, OrderMilestone } from '../types';
+import { authHeaders } from '../utils/authClient';
 import { playSyntheticChime, pickLang } from '../data';
 
 interface PaymentProtectionTrackerProps {
@@ -19,7 +20,8 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
   const copy = pickLang({
     en: { title: 'KalaSetu Payment Protection', subtitle: 'Smart Milestone Escrow Protocol', total: 'Order Total', released: 'Released to Artisan', held: 'Held in Escrow', locked: 'Escrow Payouts Locked', lockedText: 'Active dispute on this order. All milestone releases are frozen until admin resolution.', schedule: '3-Stage Milestone Payout Schedule:', confirmed: 'Released upon order confirmation', making: 'Released when making begins & QC passes', delivered: 'Released upon final verified delivery', release: 'Release', releasing: 'Releasing...', guarantee: 'Artisan & Buyer Protection Guarantee:', guaranteeText: 'Funds are held in neutral escrow. 20% advances materials to the artisan upfront, 40% releases on craft completion, and 40% releases on verified delivery.', blocked: 'Cannot release funds: This order has an active dispute. All payouts are paused.', failed: 'Failed to release milestone' },
     kn: { title: 'ಕಲಾಸೇತು ಪಾವತಿ ರಕ್ಷಣೆ', subtitle: 'ಸ್ಮಾರ್ಟ್ ಹಂತದ ಎಸ್ಕ್ರೋ ವ್ಯವಸ್ಥೆ', total: 'ಆರ್ಡರ್ ಒಟ್ಟು', released: 'ಕುಶಲಕರ್ಮಿಗೆ ಬಿಡುಗಡೆ', held: 'ಎಸ್ಕ್ರೋದಲ್ಲಿ ಹಿಡಿದಿರುವುದು', locked: 'ಎಸ್ಕ್ರೋ ಪಾವತಿಗಳು ಲಾಕ್ ಆಗಿವೆ', lockedText: 'ಈ ಆರ್ಡರ್‌ನಲ್ಲಿ ಸಕ್ರಿಯ ವಿವಾದವಿದೆ. ನಿರ್ವಾಹಕರ ಪರಿಹಾರವಾಗುವವರೆಗೆ ಎಲ್ಲಾ ಹಂತದ ಬಿಡುಗಡೆಗಳು ನಿಲ್ಲುತ್ತವೆ.', schedule: '೩ ಹಂತದ ಪಾವತಿ ವೇಳಾಪಟ್ಟಿ:', confirmed: 'ಆರ್ಡರ್ ದೃಢೀಕರಣದ ನಂತರ ಬಿಡುಗಡೆ', making: 'ತಯಾರಿಕೆ ಮತ್ತು ಗುಣಮಟ್ಟ ಪರಿಶೀಲನೆಯ ನಂತರ ಬಿಡುಗಡೆ', delivered: 'ಅಂತಿಮ ಪರಿಶೀಲಿತ ವಿತರಣೆಯ ನಂತರ ಬಿಡುಗಡೆ', release: 'ಬಿಡುಗಡೆ', releasing: 'ಬಿಡುಗಡೆಯಾಗುತ್ತಿದೆ...', guarantee: 'ಕುಶಲಕರ್ಮಿ ಮತ್ತು ಖರೀದಿದಾರರ ರಕ್ಷಣೆ:', guaranteeText: 'ಹಣವನ್ನು ತಟಸ್ಥ ಎಸ್ಕ್ರೋದಲ್ಲಿ ಇರಿಸಲಾಗುತ್ತದೆ. ೨೦% ಸಾಮಗ್ರಿಗಳಿಗೆ ಮುಂಗಡ, ೪೦% ಕರಕುಶಲ ಪೂರ್ಣಗೊಂಡಾಗ ಮತ್ತು ೪೦% ಪರಿಶೀಲಿತ ವಿತರಣೆಯ ನಂತರ ಬಿಡುಗಡೆಯಾಗುತ್ತದೆ.', blocked: 'ಹಣ ಬಿಡುಗಡೆ ಸಾಧ್ಯವಿಲ್ಲ: ಈ ಆರ್ಡರ್‌ನಲ್ಲಿ ಸಕ್ರಿಯ ವಿವಾದವಿದೆ. ಎಲ್ಲಾ ಪಾವತಿಗಳನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ.', failed: 'ಹಂತ ಬಿಡುಗಡೆ ವಿಫಲವಾಗಿದೆ' },
-    hi: { title: 'कलासेतु भुगतान सुरक्षा', subtitle: 'स्मार्ट चरणबद्ध एस्क्रो व्यवस्था', total: 'ऑर्डर कुल', released: 'कारीगर को जारी', held: 'एस्क्रो में सुरक्षित', locked: 'एस्क्रो भुगतान लॉक है', lockedText: 'इस ऑर्डर पर सक्रिय विवाद है। व्यवस्थापक के समाधान तक सभी चरणों का भुगतान रुका है।', schedule: '3 चरणों की भुगतान योजना:', confirmed: 'ऑर्डर की पुष्टि पर जारी', making: 'निर्माण और गुणवत्ता जांच पर जारी', delivered: 'अंतिम सत्यापित डिलीवरी पर जारी', release: 'जारी करें', releasing: 'जारी हो रहा है...', guarantee: 'कारीगर और खरीदार सुरक्षा गारंटी:', guaranteeText: 'धन सुरक्षित एस्क्रो में रखा जाता है। 20% सामग्री के लिए अग्रिम, 40% शिल्प पूरा होने पर और 40% सत्यापित डिलीवरी पर जारी होता है।', blocked: 'धन जारी नहीं किया जा सकता: इस ऑर्डर पर सक्रिय विवाद है। सभी भुगतान रुके हैं।', failed: 'चरण भुगतान जारी नहीं हो सका' }
+    hi: { title: 'कलासेतु भुगतान सुरक्षा', subtitle: 'स्मार्ट चरणबद्ध एस्क्रो व्यवस्था', total: 'ऑर्डर कुल', released: 'कारीगर को जारी', held: 'एस्क्रो में सुरक्षित', locked: 'एस्क्रो भुगतान लॉक है', lockedText: 'इस ऑर्डर पर सक्रिय विवाद है। व्यवस्थापक के समाधान तक सभी चरणों का भुगतान रुका है।', schedule: '3 चरणों की भुगतान योजना:', confirmed: 'ऑर्डर की पुष्टि पर जारी', making: 'निर्माण और गुणवत्ता जांच पर जारी', delivered: 'अंतिम सत्यापित डिलीवरी पर जारी', release: 'जारी करें', releasing: 'जारी हो रहा है...', guarantee: 'कारीगर और खरीदार सुरक्षा गारंटी:', guaranteeText: 'धन सुरक्षित एस्क्रो में रखा जाता है। 20% सामग्री के लिए अग्रिम, 40% शिल्प पूरा होने पर और 40% सत्यापित डिलीवरी पर जारी होता है।', blocked: 'धन जारी नहीं किया जा सकता: इस ऑर्डर पर सक्रिय विवाद है। सभी भुगतान रुके हैं।', failed: 'चरण भुगतान जारी नहीं हो सका' },
+    ta: { title: 'கலாசேது பணம் செலுத்தும் பாதுகாப்பு', subtitle: 'ஸ்மார்ட் கட்ட எஸ்க்ரோ முறை', total: 'ஆர்டர் மொத்தம்', released: 'கைவினைஞருக்கு வழங்கப்பட்டது', held: 'எஸ்க்ரோவில் வைக்கப்பட்டுள்ளது', locked: 'எஸ்க்ரோ பணம் செலுத்துதல் பூட்டப்பட்டது', lockedText: 'இந்த ஆர்டரில் செயலில் உள்ள சர்ச்சை உள்ளது. நிர்வாகியின் தீர்வு வரை அனைத்து கட்ட வெளியீடுகளும் முடக்கப்பட்டுள்ளன.', schedule: '3-கட்ட பணம் செலுத்தும் அட்டவணை:', confirmed: 'ஆர்டர் உறுதிப்படுத்தலின் போது வெளியிடப்படும்', making: 'தயாரிப்பு தொடங்கி தர சோதனை தேர்ச்சி பெறும்போது வெளியிடப்படும்', delivered: 'இறுதி சரிபார்க்கப்பட்ட டெலிவரியின் போது வெளியிடப்படும்', release: 'வெளியிடு', releasing: 'வெளியிடப்படுகிறது...', guarantee: 'கைவினைஞர் & வாங்குபவர் பாதுகாப்பு உத்தரவாதம்:', guaranteeText: 'பணம் நடுநிலை எஸ்க்ரோவில் வைக்கப்படுகிறது. 20% பொருட்களுக்கு முன்பணமாகவும், 40% கைவினை முடிந்ததும், 40% சரிபார்க்கப்பட்ட டெலிவரியின் போதும் வெளியிடப்படும்.', blocked: 'பணத்தை வெளியிட முடியாது: இந்த ஆர்டரில் செயலில் உள்ள சர்ச்சை உள்ளது. அனைத்து பணம் செலுத்துதலும் நிறுத்தப்பட்டுள்ளது.', failed: 'கட்ட பணம் வெளியீடு தோல்வியடைந்தது' }
   }, language);
   const [releasingId, setReleasingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -75,7 +77,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
     try {
       const res = await fetch(`/api/orders/${order.id}/milestones/release`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ milestoneId: milestone.id })
       });
 
@@ -122,54 +124,54 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
   };
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-indigo-custom/15 p-4 shadow-xs space-y-4" id={`payment-protection-box-${order.id}`}>
-      
+    <div className="bg-white rounded-2xl border border-cream-border p-5 sm:p-6 shadow-xs space-y-5" id={`payment-protection-box-${order.id}`}>
+
       {/* Header with Title & DEMO Badge */}
-      <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-indigo-custom/10 text-indigo-custom rounded-xl">
-            <ShieldCheck className="w-5 h-5 text-indigo-custom" />
+      <div className="flex items-start sm:items-center justify-between gap-3 border-b border-cream-border pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 shrink-0 bg-indigo-custom/10 text-indigo-custom rounded-xl flex items-center justify-center">
+            <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-serif font-bold text-sm text-charcoal flex items-center gap-1.5">
+            <h4 className="font-serif font-bold text-base text-charcoal">
               {copy.title}
             </h4>
-            <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+            <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mt-0.5">
               {copy.subtitle}
             </p>
           </div>
         </div>
 
-        <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider font-mono">
+        <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono shrink-0">
           {protection.label || 'DEMO / SANDBOX'}
         </span>
       </div>
 
       {/* Escrow Financial Summary Cards */}
-      <div className="grid grid-cols-3 gap-2 text-center">
-        <div className="bg-cream p-2.5 rounded-xl border border-cream-border">
-          <span className="text-[9px] text-gray-500 font-bold uppercase tracking-wider block">
+      <div className="grid grid-cols-3 gap-3 text-center">
+        <div className="bg-cream p-3.5 rounded-xl border border-cream-border">
+          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">
             {copy.total}
           </span>
-          <p className="font-serif font-bold text-charcoal text-sm mt-0.5">
+          <p className="font-serif font-bold text-charcoal text-base mt-1">
             ₹{(protection?.orderTotal ?? 0).toLocaleString()}
           </p>
         </div>
 
-        <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
-          <span className="text-[9px] text-emerald-700 font-bold uppercase tracking-wider block">
+        <div className="bg-emerald-50 p-3.5 rounded-xl border border-emerald-200">
+          <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider block">
             {copy.released}
           </span>
-          <p className="font-serif font-bold text-emerald-800 text-sm mt-0.5">
+          <p className="font-serif font-bold text-emerald-800 text-base mt-1">
             ₹{(protection?.releasedAmount ?? 0).toLocaleString()}
           </p>
         </div>
 
-        <div className="bg-indigo-50 p-2.5 rounded-xl border border-indigo-200">
-          <span className="text-[9px] text-indigo-700 font-bold uppercase tracking-wider block">
+        <div className="bg-indigo-50 p-3.5 rounded-xl border border-indigo-200">
+          <span className="text-[10px] text-indigo-700 font-bold uppercase tracking-wider block">
             {copy.held}
           </span>
-          <p className="font-serif font-bold text-indigo-900 text-sm mt-0.5">
+          <p className="font-serif font-bold text-indigo-900 text-base mt-1">
             ₹{(protection?.pendingAmount ?? 0).toLocaleString()}
           </p>
         </div>
@@ -191,8 +193,8 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
       )}
 
       {/* Milestone Breakdown List */}
-      <div className="space-y-2.5 pt-1">
-        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">
+      <div className="space-y-3 pt-1">
+        <span className="text-xs text-gray-400 font-bold uppercase tracking-wider block">
           {copy.schedule}
         </span>
 
@@ -227,7 +229,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
                     <span className="font-bold text-xs text-charcoal">
                       Stage {idx + 1}: {m.name} ({m.percentage}%)
                     </span>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase ${
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-lg uppercase ${
                       isReleased 
                         ? 'bg-emerald-100 text-emerald-800' 
                         : 'bg-gray-100 text-gray-600'
@@ -260,7 +262,7 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
                     id={`release-milestone-btn-${m.id}`}
                     disabled={isReleasing || hasActiveDispute}
                     onClick={() => handleReleaseMilestone(m)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 transition ${
+                    className={`px-2.5 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 transition ${
                       hasActiveDispute
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         : 'bg-terracotta hover:bg-terracotta-dark text-white shadow-2xs cursor-pointer'
@@ -285,8 +287,8 @@ export const PaymentProtectionTracker: React.FC<PaymentProtectionTrackerProps> =
       )}
 
       {/* Explanatory Safety Seal */}
-      <div className="bg-cream/60 rounded-xl p-2.5 border border-cream-border text-[10px] text-gray-500 leading-relaxed">
-        <span className="font-bold text-charcoal block">{copy.guarantee}</span>
+      <div className="bg-cream/60 rounded-xl p-3.5 border border-cream-border text-xs text-gray-500 leading-relaxed">
+        <span className="font-bold text-charcoal block mb-1">{copy.guarantee}</span>
         {copy.guaranteeText}
       </div>
 

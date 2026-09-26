@@ -261,7 +261,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
     const cgst = Math.round(gstAmount / 2);
     const sgst = gstAmount - cgst;
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${t.invoiceTitleLabel} - ${order.id}</title>
-<style>body{font-family:Arial,sans-serif;padding:32px;color:#2D2926;}h1{font-size:20px;}table{width:100%;border-collapse:collapse;margin-top:16px;}td,th{border:1px solid #ddd;padding:8px;font-size:12px;text-align:left;}.total{font-weight:bold;}</style>
+<style>body{font-family:Arial,sans-serif;padding:32px;color:#0C0A09;}h1{font-size:20px;}table{width:100%;border-collapse:collapse;margin-top:16px;}td,th{border:1px solid #ddd;padding:8px;font-size:12px;text-align:left;}.total{font-weight:bold;}</style>
 </head><body>
 <h1>${t.invoiceTitleLabel}</h1>
 <p><strong>KalaSetu</strong> — Direct Artisan Marketplace<br/>Seller: ${order.product.weaverName}, ${order.product.weaverRegion}<br/>GSTIN: ${profile?.gstin || 'URP (Unregistered Person - below GST threshold)'}</p>
@@ -271,7 +271,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
 <tr><td>${order.product.title}</td><td>${order.quantity || 1}</td><td>₹${taxableValue}</td><td>₹${cgst}</td><td>₹${sgst}</td><td>₹${order.product.price}</td></tr>
 <tr class="total"><td colspan="5">Grand Total</td><td>₹${order.product.price}</td></tr>
 </table>
-<p style="margin-top:24px;font-size:11px;color:#8C8379;">This is a system-generated invoice from KalaSetu's demo/sandbox billing. Verify GSTIN and tax details with your accountant before formal filing.</p>
+<p style="margin-top:24px;font-size:11px;color:#78716C;">This is a system-generated invoice from KalaSetu's demo/sandbox billing. Verify GSTIN and tax details with your accountant before formal filing.</p>
 </body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
@@ -360,6 +360,8 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       text = `ನಿಮ್ಮ ಒಟ್ಟು ಗಳಿಕೆಯ ವಿವರಗಳು ಇಲ್ಲಿವೆ. ಹಿಂಪಡೆಯಲು ಒಂಬತ್ತು ಸಾವಿರದ ಆರುನೂರು ರೂಪಾಯಿಗಳು ಲಭ್ಯವಿವೆ. ಮೂರು ಸಾವಿರದ ಇನ್ನೂರು ರೂಪಾಯಿಗಳು ಬಾಕಿ ಉಳಿದಿವೆ. ಒಟ್ಟು ಮೂರು ಆರ್ಡರ್‌ಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ.`;
     } else if (language === 'hi') {
       text = `आपकी कमाई का विवरण इस प्रकार है। निकासी के लिए उपलब्ध राशि नौ हजार छह सौ रुपये है। तीन हजार दो सौ रुपये होल्ड पर हैं। कुल तीन ऑर्डर पूरे हो चुके हैं।`;
+    } else if (language === 'ta') {
+      text = `உங்கள் மொத்த வருமான விவரங்கள் இதோ. திரும்பப் பெற ஒன்பதாயிரத்து அறுநூறு ரூபாய் கிடைக்கிறது. மூவாயிரத்து இருநூறு ரூபாய் நிலுவையில் உள்ளது. மொத்தம் மூன்று ஆர்டர்கள் முடிக்கப்பட்டுள்ளன.`;
     } else {
       text = `Here is your earnings summary. You have nine thousand six hundred rupees available to withdraw. Three thousand two hundred rupees are pending in hold. You have completed three orders.`;
     }
@@ -518,6 +520,8 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       summaryText = `ದಯವಿಟ್ಟು ನಿಮ್ಮ ಉತ್ಪನ್ನದ ಪಟ್ಟಿಯನ್ನು ಖಚಿತಪಡಿಸಿ. ಉತ್ಪನ್ನದ ಹೆಸರು: ${qaAnswers.title || 'ಕೈಮಗ್ಗ ಉತ್ಪನ್ನ'}. ಬಳಸಿದ ಬಟ್ಟೆ: ${qaAnswers.material || 'ಶುದ್ಧ ಹತ್ತಿ'}. ಉದ್ದ: ${dimensions.length}, ಅಗಲ: ${dimensions.width}. ವಿಶೇಷತೆ: ${qaAnswers.specialFeatures || 'ಸಾಂಪ್ರದಾಯಿಕ ಕೈಮಗ್ಗ ನೇಯ್ಗೆ'}. ನಿಗದಿಪಡಿಸಿದ ಬೆಲೆ: ${qaAnswers.price || 'ಮೂರು ಸಾವಿರ'} ರೂಪಾಯಿಗಳು.`;
     } else if (language === 'hi') {
       summaryText = `कृपया अपने उत्पाद विवरण की पुष्टि करें। उत्पाद का नाम: ${qaAnswers.title || 'हथकरघा साड़ी'}. सामग्री: ${qaAnswers.material || 'शुद्ध सूत'}. लंबाई: ${dimensions.length}, चौड़ाई: ${dimensions.width}. विशेषता: ${qaAnswers.specialFeatures || 'पारंपरिक बुनाई'}. कीमत: ${qaAnswers.price || 'चार हजार'} रुपये।`;
+    } else if (language === 'ta') {
+      summaryText = `உங்கள் தயாரிப்பு பட்டியலை உறுதிப்படுத்தவும். தயாரிப்பு பெயர்: ${qaAnswers.title || 'கைத்தறி பொருள்'}. பயன்படுத்திய துணி: ${qaAnswers.material || 'தூய பருத்தி'}. நீளம்: ${dimensions.length}, அகலம்: ${dimensions.width}. சிறப்பம்சம்: ${qaAnswers.specialFeatures || 'பாரம்பரிய கைத்தறி நெசவு'}. நிர்ணயித்த விலை: ${qaAnswers.price || 'மூவாயிரம்'} ரூபாய்.`;
     } else {
       summaryText = `Please review your listing. Product name is ${qaAnswers.title || 'Handloom item'}. Made of ${qaAnswers.material || 'pure cotton'}. Measurements are length ${dimensions.length} and width ${dimensions.width}. Special features: ${qaAnswers.specialFeatures || 'Traditional weave'}. Listed price is ${qaAnswers.price || 'three thousand'} rupees.`;
     }
@@ -583,10 +587,12 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
     setActiveSubTab('dashboard');
 
     // Speech success notification
-    const successMsg = language === 'kn' 
-      ? 'ನಿಮ್ಮ ಉತ್ಪನ್ನವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿ ಪ್ರಕಟಿಸಲಾಗಿದೆ!' 
-      : language === 'hi' 
-      ? 'आपका उत्पाद सफलतापूर्वक प्रकाशित हो गया है!' 
+    const successMsg = language === 'kn'
+      ? 'ನಿಮ್ಮ ಉತ್ಪನ್ನವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿ ಪ್ರಕಟಿಸಲಾಗಿದೆ!'
+      : language === 'hi'
+      ? 'आपका उत्पाद सफलतापूर्वक प्रकाशित हो गया है!'
+      : language === 'ta'
+      ? 'உங்கள் தயாரிப்பு வெற்றிகரமாக டாஷ்போர்டில் வெளியிடப்பட்டது!'
       : 'Your handloom product has been successfully published to KalaSetu!';
     triggerSubtitleSpeak(successMsg);
     speakText(successMsg, language, undefined, () => triggerSubtitleStop());
@@ -637,21 +643,21 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto bg-cream pb-24 min-h-[85vh] relative px-4 sm:px-6 lg:px-8" id="weaver-view-container">
-      
+    <div className="max-w-6xl mx-auto bg-cream pb-24 min-h-[85vh] relative" id="weaver-view-container">
+
       {activeSubTab === 'dashboard' ? (
-        <div className="px-4 py-5 space-y-6">
-          
+        <div className="px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
+
           {/* Dashboard Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="font-serif text-2xl font-bold text-charcoal">{t.weaverDashboard}</h2>
-              <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider flex items-center gap-1">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">{t.weaverDashboard}</h2>
+              <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider flex items-center gap-1 mt-1">
                 <span className={`w-2 h-2 rounded-full bg-emerald-500 ${dataSaver ? '' : 'animate-pulse'}`}></span>
                 Artisan ID: #{profile?.weaverId || 'WEV-8809'}
               </p>
             </div>
-            
+
             {/* Quick Listing Trigger */}
             <button
               id="add-new-product-btn"
@@ -659,11 +665,25 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                 playSyntheticChime('click');
                 setActiveSubTab('list-wizard');
               }}
-              className="bg-terracotta hover:bg-terracotta-dark text-cream font-bold py-3 px-4 rounded-xl flex items-center gap-2 shadow-md transition transform active:scale-95"
+              className="bg-terracotta hover:bg-terracotta/90 text-white font-bold py-3 px-5 rounded-xl flex items-center justify-center gap-2 shadow-xs transition transform active:scale-95 w-full sm:w-auto"
             >
               <Plus className="w-5 h-5" />
               <span>{t.addNewProduct}</span>
             </button>
+          </div>
+
+          {/* Summary stat tiles - Landing-style: large serif number, small label, white card */}
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
+            {[
+              { value: `₹${(earnings?.available ?? 0).toLocaleString()}`, label: t.availableEarnings },
+              { value: `₹${(earnings?.pending ?? 0).toLocaleString()}`, label: t.pendingPayments },
+              { value: String(earnings.completedCount), label: t.completedOrders }
+            ].map((s, i) => (
+              <div key={i} className="bg-white border border-cream-border rounded-2xl py-4 sm:py-6 px-2 text-center shadow-xs">
+                <p className="font-serif font-bold text-lg sm:text-2xl text-terracotta truncate">{s.value}</p>
+                <p className="text-[9px] sm:text-xs font-bold text-gray-500 mt-1 px-1 uppercase tracking-wider">{s.label}</p>
+              </div>
+            ))}
           </div>
 
           {/* Connection status card optimized for limited connectivity */}
@@ -762,7 +782,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                     <button
                       key={m}
                       onClick={() => setPayoutSettings(prev => ({ ...prev, method: m }))}
-                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition ${payoutSettings.method === m ? 'bg-indigo-custom text-white border-indigo-custom' : 'bg-white border-gray-200 text-gray-600'}`}
+                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition ${payoutSettings.method === m ? 'bg-indigo-custom text-white border-indigo-custom' : 'bg-white border-cream-border text-gray-600'}`}
                     >
                       {m === 'upi' ? t.upiOption : t.bankAccountOption}
                     </button>
@@ -773,7 +793,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                     value={payoutSettings.upiId}
                     onChange={(e) => setPayoutSettings(prev => ({ ...prev, upiId: e.target.value }))}
                     placeholder="yourname@upi"
-                    className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
+                    className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
                   />
                 ) : (
                   <div className="grid grid-cols-2 gap-2">
@@ -781,13 +801,13 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       value={payoutSettings.bankLast4}
                       onChange={(e) => setPayoutSettings(prev => ({ ...prev, bankLast4: e.target.value }))}
                       placeholder="Account No."
-                      className="bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                      className="bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs"
                     />
                     <input
                       value={payoutSettings.ifsc}
                       onChange={(e) => setPayoutSettings(prev => ({ ...prev, ifsc: e.target.value }))}
                       placeholder="IFSC"
-                      className="bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                      className="bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs"
                     />
                   </div>
                 )}
@@ -800,7 +820,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                     onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
                     value={payoutSettings.minThreshold}
                     onChange={(e) => setPayoutSettings(prev => ({ ...prev, minThreshold: Math.max(0, Number(e.target.value) || 0) }))}
-                    className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs"
+                    className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs"
                   />
                 </div>
                 <button onClick={() => setShowPayoutSettings(false)} className="w-full bg-terracotta hover:bg-terracotta-dark text-white font-bold py-2 rounded-xl text-xs">
@@ -821,7 +841,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               value={whatsappSettings.number}
               onChange={(e) => setWhatsappSettings(prev => ({ ...prev, number: e.target.value }))}
               placeholder="+91 98765 43210"
-              className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
+              className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
             />
             <label className="flex items-center gap-2 text-xs text-gray-600">
               <input
@@ -843,16 +863,16 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                 </div>
                 <div>
                   <h3 className="font-serif text-sm font-bold text-charcoal">
-                    {language === 'kn' ? 'ಮಾರಾಟ ಮತ್ತು ಗಳಿಕೆ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್' : language === 'hi' ? 'बिक्री और कमाई डैशबोर्ड' : 'Sales & Earnings Dashboard'}
+                    {language === 'kn' ? 'ಮಾರಾಟ ಮತ್ತು ಗಳಿಕೆ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್' : language === 'hi' ? 'बिक्री और कमाई डैशबोर्ड' : language === 'ta' ? 'விற்பனை & வருமான டாஷ்போர்டு' : 'Sales & Earnings Dashboard'}
                   </h3>
                   <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
-                    {language === 'kn' ? 'ವ್ಯವಹಾರ ಪ್ರಗತಿ ವರದಿ' : language === 'hi' ? 'व्यापार प्रगति रिपोर्ट' : 'Business Growth Metrics'}
+                    {language === 'kn' ? 'ವ್ಯವಹಾರ ಪ್ರಗತಿ ವರದಿ' : language === 'hi' ? 'व्यापार प्रगति रिपोर्ट' : language === 'ta' ? 'வணிக வளர்ச்சி அளவீடுகள்' : 'Business Growth Metrics'}
                   </p>
                 </div>
               </div>
               <div className="text-right">
                 <span className="text-[9px] font-bold text-indigo-custom bg-indigo-custom/5 px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
-                  {language === 'kn' ? 'ಲೈವ್ ವಿಶ್ಲೇಷಣೆ' : language === 'hi' ? 'लाइव विश्लेषण' : 'Live Analytics'}
+                  {language === 'kn' ? 'ಲೈವ್ ವಿಶ್ಲೇಷಣೆ' : language === 'hi' ? 'लाइव विश्लेषण' : language === 'ta' ? 'நேரடி பகுப்பாய்வு' : 'Live Analytics'}
                 </span>
               </div>
             </div>
@@ -861,7 +881,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             <div className="space-y-2">
               <div className="flex justify-between items-baseline text-xs font-bold text-charcoal">
                 <span>
-                  {language === 'kn' ? 'ಒಟ್ಟು ಗಳಿಕೆಯ ವಿಭಜನೆ' : language === 'hi' ? 'कुल कमाई का विवरण' : 'Total Earnings Breakdown'}
+                  {language === 'kn' ? 'ಒಟ್ಟು ಗಳಿಕೆಯ ವಿಭಜನೆ' : language === 'hi' ? 'कुल कमाई का विवरण' : language === 'ta' ? 'மொத்த வருமான விவரம்' : 'Total Earnings Breakdown'}
                 </span>
                 <span className="text-sm font-serif text-terracotta">
                   ₹{((earnings?.available ?? 0) + (earnings?.pending ?? 0)).toLocaleString()}
@@ -886,7 +906,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                   <span className="w-2.5 h-2.5 rounded-full bg-terracotta"></span>
                   <div className="min-w-0">
                     <p className="text-[9px] text-gray-400 uppercase font-bold tracking-wider leading-none">
-                      {language === 'kn' ? 'ಹಿಂಪಡೆಯಲು ಲಭ್ಯ' : language === 'hi' ? 'निकासी के लिए उपलब्ध' : 'Available'}
+                      {language === 'kn' ? 'ಹಿಂಪಡೆಯಲು ಲಭ್ಯ' : language === 'hi' ? 'निकासी के लिए उपलब्ध' : language === 'ta' ? 'கிடைக்கும்' : 'Available'}
                     </p>
                     <p className="text-xs font-bold text-charcoal mt-0.5">
                       ₹{(earnings?.available ?? 0).toLocaleString()} ({Math.round(((earnings?.available ?? 0) / Math.max(1, ((earnings?.available ?? 0) + (earnings?.pending ?? 0)))) * 100)}%)
@@ -897,7 +917,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                   <span className="w-2.5 h-2.5 rounded-full bg-mustard"></span>
                   <div className="min-w-0">
                     <p className="text-[9px] text-gray-400 uppercase font-bold tracking-wider leading-none">
-                      {language === 'kn' ? 'ಬಾಕಿ ಇದೆ' : language === 'hi' ? 'होल्ड पर' : 'Pending Hold'}
+                      {language === 'kn' ? 'ಬಾಕಿ ಇದೆ' : language === 'hi' ? 'होल्ड पर' : language === 'ta' ? 'நிலுவையில்' : 'Pending Hold'}
                     </p>
                     <p className="text-xs font-bold text-charcoal mt-0.5">
                       ₹{(earnings?.pending ?? 0).toLocaleString()} ({Math.round(((earnings?.pending ?? 0) / Math.max(1, ((earnings?.available ?? 0) + (earnings?.pending ?? 0)))) * 100)}%)
@@ -910,7 +930,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             {/* Monthly Sales Performance Bar Chart */}
             <div className="space-y-3 pt-2">
               <p className="text-xs font-bold text-charcoal">
-                {language === 'kn' ? 'ಮಾಸಿಕ ಕೈಮಗ್ಗ ಮಾರಾಟದ ವರದಿ' : language === 'hi' ? 'मासिक हथकरघा बिक्री रिपोर्ट' : 'Monthly Handloom Sales Performance'}
+                {language === 'kn' ? 'ಮಾಸಿಕ ಕೈಮಗ್ಗ ಮಾರಾಟದ ವರದಿ' : language === 'hi' ? 'मासिक हथकरघा बिक्री रिपोर्ट' : language === 'ta' ? 'மாதாந்திர கைத்தறி விற்பனை செயல்திறன்' : 'Monthly Handloom Sales Performance'}
               </p>
 
               {/* CSS-based bar chart */}
@@ -918,21 +938,21 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                 <div className="h-28 flex items-end justify-between gap-2.5 px-1 relative">
                   {/* Back Grid Lines */}
                   <div className="absolute inset-0 flex flex-col justify-between pointer-events-none text-[8px] text-gray-400 font-mono font-bold">
-                    <div className="border-b border-dashed border-gray-200/60 w-full pb-0.5">₹15k</div>
-                    <div className="border-b border-dashed border-gray-200/60 w-full pb-0.5">₹10k</div>
-                    <div className="border-b border-dashed border-gray-200/60 w-full pb-0.5">₹5k</div>
-                    <div className="w-full border-b border-gray-200"></div>
+                    <div className="border-b border-dashed border-cream-border/60 w-full pb-0.5">₹15k</div>
+                    <div className="border-b border-dashed border-cream-border/60 w-full pb-0.5">₹10k</div>
+                    <div className="border-b border-dashed border-cream-border/60 w-full pb-0.5">₹5k</div>
+                    <div className="w-full border-b border-cream-border"></div>
                   </div>
 
                   {/* Render Monthly Bars */}
                   {[
-                    { month: language === 'kn' ? 'ಫೆಬ್ರ' : language === 'hi' ? 'फर' : 'Feb', sales: 2, revenue: 6400 },
-                    { month: language === 'kn' ? 'ಮಾರ್ಚ್' : language === 'hi' ? 'मार्च' : 'Mar', sales: 3, revenue: 9600 },
-                    { month: language === 'kn' ? 'ಏಪ್ರಿ' : language === 'hi' ? 'अप्रै' : 'Apr', sales: 1, revenue: 3200 },
-                    { month: language === 'kn' ? 'ಮೇ' : language === 'hi' ? 'मई' : 'May', sales: 4, revenue: 12800 },
-                    { month: language === 'kn' ? 'ಜೂನ್' : language === 'hi' ? 'जून' : 'Jun', sales: 2, revenue: 6400 },
+                    { month: language === 'kn' ? 'ಫೆಬ್ರ' : language === 'hi' ? 'फर' : language === 'ta' ? 'பிப்' : 'Feb', sales: 2, revenue: 6400 },
+                    { month: language === 'kn' ? 'ಮಾರ್ಚ್' : language === 'hi' ? 'मार्च' : language === 'ta' ? 'மார்' : 'Mar', sales: 3, revenue: 9600 },
+                    { month: language === 'kn' ? 'ಏಪ್ರಿ' : language === 'hi' ? 'अप्रै' : language === 'ta' ? 'ஏப்' : 'Apr', sales: 1, revenue: 3200 },
+                    { month: language === 'kn' ? 'ಮೇ' : language === 'hi' ? 'मई' : language === 'ta' ? 'மே' : 'May', sales: 4, revenue: 12800 },
+                    { month: language === 'kn' ? 'ಜೂನ್' : language === 'hi' ? 'जून' : language === 'ta' ? 'ஜூன்' : 'Jun', sales: 2, revenue: 6400 },
                     { 
-                      month: language === 'kn' ? 'ಜುಲೈ' : language === 'hi' ? 'जुला' : 'Jul', 
+                      month: language === 'kn' ? 'ಜುಲೈ' : language === 'hi' ? 'जुला' : language === 'ta' ? 'ஜூலை' : 'Jul', 
                       sales: earnings.completedCount, 
                       revenue: earnings.available + earnings.pending,
                       isCurrent: true 
@@ -945,7 +965,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       <div 
                         key={idx} 
                         className="flex-1 flex flex-col items-center group relative z-10"
-                        title={`${item.sales} ${language === 'kn' ? 'ಸೀರೆಗಳು' : language === 'hi' ? 'साड़ियाँ' : 'sarees'} - ₹${(item?.revenue ?? 0).toLocaleString()}`}
+                        title={`${item.sales} ${language === 'kn' ? 'ಸೀರೆಗಳು' : language === 'hi' ? 'साड़ियाँ' : language === 'ta' ? 'புடவைகள்' : 'sarees'} - ₹${(item?.revenue ?? 0).toLocaleString()}`}
                       >
                         {/* Value indicator tooltip/bubble visible on hover */}
                         <div className="absolute -top-7 opacity-0 group-hover:opacity-100 transition duration-200 bg-charcoal text-cream text-[9px] font-bold py-1 px-1.5 rounded-md pointer-events-none whitespace-nowrap shadow-xs z-20">
@@ -978,13 +998,13 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-indigo-custom"></span>
                     <span>
-                      {language === 'kn' ? 'ಹಿಂದಿನ ಅವಧಿ' : language === 'hi' ? 'पिछली अवधि' : 'Previous Period'}
+                      {language === 'kn' ? 'ಹಿಂದಿನ ಅವಧಿ' : language === 'hi' ? 'पिछली अवधि' : language === 'ta' ? 'முந்தைய காலம்' : 'Previous Period'}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-terracotta"></span>
                     <span>
-                      {language === 'kn' ? 'ಪ್ರಸ್ತುತ ತಿಂಗಳು' : language === 'hi' ? 'चालू माह' : 'Current Month'}
+                      {language === 'kn' ? 'ಪ್ರಸ್ತುತ ತಿಂಗಳು' : language === 'hi' ? 'चालू माह' : language === 'ta' ? 'தற்போதைய மாதம்' : 'Current Month'}
                     </span>
                   </div>
                 </div>
@@ -1001,10 +1021,10 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                 </div>
                 <div>
                   <h3 className="font-serif text-sm font-bold text-charcoal">
-                    {language === 'kn' ? 'ಮಾರುಕಟ್ಟೆ ಬೇಡಿಕೆ ವಿಶ್ಲೇಷಣೆ' : language === 'hi' ? 'मांग और ट्रेंड विश्लेषण' : 'Demand Intelligence'}
+                    {language === 'kn' ? 'ಮಾರುಕಟ್ಟೆ ಬೇಡಿಕೆ ವಿಶ್ಲೇಷಣೆ' : language === 'hi' ? 'मांग और ट्रेंड विश्लेषण' : language === 'ta' ? 'தேவை நுண்ணறிவு' : 'Demand Intelligence'}
                   </h3>
                   <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
-                    {language === 'kn' ? 'ಉತ್ಪನ್ನ ಶ್ರೇಣಿ ಮತ್ತು ಋತುಮಾನದ ಬೇಡಿಕೆ' : language === 'hi' ? 'लोकप्रिय शिल्प एवं मौसमी मांग' : 'Real-time Category Trends & Seasonal Spikes'}
+                    {language === 'kn' ? 'ಉತ್ಪನ್ನ ಶ್ರೇಣಿ ಮತ್ತು ಋತುಮಾನದ ಬೇಡಿಕೆ' : language === 'hi' ? 'लोकप्रिय शिल्प एवं मौसमी मांग' : language === 'ta' ? 'நேரடி வகை போக்குகள் & பருவகால உயர்வு' : 'Real-time Category Trends & Seasonal Spikes'}
                   </p>
                 </div>
               </div>
@@ -1064,10 +1084,10 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                 </div>
                 <div>
                   <h3 className="font-serif text-sm font-bold text-charcoal">
-                    {language === 'kn' ? 'ನಿಮಗಾಗಿ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು' : language === 'hi' ? 'आपके लिए सरकारी योजनाएं' : 'Schemes for You'}
+                    {language === 'kn' ? 'ನಿಮಗಾಗಿ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು' : language === 'hi' ? 'आपके लिए सरकारी योजनाएं' : language === 'ta' ? 'உங்களுக்கான திட்டங்கள்' : 'Schemes for You'}
                   </h3>
                   <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
-                    {language === 'kn' ? 'ಕರಕುಶಲ ಮತ್ತು ರೇಷ್ಮೆ ನೇಯ್ಗೆ ಪ್ರೋತ್ಸಾಹಕಗಳು' : language === 'hi' ? 'हस्तशिल्प एवं बुनकर सब्सिडी' : 'Curated Subsidies, Grants & Export Incentives'}
+                    {language === 'kn' ? 'ಕರಕುಶಲ ಮತ್ತು ರೇಷ್ಮೆ ನೇಯ್ಗೆ ಪ್ರೋತ್ಸಾಹಕಗಳು' : language === 'hi' ? 'हस्तशिल्प एवं बुनकर सब्सिडी' : language === 'ta' ? 'தேர்ந்தெடுக்கப்பட்ட மானியங்கள், உதவித்தொகைகள் & ஏற்றுமதி ஊக்குவிப்புகள்' : 'Curated Subsidies, Grants & Export Incentives'}
                   </p>
                 </div>
               </div>
@@ -1172,10 +1192,10 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                 </div>
                 <div>
                   <h3 className="font-serif text-sm font-bold text-charcoal">
-                    {language === 'kn' ? 'ಬಲ್ಕ್ ಮತ್ತು ಕಸ್ಟಮ್ ಆರ್ಡರ್ ವಿನಂತಿಗಳು' : language === 'hi' ? 'कस्टम एवं थोक ऑर्डर अनुरोध' : 'Structured Custom & Bulk Order Requests'}
+                    {language === 'kn' ? 'ಬಲ್ಕ್ ಮತ್ತು ಕಸ್ಟಮ್ ಆರ್ಡರ್ ವಿನಂತಿಗಳು' : language === 'hi' ? 'कस्टम एवं थोक ऑर्डर अनुरोध' : language === 'ta' ? 'கட்டமைக்கப்பட்ட தனிப்பயன் & மொத்த ஆர்டர் கோரிக்கைகள்' : 'Structured Custom & Bulk Order Requests'}
                   </h3>
                   <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
-                    {language === 'kn' ? 'ಖರೀದಿದಾರರಿಂದ ವಿಶೇಷ ವಿನಂತಿಗಳು' : language === 'hi' ? 'खरीदारों से सीधी पूछताछ एवं ऑर्डर कोटेशन' : 'Buyer Specs & Capacity-Aware Order Flow'}
+                    {language === 'kn' ? 'ಖರೀದಿದಾರರಿಂದ ವಿಶೇಷ ವಿನಂತಿಗಳು' : language === 'hi' ? 'खरीदारों से सीधी पूछताछ एवं ऑर्डर कोटेशन' : language === 'ta' ? 'வாங்குபவர் விவரங்கள் & திறன் அறிந்த ஆர்டர் ஓட்டம்' : 'Buyer Specs & Capacity-Aware Order Flow'}
                   </p>
                 </div>
               </div>
@@ -1185,7 +1205,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             </div>
 
             {customRequestsList.length === 0 ? (
-              <div className="bg-cream-dark/40 border border-gray-200 rounded-xl p-6 text-center text-gray-500 text-xs">
+              <div className="bg-cream-dark/40 border border-cream-border rounded-xl p-6 text-center text-gray-500 text-xs">
                 No custom or bulk order requests currently pending.
               </div>
             ) : (
@@ -1275,7 +1295,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             </h3>
 
             {artisanOrders.filter(o => o.status === 'Order Received' || o.status === 'Accepted').length === 0 ? (
-              <div className="bg-cream-dark/50 border border-gray-200 rounded-xl p-6 text-center">
+              <div className="bg-cream-dark/50 border border-cream-border rounded-xl p-6 text-center">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
                 <p className="text-sm font-medium text-gray-700">All orders dispatched securely!</p>
                 <p className="text-xs text-gray-500 mt-1">Excellent job keeping rural artisans active.</p>
@@ -1403,15 +1423,18 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
 
           {/* List of current listings */}
           <div className="space-y-3" id="weaver-listings-section">
-            <h3 className="font-serif text-lg font-bold text-charcoal">{t.myListedProducts}</h3>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div>
+              <h3 className="font-serif font-bold text-xl sm:text-2xl text-charcoal">{t.myListedProducts}</h3>
+              <p className="text-sm text-gray-500 mt-1">{products.length} products</p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {products.map(product => (
-                <div key={product.id} className="bg-white rounded-xl border border-cream-border overflow-hidden shadow-xs flex flex-col">
-                  <div className="h-28 relative">
-                    <img 
-                      src={product.images[0]} 
-                      alt={product.title} 
+                <div key={product.id} className="bg-white rounded-2xl border border-cream-border overflow-hidden shadow-xs flex flex-col">
+                  <div className="aspect-square relative bg-cream">
+                    <img
+                      src={product.images[0]}
+                      alt={product.title}
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"
                     />
@@ -1450,7 +1473,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       </button>
                       <button
                         onClick={() => handleDuplicateProduct(product)}
-                        className="text-[9px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2 py-1 rounded-md transition"
+                        className="text-[9px] font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-cream-border px-2 py-1 rounded-md transition"
                       >
                         {t.duplicateProduct}
                       </button>
@@ -1481,7 +1504,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       {product.status !== 'Archived' && (
                         <button
                           onClick={() => setConfirmArchiveId(product.id)}
-                          className="text-[9px] font-bold text-gray-500 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2 py-1 rounded-md transition"
+                          className="text-[9px] font-bold text-gray-500 bg-gray-50 hover:bg-gray-100 border border-cream-border px-2 py-1 rounded-md transition"
                         >
                           {t.archiveProduct}
                         </button>
@@ -1541,7 +1564,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                     </button>
 
                     {confirmArchiveId === product.id && (
-                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-2 space-y-1.5">
+                      <div className="bg-gray-50 border border-cream-border rounded-lg p-2 space-y-1.5">
                         <p className="text-[9px] text-gray-600">{t.confirmArchive}</p>
                         <div className="flex gap-1.5">
                           <button
@@ -1552,7 +1575,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                           </button>
                           <button
                             onClick={() => setConfirmArchiveId(null)}
-                            className="flex-1 text-[9px] font-bold text-gray-600 bg-white border border-gray-200 py-1 rounded-md"
+                            className="flex-1 text-[9px] font-bold text-gray-600 bg-white border border-cream-border py-1 rounded-md"
                           >
                             {t.cancel}
                           </button>
@@ -1569,58 +1592,61 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
       ) : (
         /* Flow 1: Add New Product conversational wizard */
         <div className="bg-cream min-h-screen">
-          <div className="px-4 pt-4">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-4">
             <BackButton language={language} onBack={() => setActiveSubTab('dashboard')} />
           </div>
-          
+
           {/* Stepper Header */}
-          <div className="bg-white border-b border-cream-border px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
-            <button
-              onClick={() => {
-                playSyntheticChime('click');
-                if (wizardStep > 1) {
-                  setWizardStep(wizardStep - 1);
-                } else {
-                  setActiveSubTab('dashboard');
-                }
-              }}
-              className="text-gray-600 hover:text-black p-1 bg-gray-100 rounded-full"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div className="flex-1">
-              <span className="text-xs text-mustard font-bold uppercase tracking-wider block">
-                {t.qaTitle}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-charcoal">
-                  Step {wizardStep} of 3
+          <div className="bg-cream/95 backdrop-blur-sm border-b border-cream-border px-4 sm:px-6 py-4 sticky top-0 z-30">
+            <div className="max-w-2xl mx-auto flex items-center gap-3">
+              <button
+                onClick={() => {
+                  playSyntheticChime('click');
+                  if (wizardStep > 1) {
+                    setWizardStep(wizardStep - 1);
+                  } else {
+                    setActiveSubTab('dashboard');
+                  }
+                }}
+                className="text-gray-600 hover:text-black p-1 bg-white border border-cream-border rounded-full shrink-0"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <div className="flex-1">
+                <span className="text-xs text-mustard font-bold uppercase tracking-wider block">
+                  {t.qaTitle}
                 </span>
-                <span className="text-xs text-gray-500">
-                  ({wizardStep === 1 ? 'Photo Capture' : wizardStep === 2 ? 'Conversational Q&A' : 'Review & Confirm'})
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-charcoal">
+                    Step {wizardStep} of 3
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    ({wizardStep === 1 ? 'Photo Capture' : wizardStep === 2 ? 'Conversational Q&A' : 'Review & Confirm'})
+                  </span>
+                </div>
               </div>
-            </div>
-            {/* Visual progress bar dots */}
-            <div className="flex gap-1.5">
-              <div className={`w-2.5 h-2.5 rounded-full ${wizardStep >= 1 ? 'bg-terracotta' : 'bg-gray-200'}`}></div>
-              <div className={`w-2.5 h-2.5 rounded-full ${wizardStep >= 2 ? 'bg-terracotta' : 'bg-gray-200'}`}></div>
-              <div className={`w-2.5 h-2.5 rounded-full ${wizardStep >= 3 ? 'bg-terracotta' : 'bg-gray-200'}`}></div>
+              {/* Visual progress bar dots */}
+              <div className="flex gap-1.5 shrink-0">
+                <div className={`w-2.5 h-2.5 rounded-full ${wizardStep >= 1 ? 'bg-terracotta' : 'bg-gray-200'}`}></div>
+                <div className={`w-2.5 h-2.5 rounded-full ${wizardStep >= 2 ? 'bg-terracotta' : 'bg-gray-200'}`}></div>
+                <div className={`w-2.5 h-2.5 rounded-full ${wizardStep >= 3 ? 'bg-terracotta' : 'bg-gray-200'}`}></div>
+              </div>
             </div>
           </div>
 
           {/* Step 1: Photo Capture Simulation */}
           {wizardStep === 1 && (
-            <div className="px-4 py-6 space-y-6" id="photo-step-container">
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12" id="photo-step-container">
+            <div className="bg-white border border-cream-border rounded-2xl shadow-xs p-5 sm:p-8 space-y-6">
               <div className="text-center space-y-2">
-                <h3 className="font-serif text-xl font-bold text-charcoal">Take or Pick Product Photo</h3>
-                <p className="text-sm text-gray-600 max-w-xs mx-auto">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-charcoal">Take or Pick Product Photo</h3>
+                <p className="text-sm text-gray-500 max-w-xs mx-auto">
                   Snap a photo of the completed handloom masterpiece on your loom or flat surface.
                 </p>
               </div>
 
               {/* Main Photo Sandbox Box */}
-              <div className="aspect-square w-full max-w-sm mx-auto bg-white border-4 border-dashed border-gray-300 rounded-3xl flex flex-col items-center justify-center relative overflow-hidden group shadow-inner">
+              <div className="aspect-square w-full max-w-sm mx-auto bg-white border-4 border-dashed border-cream-border rounded-3xl flex flex-col items-center justify-center relative overflow-hidden group shadow-inner">
                 {selectedPhoto ? (
                   <>
                     <img
@@ -1728,7 +1754,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               </div>
 
               {/* Bottom Next button */}
-              <div className="pt-4 max-w-sm mx-auto">
+              <div className="pt-2 max-w-sm mx-auto">
                 <button
                   id="photo-step-next-btn"
                   disabled={!selectedPhoto}
@@ -1737,19 +1763,21 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                     setWizardStep(2);
                     setQaIndex(0);
                   }}
-                  className={`w-full font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-md transition ${selectedPhoto ? 'bg-terracotta hover:bg-terracotta-dark text-cream transform active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                  className={`w-full font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 shadow-xs transition ${selectedPhoto ? 'bg-terracotta hover:bg-terracotta/90 text-white transform active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
                 >
                   <span>{t.next}</span>
                   <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
+            </div>
           )}
 
           {/* Step 2: Guided Conversational Q&A */}
           {wizardStep === 2 && (
-            <div className="px-4 py-6 space-y-6 flex flex-col justify-between" id="qa-step-container">
-              
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12" id="qa-step-container">
+            <div className="bg-white border border-cream-border rounded-2xl shadow-xs p-5 sm:p-8 space-y-6 flex flex-col justify-between">
+
               {/* Question bubble */}
               <div className="space-y-4">
                 <div className="bg-white border-2 border-indigo-custom/15 rounded-2xl p-5 shadow-xs space-y-2 relative">
@@ -1768,14 +1796,14 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
 
                 {/* Sub-inputs if dimensions or price */}
                 {QA_QUESTIONS[qaIndex].isMeasurements && (
-                  <div className="bg-white border border-gray-200 rounded-xl p-4 grid grid-cols-2 gap-3" id="dimensions-input-panel">
+                  <div className="bg-white border border-cream-border rounded-xl p-4 grid grid-cols-2 gap-3" id="dimensions-input-panel">
                     <div>
                       <label className="text-xs font-bold text-gray-700 block mb-1">Length (ಉದ್ದ/लंबाई)</label>
                       <input 
                         type="text" 
                         value={dimensions.length}
                         onChange={(e) => setDimensions(prev => ({ ...prev, length: e.target.value }))}
-                        className="w-full bg-cream p-2.5 rounded-lg text-sm border border-gray-300 focus:outline-none focus:border-terracotta"
+                        className="w-full bg-cream p-2.5 rounded-lg text-sm border border-cream-border focus:outline-none focus:border-terracotta"
                       />
                     </div>
                     <div>
@@ -1784,7 +1812,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                         type="text" 
                         value={dimensions.width}
                         onChange={(e) => setDimensions(prev => ({ ...prev, width: e.target.value }))}
-                        className="w-full bg-cream p-2.5 rounded-lg text-sm border border-gray-300 focus:outline-none focus:border-terracotta"
+                        className="w-full bg-cream p-2.5 rounded-lg text-sm border border-cream-border focus:outline-none focus:border-terracotta"
                       />
                     </div>
                   </div>
@@ -1805,7 +1833,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                             playSyntheticChime('click');
                             handleVoiceInput(exText);
                           }}
-                          className="bg-white hover:bg-cream-dark text-charcoal border border-gray-300 rounded-full px-3.5 py-1.5 text-xs font-medium shadow-xs transition active:scale-95"
+                          className="bg-white hover:bg-cream-dark text-charcoal border border-cream-border rounded-full px-3.5 py-1.5 text-xs font-medium shadow-xs transition active:scale-95"
                         >
                           {exText}
                         </button>
@@ -1845,7 +1873,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               </div>
 
               {/* Main Interactive Speaking / Typing Field */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-inner space-y-4">
+              <div className="bg-white border border-cream-border rounded-2xl p-5 shadow-inner space-y-4">
                 {!typingMode ? (
                   /* Voice Input Controls */
                   <div className="text-center space-y-4 py-2">
@@ -1888,7 +1916,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       value={currentInputText}
                       onChange={(e) => setCurrentInputText(e.target.value)}
                       placeholder="Type details in your comfortable language..."
-                      className="w-full bg-cream p-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-terracotta min-h-[100px]"
+                      className="w-full bg-cream p-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:border-terracotta min-h-[100px]"
                     />
                     
                     <div className="flex justify-between items-center">
@@ -2009,18 +2037,20 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               )}
 
             </div>
+            </div>
           )}
 
           {/* Step 3: Listen-or-Read Confirmation screen */}
           {wizardStep === 3 && (
-            <div className="px-4 py-6 space-y-6" id="review-step-container">
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12" id="review-step-container">
+            <div className="bg-white border border-cream-border rounded-2xl shadow-xs p-5 sm:p-8 space-y-6">
               <div className="text-center space-y-1">
-                <h3 className="font-serif text-xl font-bold text-charcoal">{t.confirmListing}</h3>
-                <p className="text-xs text-gray-500">Listen to our narration summary or read to confirm details before publishing.</p>
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-charcoal">{t.confirmListing}</h3>
+                <p className="text-sm text-gray-500">Listen to our narration summary or read to confirm details before publishing.</p>
               </div>
 
               {/* Visual Audio Waveform during TTS review */}
-              <div className="bg-gradient-to-r from-terracotta/10 to-mustard/10 rounded-2xl p-5 border border-terracotta/20 flex flex-col items-center justify-center space-y-4 shadow-sm">
+              <div className="bg-gradient-to-r from-terracotta/10 to-mustard/10 rounded-2xl p-5 border border-terracotta/20 flex flex-col items-center justify-center space-y-4 shadow-xs">
                 <button
                   id="play-review-narration-btn"
                   onClick={handleReadReviewSummary}
@@ -2044,8 +2074,8 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               </div>
 
               {/* Review Card Details */}
-              <div className="bg-white border-2 border-dashed border-gray-300 rounded-2xl p-5 space-y-4">
-                <div className="flex gap-3 pb-3 border-b border-gray-100">
+              <div className="bg-white border-2 border-dashed border-cream-border rounded-2xl p-5 space-y-4">
+                <div className="flex gap-3 pb-3 border-b border-cream-border">
                   <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
                     <img src={selectedPhoto || SAMPLE_PRODUCT_IMAGES[0]} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
@@ -2123,7 +2153,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                       onChange={(e) => setDraftGiRegistered(e.target.checked)}
                       className="sr-only peer"
                     />
-                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-cream-border after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
                   </label>
                 </div>
 
@@ -2141,7 +2171,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                         type="text"
                         value={draftGiRegNumber}
                         onChange={(e) => setDraftGiRegNumber(e.target.value)}
-                        className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs font-mono font-bold text-charcoal"
+                        className="w-full bg-white border border-cream-border rounded-lg p-2 text-xs font-mono font-bold text-charcoal"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -2151,7 +2181,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                           type="text"
                           value={draftGiOrigin}
                           onChange={(e) => setDraftGiOrigin(e.target.value)}
-                          className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs text-charcoal"
+                          className="w-full bg-white border border-cream-border rounded-lg p-2 text-xs text-charcoal"
                         />
                       </div>
                       <div>
@@ -2160,7 +2190,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                           type="text"
                           value={draftGiState}
                           onChange={(e) => setDraftGiState(e.target.value)}
-                          className="w-full bg-white border border-gray-300 rounded-lg p-2 text-xs text-charcoal"
+                          className="w-full bg-white border border-cream-border rounded-lg p-2 text-xs text-charcoal"
                         />
                       </div>
                     </div>
@@ -2189,12 +2219,13 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                     setWizardStep(2);
                     setQaIndex(0);
                   }}
-                  className="w-full bg-white hover:bg-cream-dark text-gray-600 border border-gray-300 font-bold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 transition"
+                  className="w-full bg-white hover:bg-cream-dark text-gray-600 border border-cream-border font-bold py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 transition"
                 >
                   <span>{t.editDetails}</span>
                 </button>
               </div>
 
+            </div>
             </div>
           )}
 
@@ -2218,7 +2249,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               </button>
             </div>
 
-            <div className="bg-white p-3.5 rounded-xl border border-gray-200 text-xs flex gap-3">
+            <div className="bg-white p-3.5 rounded-xl border border-cream-border text-xs flex gap-3">
               <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0">
                 <img src={selectedOrderForQc.product.images[0]} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               </div>
@@ -2232,7 +2263,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
                   </span>
                 </div>
                 {/* Smooth Animated QC progress track */}
-                <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden mt-1 border border-gray-200">
+                <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden mt-1 border border-cream-border">
                   <motion.div
                     className="h-full bg-gradient-to-r from-amber-500 via-terracotta to-emerald-500 rounded-full"
                     initial={{ width: 0 }}
@@ -2249,45 +2280,45 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             <div className="space-y-4">
               <label 
                 id="damage-qc-check"
-                className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-cream-dark/40 transition"
+                className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-cream-border cursor-pointer hover:bg-cream-dark/40 transition"
               >
                 <input 
                   type="checkbox" 
                   checked={qcChecks.noDamage}
                   onChange={(e) => setQcChecks(prev => ({ ...prev, noDamage: e.target.checked }))}
-                  className="w-5 h-5 text-terracotta rounded border-gray-300 focus:ring-terracotta shrink-0 mt-0.5"
+                  className="w-5 h-5 text-terracotta rounded border-cream-border focus:ring-terracotta shrink-0 mt-0.5"
                 />
                 <span className="text-xs font-semibold text-charcoal leading-relaxed">{t.damageCheck}</span>
               </label>
 
               <label 
                 id="threads-qc-check"
-                className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-cream-dark/40 transition"
+                className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-cream-border cursor-pointer hover:bg-cream-dark/40 transition"
               >
                 <input 
                   type="checkbox" 
                   checked={qcChecks.threadsTrimmed}
                   onChange={(e) => setQcChecks(prev => ({ ...prev, threadsTrimmed: e.target.checked }))}
-                  className="w-5 h-5 text-terracotta rounded border-gray-300 focus:ring-terracotta shrink-0 mt-0.5"
+                  className="w-5 h-5 text-terracotta rounded border-cream-border focus:ring-terracotta shrink-0 mt-0.5"
                 />
                 <span className="text-xs font-semibold text-charcoal leading-relaxed">{t.threadsCheck}</span>
               </label>
 
               <label 
                 id="stitching-qc-check"
-                className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-cream-dark/40 transition"
+                className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-cream-border cursor-pointer hover:bg-cream-dark/40 transition"
               >
                 <input 
                   type="checkbox" 
                   checked={qcChecks.stitchingOk}
                   onChange={(e) => setQcChecks(prev => ({ ...prev, stitchingOk: e.target.checked }))}
-                  className="w-5 h-5 text-terracotta rounded border-gray-300 focus:ring-terracotta shrink-0 mt-0.5"
+                  className="w-5 h-5 text-terracotta rounded border-cream-border focus:ring-terracotta shrink-0 mt-0.5"
                 />
                 <span className="text-xs font-semibold text-charcoal leading-relaxed">{t.stitchingCheck}</span>
               </label>
 
               {/* Photo Upload Simulator */}
-              <div className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-4 text-center">
+              <div className="bg-white border-2 border-dashed border-cream-border rounded-xl p-4 text-center">
                 {qcPhoto ? (
                   <div className="relative">
                     <img src={qcPhoto} alt="QC Packed Bundle" className="h-32 w-full object-cover rounded-lg" referrerPolicy="no-referrer" />
@@ -2326,7 +2357,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
               <button
                 id="qc-cancel-btn"
                 onClick={() => setSelectedOrderForQc(null)}
-                className="flex-1 bg-white hover:bg-cream-dark text-gray-600 border border-gray-300 font-bold py-3 px-4 rounded-xl text-xs text-center transition"
+                className="flex-1 bg-white hover:bg-cream-dark text-gray-600 border border-cream-border font-bold py-3 px-4 rounded-xl text-xs text-center transition"
               >
                 {t.cancel}
               </button>
@@ -2356,6 +2387,7 @@ export const WeaverView: React.FC<WeaverViewProps> = ({
             setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
             setSelectedGiProduct(updated);
           }}
+          isAdmin={profile?.role === 'admin'}
         />
       )}
 
@@ -2467,32 +2499,32 @@ const ProductEditModal: React.FC<{ product: Product; t: Translation; onClose: ()
         <div className="space-y-3">
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-600">Title</label>
-            <input value={draft.title} onChange={(e) => setDraft(prev => ({ ...prev, title: e.target.value }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
+            <input value={draft.title} onChange={(e) => setDraft(prev => ({ ...prev, title: e.target.value }))} className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className="text-xs font-bold text-gray-600">Price (₹)</label>
-              <input type="number" min={0} onWheel={(e) => e.currentTarget.blur()} onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }} value={draft.price} onChange={(e) => setDraft(prev => ({ ...prev, price: Math.max(0, Number(e.target.value) || 0) }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
+              <input type="number" min={0} onWheel={(e) => e.currentTarget.blur()} onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }} value={draft.price} onChange={(e) => setDraft(prev => ({ ...prev, price: Math.max(0, Number(e.target.value) || 0) }))} className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
             </div>
             <div className="space-y-1">
               <label className="text-xs font-bold text-gray-600">Material</label>
-              <input value={draft.material} onChange={(e) => setDraft(prev => ({ ...prev, material: e.target.value }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
+              <input value={draft.material} onChange={(e) => setDraft(prev => ({ ...prev, material: e.target.value }))} className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta" />
             </div>
           </div>
           <div className="space-y-1">
             <label className="text-xs font-bold text-gray-600">Description</label>
-            <textarea value={draft.description} onChange={(e) => setDraft(prev => ({ ...prev, description: e.target.value }))} rows={2} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta resize-none" />
+            <textarea value={draft.description} onChange={(e) => setDraft(prev => ({ ...prev, description: e.target.value }))} rows={2} className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta resize-none" />
           </div>
         </div>
 
         {/* Variants */}
-        <div className="space-y-2 border-t border-gray-100 pt-3">
+        <div className="space-y-2 border-t border-cream-border pt-3">
           <label className="text-xs font-bold text-gray-600">{t.variants}</label>
           {(draft.variants || []).map(v => (
             <div key={v.id} className="grid grid-cols-4 gap-1.5 items-center">
-              <input placeholder={t.variantSize} value={v.size || ''} onChange={(e) => updateVariant(v.id, { size: e.target.value })} className="col-span-1 bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
-              <input placeholder={t.variantColor} value={v.color || ''} onChange={(e) => updateVariant(v.id, { color: e.target.value })} className="col-span-1 bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
-              <input type="number" placeholder={t.variantExtraPrice} onWheel={(e) => e.currentTarget.blur()} value={v.priceDelta} onChange={(e) => updateVariant(v.id, { priceDelta: Number(e.target.value) || 0 })} className="col-span-1 bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
+              <input placeholder={t.variantSize} value={v.size || ''} onChange={(e) => updateVariant(v.id, { size: e.target.value })} className="col-span-1 bg-cream border border-cream-border rounded-lg px-2 py-1.5 text-[10px]" />
+              <input placeholder={t.variantColor} value={v.color || ''} onChange={(e) => updateVariant(v.id, { color: e.target.value })} className="col-span-1 bg-cream border border-cream-border rounded-lg px-2 py-1.5 text-[10px]" />
+              <input type="number" placeholder={t.variantExtraPrice} onWheel={(e) => e.currentTarget.blur()} value={v.priceDelta} onChange={(e) => updateVariant(v.id, { priceDelta: Number(e.target.value) || 0 })} className="col-span-1 bg-cream border border-cream-border rounded-lg px-2 py-1.5 text-[10px]" />
               <button onClick={() => removeVariant(v.id)} className="text-[9px] font-bold text-rose-500">{t.removeVariant}</button>
             </div>
           ))}
@@ -2500,27 +2532,27 @@ const ProductEditModal: React.FC<{ product: Product; t: Translation; onClose: ()
         </div>
 
         {/* Discounts */}
-        <div className="space-y-2 border-t border-gray-100 pt-3">
+        <div className="space-y-2 border-t border-cream-border pt-3">
           <label className="text-xs font-bold text-gray-600">{t.discountsAndOffers}</label>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className="text-[10px] text-gray-500">{t.discountPercentLabel}</label>
-              <input type="number" min={0} max={90} onWheel={(e) => e.currentTarget.blur()} value={draft.discountPercent || 0} onChange={(e) => setDraft(prev => ({ ...prev, discountPercent: Math.max(0, Math.min(90, Number(e.target.value) || 0)) }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs" />
+              <input type="number" min={0} max={90} onWheel={(e) => e.currentTarget.blur()} value={draft.discountPercent || 0} onChange={(e) => setDraft(prev => ({ ...prev, discountPercent: Math.max(0, Math.min(90, Number(e.target.value) || 0)) }))} className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs" />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] text-gray-500">{t.saleEndsOn}</label>
-              <input type="date" value={draft.saleEndsAt || ''} onChange={(e) => setDraft(prev => ({ ...prev, saleEndsAt: e.target.value }))} className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs" />
+              <input type="date" value={draft.saleEndsAt || ''} onChange={(e) => setDraft(prev => ({ ...prev, saleEndsAt: e.target.value }))} className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs" />
             </div>
           </div>
         </div>
 
         {/* Bulk pricing */}
-        <div className="space-y-2 border-t border-gray-100 pt-3">
+        <div className="space-y-2 border-t border-cream-border pt-3">
           <label className="text-xs font-bold text-gray-600">{t.bulkPricingTiers}</label>
           {(draft.bulkPricingTiers || []).map((tier, i) => (
             <div key={i} className="grid grid-cols-3 gap-1.5 items-center">
-              <input type="number" placeholder={t.bulkMinQty} onWheel={(e) => e.currentTarget.blur()} value={tier.minQty} onChange={(e) => updateBulkTier(i, { minQty: Math.max(1, Number(e.target.value) || 1) })} className="bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
-              <input type="number" placeholder={t.bulkPricePerUnit} onWheel={(e) => e.currentTarget.blur()} value={tier.pricePerUnit} onChange={(e) => updateBulkTier(i, { pricePerUnit: Math.max(0, Number(e.target.value) || 0) })} className="bg-cream border border-gray-200 rounded-lg px-2 py-1.5 text-[10px]" />
+              <input type="number" placeholder={t.bulkMinQty} onWheel={(e) => e.currentTarget.blur()} value={tier.minQty} onChange={(e) => updateBulkTier(i, { minQty: Math.max(1, Number(e.target.value) || 1) })} className="bg-cream border border-cream-border rounded-lg px-2 py-1.5 text-[10px]" />
+              <input type="number" placeholder={t.bulkPricePerUnit} onWheel={(e) => e.currentTarget.blur()} value={tier.pricePerUnit} onChange={(e) => updateBulkTier(i, { pricePerUnit: Math.max(0, Number(e.target.value) || 0) })} className="bg-cream border border-cream-border rounded-lg px-2 py-1.5 text-[10px]" />
               <button onClick={() => removeBulkTier(i)} className="text-[9px] font-bold text-rose-500">{t.removeVariant}</button>
             </div>
           ))}
@@ -2528,14 +2560,14 @@ const ProductEditModal: React.FC<{ product: Product; t: Translation; onClose: ()
         </div>
 
         {/* Process video */}
-        <div className="space-y-1 border-t border-gray-100 pt-3">
+        <div className="space-y-1 border-t border-cream-border pt-3">
           <label className="text-xs font-bold text-gray-600">{t.attachProcessVideo}</label>
           <input
             type="text"
             placeholder="https://..."
             value={draft.videoUrl || ''}
             onChange={(e) => setDraft(prev => ({ ...prev, videoUrl: e.target.value }))}
-            className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
+            className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
           />
           {draft.videoUrl && <p className="text-[10px] text-emerald-700">{t.videoAttachedLabel}</p>}
         </div>

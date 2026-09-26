@@ -75,22 +75,22 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/80 backdrop-blur-xs overflow-y-auto animate-fade-in">
-      <div className="bg-cream border-2 border-indigo-custom/30 rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden my-6">
-        
+      <div className="bg-cream border border-cream-border rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden my-6">
+
         {/* Header */}
-        <div className="bg-indigo-custom text-cream p-4 sm:p-5 flex items-start justify-between relative overflow-hidden">
+        <div className="bg-indigo-custom text-cream p-5 sm:p-6 flex items-start justify-between relative overflow-hidden">
           <BackButton language={language} onBack={onClose} className="text-cream hover:text-mustard relative z-10" />
-          <div className="relative z-10">
+          <div className="relative z-10 space-y-2">
             <div className="flex items-center gap-2">
               <span className="bg-amber-400 text-charcoal text-[10px] font-black uppercase px-2 py-0.5 rounded-full tracking-wider">
                 Rural Resilience Lab
               </span>
               <span className="text-indigo-200 text-xs font-mono">PWA • Cache-First</span>
             </div>
-            <h2 className="font-serif text-lg sm:text-xl font-bold text-cream mt-1 flex items-center gap-2">
+            <h2 className="font-serif text-lg sm:text-xl font-bold text-cream flex items-center gap-2">
               <span>Offline Mode Trial & Demonstration</span>
             </h2>
-            <p className="text-xs text-indigo-100/90 mt-0.5 leading-relaxed">
+            <p className="text-xs text-indigo-100/90 leading-relaxed">
               Test how KalaSetu empowers weavers and buyers in rural handloom sheds with 0 kbps connectivity.
             </p>
           </div>
@@ -107,8 +107,8 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
         </div>
 
         {/* Network Connection Mode Selector Switch */}
-        <div className="p-4 sm:p-5 bg-white border-b border-gray-200">
-          <div className="flex items-center justify-between mb-2">
+        <div className="p-5 sm:p-6 bg-white border-b border-cream-border">
+          <div className="flex items-center justify-between mb-3">
             <label className="text-xs font-bold uppercase tracking-wider text-charcoal flex items-center gap-1.5">
               <span>Live Network Simulator:</span>
             </label>
@@ -240,7 +240,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
         </div>
 
         {/* Tab Contents */}
-        <div className="p-4 sm:p-5 max-h-[380px] overflow-y-auto space-y-4">
+        <div className="p-5 sm:p-6 max-h-[380px] overflow-y-auto space-y-4">
           
           {/* TAB 1: INTERACTIVE WALKTHROUGH */}
           {activeTab === 'walkthrough' && (
@@ -415,14 +415,14 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
                 </div>
 
                 {/* Special Step: Test Offline Voice Assistant */}
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-4 shadow-sm space-y-2.5">
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-4 shadow-xs space-y-2.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="bg-amber-500 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full tracking-wider shadow-xs">
                         ⚡ 100% Offline Voice Mode
                       </span>
                       <span className="text-[11px] font-bold text-amber-900">
-                        {language === 'kn' ? 'ಆಫ್‌ಲೈನ್ ಧ್ವನಿ ಪ್ರಯೋಗ' : language === 'hi' ? 'ऑफ़लाइन आवाज़ ट्रायल' : 'Offline Voice Trial'}
+                        {language === 'kn' ? 'ಆಫ್‌ಲೈನ್ ಧ್ವನಿ ಪ್ರಯೋಗ' : language === 'hi' ? 'ऑफ़लाइन आवाज़ ट्रायल' : language === 'ta' ? 'ஆஃப்லைன் குரல் சோதனை' : 'Offline Voice Trial'}
                       </span>
                     </div>
                   </div>
@@ -431,6 +431,8 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
                       ? 'ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲದಿದ್ದರೂ (0 kbps), ಟಾಣಾ ಆನ್‌-ಡಿವೈಸ್ ವೆಬ್ ಸ್ಪೀಚ್ ಎಂಜಿನ್ ಮತ್ತು ಲೋಕಲ್ ಧ್ವನಿ ತರಂಗಗಳ ಮೂಲಕ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.'
                       : language === 'hi'
                       ? 'इंटरनेट कनेक्शन न होने पर भी (0 kbps), ताना ऑन-डिवाइस वेब स्पीच और लोकल ऑडियो तरंगों द्वारा तुरंत काम करता है।'
+                      : language === 'ta'
+                      ? 'இணைய இணைப்பு முற்றிலும் இல்லாத போதும் (0 kbps), KalaSetu சாதனத்திலேயே பேச்சு உருவாக்கம், உள்ளூர் ஒலி அலை கண்டறிதல் மற்றும் உடனடி கைத்தறி பேச்சு பதிவை செய்கிறது!'
                       : 'Even when completely offline (0 kbps), KalaSetu executes speech synthesis, local acoustic wave detection, and instant handloom speech capture directly on the device!'}
                   </p>
                   <div className="flex flex-wrap gap-2 pt-1">
@@ -444,7 +446,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
                       >
                         <Zap className="w-3.5 h-3.5" />
                         <span>
-                          {language === 'kn' ? 'ಆಫ್‌ಲೈನ್ ಧ್ವನಿ ಪರೀಕ್ಷಿಸಿ' : language === 'hi' ? 'ऑफ़लाइन आवाज़ टेस्ट करें' : 'Hear Offline Voice Guide'}
+                          {language === 'kn' ? 'ಆಫ್‌ಲೈನ್ ಧ್ವನಿ ಪರೀಕ್ಷಿಸಿ' : language === 'hi' ? 'ऑफ़लाइन आवाज़ टेस्ट करें' : language === 'ta' ? 'ஆஃப்லைன் குரல் வழிகாட்டியைக் கேளுங்கள்' : 'Hear Offline Voice Guide'}
                         </span>
                       </button>
                     )}
@@ -514,7 +516,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
                             {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                           </span>
                         </div>
-                        <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md flex items-center gap-1">
+                        <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
                           Pending Cloud Sync
                         </span>
@@ -672,7 +674,7 @@ export const OfflineSimulationLab: React.FC<OfflineSimulationLabProps> = ({
         </div>
 
         {/* Footer actions */}
-        <div className="bg-cream-dark/60 border-t border-gray-200 p-4 flex items-center justify-between">
+        <div className="bg-cream-dark/60 border-t border-cream-border p-4 sm:p-5 flex items-center justify-between">
           <div className="text-[11px] text-gray-500 font-mono">
             Status: <strong className={networkMode === 'offline' ? 'text-amber-700' : 'text-emerald-700'}>{networkMode.toUpperCase()}</strong> • Outbox: {outbox.length} items
           </div>

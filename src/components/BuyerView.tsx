@@ -401,6 +401,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       ? `ನಮಸ್ಕಾರ, ನಾನು ${product.weaverName}. ನಾನು ${product.weaverRegion} ನೇಕಾರ. ನನ್ನ ಕುಟುಂಬವು ತಲೆಮಾರುಗಳಿಂದ ಕೈಮಗ್ಗ ನೆಯ್ದು ಜೀವನ ಸಾಗಿಸುತ್ತಿದೆ. ಈ ಸೀರೆಯನ್ನು ತಯಾರಿಸಲು ನನಗೆ ಸುಮಾರು ಐದು ದಿನಗಳ ಕಠಿಣ ಶ್ರಮ ಬೇಕಾಯಿತು. ದಯವಿಟ್ಟು ಗ್ರಾಮೀಣ ಸೃಜನಶೀಲತೆಯನ್ನು ಪ್ರೋತ್ಸಾಹಿಸಿ.`
       : language === 'hi'
       ? `नमस्ते, मैं ${product.weaverName} हूँ। मैं ${product.weaverRegion} से हूँ। हमारा परिवार पीढ़ियों से हथकरघा बुनाई का काम कर रहा है। इस कपड़े को तैयार करने में मेरी ५ दिनों की मेहनत लगी है। अपना समर्थन दें।`
+      : language === 'ta'
+      ? `வணக்கம், நான் ${product.weaverName}. நான் ${product.weaverRegion} பகுதியைச் சேர்ந்த நெசவாளி. எங்கள் குடும்பம் தலைமுறை தலைமுறையாக கைத்தறி நெசவு செய்து வருகிறது. இந்த புடவையை தயாரிக்க எனக்கு ஐந்து நாட்கள் கடின உழைப்பு தேவைப்பட்டது. கிராமப்புற படைப்பாற்றலை ஊக்குவிக்கவும்.`
       : `Hello, I am ${product.weaverName}, crafting directly from ${product.weaverRegion}. This beautiful product was handmade over five days. Thank you for connecting with artisans directly.`;
 
     triggerSubtitleSpeak(storyText);
@@ -542,10 +544,12 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       setActiveTab('orders');
       
       // Prompt success
-      const succText = language === 'kn' 
-        ? 'ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ! ನೇಕಾರರ ನೇರ ಆದಾಯವನ್ನು ಖಾತರಿಪಡಿಸಲಾಗಿದೆ.' 
-        : language === 'hi' 
-        ? 'ऑर्डर सफल रहा! बुनकर की सीधी कमाई सुनिश्चित की गई।' 
+      const succText = language === 'kn'
+        ? 'ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ! ನೇಕಾರರ ನೇರ ಆದಾಯವನ್ನು ಖಾತರಿಪಡಿಸಲಾಗಿದೆ.'
+        : language === 'hi'
+        ? 'ऑर्डर सफल रहा! बुनकर की सीधी कमाई सुनिश्चित की गई।'
+        : language === 'ta'
+        ? 'ஆர்டர் உறுதி செய்யப்பட்டது! நெசவாளரின் நேரடி வருமானம் செயலாக்கப்பட்டது.'
         : 'Order confirmed successfully! Artisan direct payment processed.';
       triggerSubtitleSpeak(succText);
       speakText(succText, language, undefined, () => triggerSubtitleStop());
@@ -622,6 +626,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         ? `ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ! ${cartArtisanCount > 1 ? cartArtisanCount + ' ಕುಶಲಕರ್ಮಿಗಳಿಂದ ಪ್ರತ್ಯೇಕ ಸಾಗಣೆಗಳು.' : 'ನೇಕಾರರ ನೇರ ಆದಾಯವನ್ನು ಖಾತರಿಪಡಿಸಲಾಗಿದೆ.'}`
         : language === 'hi'
         ? `ऑर्डर सफल रहा! ${cartArtisanCount > 1 ? cartArtisanCount + ' अलग-अलग कारीगरों से शिपमेंट।' : 'बुनकर की सीधी कमाई सुनिश्चित की गई।'}`
+        : language === 'ta'
+        ? `ஆர்டர் உறுதி செய்யப்பட்டது! ${cartArtisanCount > 1 ? cartArtisanCount + ' வெவ்வேறு கைவினைஞர்களிடமிருந்து தனித்தனி அனுப்புகைகள்.' : 'நெசவாளரின் நேரடி வருமானம் செயலாக்கப்பட்டது.'}`
         : `Order confirmed successfully! ${cartArtisanCount > 1 ? cartArtisanCount + ' separate shipments from different artisans.' : 'Artisan direct payment processed.'}`;
       triggerSubtitleSpeak(succText);
       speakText(succText, language, undefined, () => triggerSubtitleStop());
@@ -850,11 +856,11 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto bg-cream pb-24 min-h-[85vh] relative px-4 sm:px-6 lg:px-8" id="buyer-view-container">
-      
+    <div className="max-w-6xl mx-auto bg-cream pb-24 min-h-[85vh] relative px-4 sm:px-6" id="buyer-view-container">
+
       {/* 1. BROWSE SCREEN */}
       {activeTab === 'browse' && (
-        <div className="px-4 py-5 space-y-5">
+        <div className="py-6 sm:py-10 space-y-6 sm:space-y-8">
 
           {/* Connection status card optimized for limited connectivity */}
           <div className="bg-white rounded-2xl border border-cream-border p-3 flex items-center justify-between shadow-xs">
@@ -889,8 +895,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
           {/* Header search controls */}
           <div className="space-y-3">
             <div>
-              <h2 className="font-serif text-2xl font-bold text-charcoal">{t.searchTitle}</h2>
-              <p className="text-xs text-gray-500">Search handlooms conversational-style with instant tag filters.</p>
+              <h2 className="font-serif font-bold text-2xl sm:text-3xl text-charcoal">{t.searchTitle}</h2>
+              <p className="text-sm text-gray-500 mt-2">Search handlooms conversational-style with instant tag filters.</p>
             </div>
 
             {/* Voice and NLP search bar */}
@@ -949,7 +955,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   {searchHistory.map((query, idx) => (
                     <div 
                       key={idx} 
-                      className="flex items-center bg-white hover:bg-cream-dark text-charcoal rounded-full pl-3 pr-1.5 py-1 border border-gray-200 transition text-[11px] font-semibold hover:border-indigo-custom"
+                      className="flex items-center bg-white hover:bg-cream-dark text-charcoal rounded-full pl-3 pr-1.5 py-1 border border-cream-border transition text-[11px] font-semibold hover:border-indigo-custom"
                     >
                       <button
                         id={`recent-search-${idx}`}
@@ -996,7 +1002,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     key={idx}
                     id={`nlp-demo-query-${idx}`}
                     onClick={() => handleQuerySuggestion(item.query)}
-                    className="text-left bg-white hover:bg-cream-dark text-[11px] text-charcoal py-2 px-3 rounded-lg border border-gray-200 transition line-clamp-1 font-semibold hover:border-terracotta"
+                    className="text-left bg-white hover:bg-cream-dark text-[11px] text-charcoal py-2 px-3 rounded-xl border border-cream-border transition line-clamp-1 font-semibold hover:border-terracotta"
                   >
                     "{item.label}"
                   </button>
@@ -1043,7 +1049,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
           {/* Catalog Grid */}
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cream-border pb-3">
               <div>
                 <h3 className="font-serif text-lg font-bold text-charcoal">Available Loom Crafts</h3>
                 <p className="text-[11px] text-gray-500">Connecting you directly with rural artisan families</p>
@@ -1057,7 +1063,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   onClick={() => setActiveTab('orders')}
                   className="px-3 py-1.5 rounded-full text-xs font-semibold transition flex items-center gap-1.5 bg-terracotta text-white shadow-xs"
                 >
-                  {language === 'kn' ? 'ನನ್ನ ಆರ್ಡರ್‌ಗಳು' : language === 'hi' ? 'मेरे ऑर्डर' : 'My Orders'}
+                  {language === 'kn' ? 'ನನ್ನ ಆರ್ಡರ್‌ಗಳು' : language === 'hi' ? 'मेरे ऑर्डर' : language === 'ta' ? 'எனது ஆர்டர்கள்' : 'My Orders'}
                 </button>
                 <button
                   id="open-cart-btn"
@@ -1082,7 +1088,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold transition flex items-center gap-1.5 ${
                     !showFavoritesOnly 
                       ? 'bg-indigo-custom text-cream shadow-xs' 
-                      : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'
+                      : 'bg-white text-gray-500 border border-cream-border hover:bg-gray-50'
                   }`}
                 >
                   All Crafts ({products.filter(p => p.status === 'Listed' || p.status === 'Pending Approval').length})
@@ -1096,7 +1102,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold transition flex items-center gap-1.5 ${
                     showFavoritesOnly 
                       ? 'bg-terracotta text-cream shadow-xs' 
-                      : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'
+                      : 'bg-white text-gray-500 border border-cream-border hover:bg-gray-50'
                   }`}
                 >
                   <Heart className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-cream text-cream' : 'text-terracotta'}`} />
@@ -1106,7 +1112,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             </div>
 
             {filteredProducts.length === 0 ? (
-              <div className="bg-white border border-gray-200 rounded-xl p-8 text-center space-y-3">
+              <div className="bg-white border border-cream-border rounded-xl p-8 text-center space-y-3">
                 {showFavoritesOnly ? (
                   <>
                     <Heart className="w-10 h-10 text-gray-300 mx-auto fill-gray-100" />
@@ -1138,7 +1144,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="buyer-products-grid">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5" id="buyer-products-grid">
                 {filteredProducts.map(product => (
                   <div 
                     key={product.id} 
@@ -1150,11 +1156,11 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                       setReviewedSpecs(false); // Reset review spec checkbox on click
                       setActiveTab('product-detail');
                     }}
-                    className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs cursor-pointer hover:shadow-md transition transform hover:-translate-y-0.5 flex flex-col justify-between relative group"
+                    className="bg-white rounded-2xl border border-cream-border overflow-hidden shadow-xs cursor-pointer hover:shadow-md transition transform hover:-translate-y-0.5 flex flex-col justify-between relative group"
                   >
-                    <div className="h-32 relative">
-                      <img 
-                        src={product.images[0]} 
+                    <div className="aspect-square relative bg-cream">
+                      <img
+                        src={product.images[0]}
                         alt={product.title} 
                         className="w-full h-full object-cover"
                         referrerPolicy="no-referrer"
@@ -1172,7 +1178,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                             playSyntheticChime('click');
                             setSelectedGiProduct(product);
                           }}
-                          className={`absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm transition hover:scale-105 z-10 ${
+                          className={`absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-xs transition hover:scale-105 z-10 ${
                             product.giInfo.status === 'VERIFIED'
                               ? 'bg-emerald-600/95 hover:bg-emerald-700 text-white'
                               : product.giInfo.status === 'PENDING'
@@ -1194,7 +1200,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                           playSyntheticChime('click');
                           toggleSaveProduct(product.id);
                         }}
-                        className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-white/90 hover:bg-white text-terracotta transition shadow-sm hover:scale-110 z-10"
+                        className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-white/90 hover:bg-white text-terracotta transition shadow-xs hover:scale-110 z-10"
                         title={savedProductIds.includes(product.id) ? "Remove from Saved" : "Save Item"}
                       >
                         <Heart 
@@ -1229,7 +1235,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         })()}
                       </div>
 
-                      <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] font-bold text-indigo-custom uppercase">
+                      <div className="pt-2 border-t border-cream-border flex items-center justify-between text-[10px] font-bold text-indigo-custom uppercase">
                         <span>Direct Artisan</span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </div>
@@ -1242,8 +1248,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
           {/* Recently Viewed Products */}
           {recentlyViewedProducts.length > 0 && (
-            <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3 mt-6" id="recently-viewed-panel">
-              <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+            <div className="bg-white rounded-2xl border border-cream-border p-4 space-y-3 mt-6" id="recently-viewed-panel">
+              <div className="flex items-center justify-between border-b border-cream-border pb-2">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-indigo-custom animate-pulse" />
                   <h4 className="font-serif text-sm font-bold text-charcoal">Recently Viewed Pieces</h4>
@@ -1300,11 +1306,11 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
       {/* 2. PRODUCT DETAIL SCREEN */}
       {activeTab === 'product-detail' && selectedProduct && (
-        <div className="space-y-5" id="product-detail-screen">
+        <div className="max-w-2xl mx-auto space-y-6 py-4 sm:py-6" id="product-detail-screen">
           <BackButton language={language} onBack={() => setActiveTab('browse')} />
           
           {/* Header Navigation */}
-          <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-30 flex items-center justify-between">
+          <div className="bg-white border-b border-cream-border px-4 py-4 sticky top-0 z-30 flex items-center justify-between">
             <button
               onClick={() => {
                 playSyntheticChime('click');
@@ -1330,9 +1336,9 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             </button>
           </div>
 
-          <div className="px-4 space-y-5">
+          <div className="space-y-6">
             {/* Product Image Carousel block */}
-            <div className="rounded-3xl overflow-hidden aspect-video relative shadow-sm border border-gray-200">
+            <div className="rounded-3xl overflow-hidden aspect-video relative shadow-xs border border-cream-border">
               <img
                 src={(selectedProduct.aiEnhanced && selectedProduct.enhancedImages?.[0]) || selectedProduct.images[0]}
                 alt=""
@@ -1395,7 +1401,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     playSyntheticChime('click');
                     setSelectedGiProduct(selectedProduct);
                   }}
-                  className="text-xs font-bold px-3 py-1.5 rounded-xl bg-white border border-gray-300 shadow-2xs hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
+                  className="text-xs font-bold px-3 py-1.5 rounded-xl bg-white border border-cream-border shadow-2xs hover:bg-gray-50 flex items-center gap-1 cursor-pointer"
                 >
                   <span>View Details</span>
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -1404,14 +1410,14 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             )}
 
             {/* Artisan Story Section */}
-            <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-xs">
+            <div className="bg-white rounded-2xl p-4 border border-cream-border space-y-3 shadow-xs">
               <h3 className="font-serif text-sm font-bold text-charcoal flex items-center gap-1.5">
                 <User className="w-4 h-4 text-terracotta" />
                 {t.weaverStory}
               </h3>
               
               <div className="flex gap-3 items-start">
-                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-gray-300">
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-cream-border">
                   <img src={selectedProduct.weaverImage} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <div className="space-y-1 text-xs">
@@ -1446,7 +1452,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 text-xs bg-white p-3 rounded-xl border border-gray-200">
+              <div className="grid grid-cols-2 gap-3 text-xs bg-white p-3 rounded-xl border border-cream-border">
                 <div>
                   <span className="text-gray-400 font-bold block text-[9px] uppercase tracking-wider">Exact Length:</span>
                   <p className="font-serif font-bold text-charcoal">{selectedProduct.dimensions.length}</p>
@@ -1455,18 +1461,18 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   <span className="text-gray-400 font-bold block text-[9px] uppercase tracking-wider">Exact Width:</span>
                   <p className="font-serif font-bold text-charcoal">{selectedProduct.dimensions.width}</p>
                 </div>
-                <div className="col-span-2 border-t border-gray-100 pt-2.5 mt-1.5">
+                <div className="col-span-2 border-t border-cream-border pt-2.5 mt-1.5">
                   <span className="text-gray-400 font-bold block text-[9px] uppercase tracking-wider">Yarn Material:</span>
                   <p className="font-semibold text-charcoal">{selectedProduct.material}</p>
                 </div>
               </div>
 
-              <div className="bg-cream p-3 rounded-xl border border-gray-200 text-xs text-gray-600 space-y-2 leading-relaxed">
+              <div className="bg-cream p-3 rounded-xl border border-cream-border text-xs text-gray-600 space-y-2 leading-relaxed">
                 <p className="flex gap-1.5 items-start text-[11px]">
                   <Info className="w-4 h-4 text-terracotta shrink-0 mt-0.5" />
                   <span>{t.variationDisclaimer}</span>
                 </p>
-                <div className="border-t border-gray-200/60 pt-2 mt-1">
+                <div className="border-t border-cream-border/60 pt-2 mt-1">
                   <p className="font-bold text-charcoal text-[10px] uppercase">Care Instructions:</p>
                   <p className="text-[11px] mt-0.5 text-gray-500 italic">{selectedProduct.careInstructions}</p>
                 </div>
@@ -1544,7 +1550,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               </button>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3 shadow-xs" id="craft-recommendations-panel">
+            <div className="bg-white rounded-2xl p-4 border border-cream-border space-y-3 shadow-xs" id="craft-recommendations-panel">
               <h3 className="font-serif text-sm font-bold text-charcoal">{t.recommendationsTitle}</h3>
               {recommendedProducts.length > 0 && (
                 <p className="text-[10px] text-gray-400 -mt-2">{t.recommendationsWhy}</p>
@@ -1578,11 +1584,11 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
       {/* 3. TRANSPARENT CHECKOUT SCREEN */}
       {activeTab === 'checkout' && selectedProduct && (
-        <div className="space-y-5" id="checkout-screen">
+        <div className="max-w-2xl mx-auto space-y-6 py-4 sm:py-6" id="checkout-screen">
           <BackButton language={language} onBack={() => setActiveTab('product-detail')} />
           
           {/* Header */}
-          <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
+          <div className="bg-white border-b border-cream-border px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
             <button
               onClick={() => {
                 playSyntheticChime('click');
@@ -1595,10 +1601,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             <h3 className="font-serif font-bold text-charcoal text-base">{t.checkoutTitle}</h3>
           </div>
 
-          <div className="px-4 space-y-6">
-            
+          <div className="space-y-6">
+
             {/* Product recap */}
-            <div className="bg-white rounded-2xl p-4 border border-gray-200 flex gap-3 shadow-xs">
+            <div className="bg-white rounded-2xl p-4 border border-cream-border flex gap-3 shadow-xs">
               <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
                 <img src={selectedProduct.images[0]} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               </div>
@@ -1618,7 +1624,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
               <div className="p-4 space-y-3 text-xs font-medium text-gray-700">
                 
-                <div className="flex justify-between pb-2 border-b border-gray-100">
+                <div className="flex justify-between pb-2 border-b border-cream-border">
                   <span className="text-gray-500">{t.customerPrice}</span>
                   <span className="font-bold text-charcoal">₹{selectedProduct.price}</span>
                 </div>
@@ -1694,10 +1700,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
       {/* CART SCREEN - multi-item, grouped by artisan */}
       {activeTab === 'cart' && (
-        <div className="space-y-5" id="cart-screen">
+        <div className="max-w-2xl mx-auto space-y-6 py-4 sm:py-6" id="cart-screen">
           <BackButton language={language} onBack={() => setActiveTab('browse')} />
 
-          <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
+          <div className="bg-white border-b border-cream-border px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
             <button
               onClick={() => { playSyntheticChime('click'); setActiveTab('browse'); }}
               className="text-gray-600 hover:text-black p-1 bg-gray-100 rounded-full"
@@ -1707,9 +1713,9 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             <h3 className="font-serif font-bold text-charcoal text-base">{t.cart}</h3>
           </div>
 
-          <div className="px-4 space-y-5">
+          <div className="space-y-6">
             {cartLines.length === 0 ? (
-              <div className="bg-white border border-gray-200 rounded-xl p-8 text-center space-y-3">
+              <div className="bg-white border border-cream-border rounded-xl p-8 text-center space-y-3">
                 <ShoppingBag className="w-10 h-10 text-gray-300 mx-auto" />
                 <p className="text-sm font-semibold text-gray-700">{t.cartEmpty}</p>
                 <p className="text-xs text-gray-500 max-w-xs mx-auto">{t.cartEmptyHint}</p>
@@ -1730,11 +1736,11 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 )}
 
                 {Object.entries(cartByArtisan).map(([artisanName, lines]) => (
-                  <div key={artisanName} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs">
+                  <div key={artisanName} className="bg-white rounded-2xl border border-cream-border overflow-hidden shadow-xs">
                     <div className="bg-cream px-4 py-2.5 text-[11px] font-bold text-gray-600 uppercase tracking-wider">
                       {t.cartFromArtisan} {artisanName}
                     </div>
-                    <div className="divide-y divide-gray-100">
+                    <div className="divide-y divide-cream-border">
                       {lines.map(({ item, product }) => (
                         <div key={product.id} className="p-3.5 flex gap-3 items-center">
                           <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
@@ -1771,7 +1777,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   </div>
                 ))}
 
-                <div className="bg-white rounded-2xl p-4 border border-gray-200 flex items-center justify-between shadow-xs">
+                <div className="bg-white rounded-2xl p-4 border border-cream-border flex items-center justify-between shadow-xs">
                   <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">{t.cartGrandTotal}</span>
                   <span className="font-serif font-extrabold text-charcoal text-lg">₹{cartGrandTotal}</span>
                 </div>
@@ -1792,10 +1798,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
       {/* CART CHECKOUT SCREEN - one payment, split per artisan behind the scenes */}
       {activeTab === 'cart-checkout' && cartLines.length > 0 && (
-        <div className="space-y-5" id="cart-checkout-screen">
+        <div className="max-w-2xl mx-auto space-y-6 py-4 sm:py-6" id="cart-checkout-screen">
           <BackButton language={language} onBack={() => setActiveTab('cart')} />
 
-          <div className="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
+          <div className="bg-white border-b border-cream-border px-4 py-4 sticky top-0 z-30 flex items-center gap-3">
             <button
               onClick={() => { playSyntheticChime('click'); setActiveTab('cart'); }}
               className="text-gray-600 hover:text-black p-1 bg-gray-100 rounded-full"
@@ -1805,8 +1811,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             <h3 className="font-serif font-bold text-charcoal text-base">{t.checkoutTitle}</h3>
           </div>
 
-          <div className="px-4 space-y-6">
-            <div className="bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100 shadow-xs">
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-cream-border divide-y divide-cream-border shadow-xs">
               {cartLines.map(({ item, product }) => (
                 <div key={product.id} className="p-3.5 flex gap-3 items-center text-xs">
                   <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0">
@@ -1828,7 +1834,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               </div>
             )}
 
-            <div className="bg-white rounded-2xl p-4 border border-gray-200 flex items-center justify-between shadow-xs">
+            <div className="bg-white rounded-2xl p-4 border border-cream-border flex items-center justify-between shadow-xs">
               <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">{t.cartGrandTotal}</span>
               <span className="font-serif font-extrabold text-charcoal text-lg">₹{cartGrandTotal}</span>
             </div>
@@ -1862,18 +1868,18 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
       {/* 4. ORDERS STATUS TRACKER SCREEN */}
       {activeTab === 'orders' && (
-        <div className="px-4 py-5 space-y-6" id="order-tracker-screen">
+        <div className="max-w-2xl mx-auto py-6 sm:py-10 space-y-6" id="order-tracker-screen">
           <BackButton language={language} onBack={() => setActiveTab('browse')} />
-          
+
           <div>
-            <h2 className="font-serif text-2xl font-bold text-charcoal">{t.orderConfirmed}</h2>
-            <p className="text-xs text-gray-500">Track your order's direct loom dispatch lifecycle progress below.</p>
+            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-charcoal">{t.orderConfirmed}</h2>
+            <p className="text-sm text-gray-500 mt-2">Track your order's direct loom dispatch lifecycle progress below.</p>
           </div>
 
           {buyerOrders.length > 0 && (
-            <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3" id="buyer-orders-list">
+            <div className="bg-white rounded-2xl border border-cream-border p-4 space-y-3" id="buyer-orders-list">
               <h3 className="font-serif text-base font-bold text-charcoal">
-                {language === 'kn' ? 'ನನ್ನ ಆರ್ಡರ್‌ಗಳು' : language === 'hi' ? 'मेरे ऑर्डर' : 'My Orders'}
+                {language === 'kn' ? 'ನನ್ನ ಆರ್ಡರ್‌ಗಳು' : language === 'hi' ? 'मेरे ऑर्डर' : language === 'ta' ? 'எனது ஆர்டர்கள்' : 'My Orders'}
               </h3>
               <div className="grid gap-2">
                 {buyerOrders.map(order => (
@@ -1884,7 +1890,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     className={`w-full text-left rounded-xl border p-3 transition ${
                       (activeOrder?.id || orders[0]?.id) === order.id
                         ? 'border-terracotta bg-cream'
-                        : 'border-gray-200 hover:border-terracotta/50'
+                        : 'border-cream-border hover:border-terracotta/50'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -1903,12 +1909,12 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
           )}
 
           {buyerOrders.length === 0 ? (
-            <div className="text-center p-6 bg-white rounded-xl border border-gray-200 space-y-3">
+            <div className="text-center p-6 bg-white rounded-xl border border-cream-border space-y-3">
               <p className="text-sm font-semibold text-gray-500">
-                {language === 'kn' ? 'ಇನ್ನೂ ಯಾವುದೇ ಆರ್ಡರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ.' : language === 'hi' ? 'अभी कोई ऑर्डर नहीं मिला।' : 'No placed orders found yet.'}
+                {language === 'kn' ? 'ಇನ್ನೂ ಯಾವುದೇ ಆರ್ಡರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ.' : language === 'hi' ? 'अभी कोई ऑर्डर नहीं मिला।' : language === 'ta' ? 'இதுவரை ஆர்டர்கள் எதுவும் இல்லை.' : 'No placed orders found yet.'}
               </p>
               <p className="text-xs text-gray-400 max-w-xs mx-auto">
-                {language === 'kn' ? 'ಮಾರುಕಟ್ಟೆ ಬ್ರೌಸ್ ಮಾಡಿ ಮತ್ತು ಮೊದಲ ಆರ್ಡರ್ ಮಾಡಿ.' : language === 'hi' ? 'बाज़ार देखें और अपना पहला ऑर्डर करें।' : 'Browse the marketplace and place your first order.'}
+                {language === 'kn' ? 'ಮಾರುಕಟ್ಟೆ ಬ್ರೌಸ್ ಮಾಡಿ ಮತ್ತು ಮೊದಲ ಆರ್ಡರ್ ಮಾಡಿ.' : language === 'hi' ? 'बाज़ार देखें और अपना पहला ऑर्डर करें।' : language === 'ta' ? 'சந்தையை உலாவி உங்கள் முதல் ஆர்டரை வையுங்கள்.' : 'Browse the marketplace and place your first order.'}
               </p>
               <button
                 onClick={() => { playSyntheticChime('click'); setActiveTab('browse'); }}
@@ -1935,7 +1941,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <div className="space-y-5" key={currentOrder.id}>
                   
                   {/* Order summary card */}
-                  <div className="bg-white rounded-2xl p-4 border border-gray-200 flex gap-3 shadow-xs">
+                  <div className="bg-white rounded-2xl p-4 border border-cream-border flex gap-3 shadow-xs">
                     <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
                       <img src={currentOrder.product.images[0]} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     </div>
@@ -1996,7 +2002,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
                   {/* Feature 3: Dispute & Escrow Refund Flow */}
                   <div className="bg-white rounded-2xl p-4 border border-cream-border space-y-3 shadow-xs">
-                    <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+                    <div className="flex items-center justify-between border-b border-cream-border pb-2.5">
                       <div className="flex items-center gap-2">
                         <ShieldAlert className="w-4 h-4 text-rose-600" />
                         <span className="font-serif font-bold text-xs text-charcoal">
@@ -2022,7 +2028,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                             setSelectedDisputeOrder(currentOrder);
                             setDisputeInitialMode('view');
                           }}
-                          className="w-full bg-cream hover:bg-cream-dark border border-gray-300 font-bold py-2.5 px-3 rounded-xl text-xs text-charcoal flex items-center justify-center gap-1.5 transition"
+                          className="w-full bg-cream hover:bg-cream-dark border border-cream-border font-bold py-2.5 px-3 rounded-xl text-xs text-charcoal flex items-center justify-center gap-1.5 transition"
                         >
                           <FileText className="w-3.5 h-3.5 text-indigo-custom" />
                           <span>View Dispute & Resolution Details</span>
@@ -2114,7 +2120,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   )}
 
                   {currentOrder.returnRequest && (
-                    <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3" id="return-status-card">
+                    <div className="bg-white border border-cream-border rounded-2xl p-4 space-y-3" id="return-status-card">
                       <div className="flex items-center justify-between">
                         <h4 className="font-serif font-bold text-sm text-charcoal">{t.returnStatus}</h4>
                         <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-custom/10 text-indigo-custom">
@@ -2144,7 +2150,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   )}
 
                   {/* Verified-purchase reviews */}
-                  <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3" id="order-reviews-panel">
+                  <div className="bg-white border border-cream-border rounded-2xl p-4 space-y-3" id="order-reviews-panel">
                     <div className="flex items-center gap-2">
                       <Star className="w-4 h-4 text-mustard fill-mustard" />
                       <h4 className="font-serif font-bold text-sm text-charcoal">{t.reviews}</h4>
@@ -2159,7 +2165,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                       <p className="text-xs text-gray-500">{t.reviewNeedsPurchase}</p>
                     )}
                     {(currentOrder.reviews || []).map(review => (
-                      <div key={review.id} className="border-t border-gray-100 pt-2.5 space-y-1">
+                      <div key={review.id} className="border-t border-cream-border pt-2.5 space-y-1">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
                             {[1, 2, 3, 4, 5].map(n => (
@@ -2183,7 +2189,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   </div>
 
                   {/* Buyer-artisan chat, with off-platform-payment warning and reporting */}
-                  <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3" id="order-chat-panel">
+                  <div className="bg-white border border-cream-border rounded-2xl p-4 space-y-3" id="order-chat-panel">
                     <div className="flex items-center gap-2">
                       <MessageSquare className="w-4 h-4 text-indigo-custom" />
                       <h4 className="font-serif font-bold text-sm text-charcoal">{t.chatWithArtisan}</h4>
@@ -2220,7 +2226,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         onChange={(e) => setChatDraft(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(currentOrder); }}
                         placeholder={t.chatPlaceholder}
-                        className="flex-1 bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
+                        className="flex-1 bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta"
                       />
                       <button
                         onClick={() => handleSendChatMessage(currentOrder)}
@@ -2255,7 +2261,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               <select
                 value={returnReason}
                 onChange={(e) => setReturnReason(e.target.value as ReturnReason)}
-                className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-terracotta"
+                className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-terracotta"
               >
                 {(['Wrong item', 'Damaged', 'Defective', 'Materially different', 'Change of mind'] as ReturnReason[]).map(r => (
                   <option key={r} value={r}>{r}</option>
@@ -2271,7 +2277,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     key={opt}
                     type="button"
                     onClick={() => setReturnResolution(opt)}
-                    className={`flex-1 py-2 rounded-xl text-xs font-bold border transition ${returnResolution === opt ? 'bg-indigo-custom text-white border-indigo-custom' : 'bg-white border-gray-200 text-gray-600'}`}
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold border transition ${returnResolution === opt ? 'bg-indigo-custom text-white border-indigo-custom' : 'bg-white border-cream-border text-gray-600'}`}
                   >
                     {opt === 'REFUND' ? 'Refund' : 'Replacement'}
                   </button>
@@ -2285,7 +2291,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 value={returnNoteText}
                 onChange={(e) => setReturnNoteText(e.target.value)}
                 rows={3}
-                className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-terracotta resize-none"
+                className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-terracotta resize-none"
               />
             </div>
 
@@ -2337,7 +2343,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     className={`p-3 rounded-xl border-2 text-xs font-bold text-left transition ${
                       issueType === item.key 
                         ? 'bg-indigo-custom border-indigo-custom text-cream' 
-                        : 'bg-white border-gray-200 text-charcoal hover:border-gray-300'
+                        : 'bg-white border-cream-border text-charcoal hover:border-cream-border'
                     }`}
                   >
                     {item.label}
@@ -2349,7 +2355,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             {/* Simulated Photo upload */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-indigo-custom uppercase tracking-wider block">Defect Photo (Proof):</label>
-              <div className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-4 text-center">
+              <div className="bg-white border-2 border-dashed border-cream-border rounded-xl p-4 text-center">
                 {issuePhoto ? (
                   <div className="relative">
                     <img src={selectedOrderForIssue.product.images[0]} alt="" className="h-24 w-full object-cover rounded-lg" referrerPolicy="no-referrer" />
@@ -2383,7 +2389,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 value={issueNote}
                 onChange={(e) => setIssueNote(e.target.value)}
                 placeholder="Briefly state the issue with threads, size, or dye..."
-                className="w-full bg-white p-3 rounded-xl border border-gray-300 text-xs focus:outline-none focus:border-terracotta min-h-[60px]"
+                className="w-full bg-white p-3 rounded-xl border border-cream-border text-xs focus:outline-none focus:border-terracotta min-h-[60px]"
               />
             </div>
 
@@ -2417,7 +2423,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     // Navigate to refresh active order tracker tab automatically
                     setActiveTab('orders');
                   }}
-                  className="w-full bg-cream text-charcoal font-bold py-2 px-3 rounded-lg text-xs"
+                  className="w-full bg-cream text-charcoal font-bold py-2 px-3 rounded-xl text-xs"
                 >
                   I Understand, Return to Tracker
                 </button>
@@ -2437,6 +2443,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             if (selectedProduct?.id === updated.id) setSelectedProduct(updated);
             setSelectedGiProduct(updated);
           }}
+          isAdmin={profile?.role === 'admin'}
         />
       )}
 
@@ -2641,7 +2648,7 @@ const ReviewComposer: React.FC<{ alreadyReviewed: boolean; onSubmit: (rating: 1 
         onChange={(e) => setText(e.target.value)}
         placeholder={t.writeReview}
         rows={2}
-        className="w-full bg-cream border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta resize-none"
+        className="w-full bg-cream border border-cream-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-terracotta resize-none"
       />
       <button
         type="button"

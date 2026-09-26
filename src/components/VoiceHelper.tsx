@@ -18,7 +18,7 @@ function getBestVoice(shortLang: string): { voice: SpeechSynthesisVoice | null, 
   
   const voices = window.speechSynthesis.getVoices();
   if (voices.length === 0) {
-    return { voice: null, lang: shortLang === 'kn' ? 'kn-IN' : shortLang === 'hi' ? 'hi-IN' : 'en-IN' };
+    return { voice: null, lang: shortLang === 'kn' ? 'kn-IN' : shortLang === 'hi' ? 'hi-IN' : shortLang === 'ta' ? 'ta-IN' : 'en-IN' };
   }
 
   // 1. Try to find an exact language match (case-insensitive) for India locale
@@ -58,6 +58,9 @@ export function speakText(text: string, lang: Language, onStart?: () => void, on
   }
   if (lang === 'hi') {
     shortLang = 'hi';
+  }
+  if (lang === 'ta') {
+    shortLang = 'ta';
   }
 
   // Define clean fallback to standard Web Speech API (runs 100% on-device and offline!)
@@ -899,6 +902,7 @@ export const VoiceHelper: React.FC<VoiceHelperProps> = ({
         let locale = 'en-IN';
         if (languageRef.current === 'kn') locale = 'kn-IN';
         if (languageRef.current === 'hi') locale = 'hi-IN';
+        if (languageRef.current === 'ta') locale = 'ta-IN';
         rec.lang = locale;
         addLog(`SpeechRecognition language locale set to: ${locale} (continuous: ${!isMobileRef.current})`);
 

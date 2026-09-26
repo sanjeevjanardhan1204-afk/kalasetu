@@ -28,10 +28,12 @@ interface StepMeta {
   en: string;
   kn: string;
   hi: string;
+  ta: string;
   icon: React.ElementType;
   defaultDescEn: string;
   defaultDescKn: string;
   defaultDescHi: string;
+  defaultDescTa: string;
   stageTag: string;
 }
 
@@ -41,10 +43,12 @@ const ORDER_STEPS: StepMeta[] = [
     en: 'Order Received',
     kn: 'ಆರ್ಡರ್ ಸ್ವೀಕರಿಸಲಾಗಿದೆ',
     hi: 'ऑर्डर प्राप्त हुआ',
+    ta: 'ஆர்டர் பெறப்பட்டது',
     icon: ShoppingBag,
     defaultDescEn: 'Order confirmed and registered directly with the rural master weaver.',
     defaultDescKn: 'ಗ್ರಾಮೀಣ ನೇಕಾರರ ಬಳಿ ಆರ್ಡರ್ ನೇರವಾಗಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ.',
     defaultDescHi: 'कारीगर के पास सीधे ऑर्डर दर्ज किया गया है।',
+    defaultDescTa: 'கிராமப்புற முதன்மை நெசவாளரிடம் ஆர்டர் நேரடியாக பதிவு செய்யப்பட்டது.',
     stageTag: 'Loom Direct'
   },
   {
@@ -52,10 +56,12 @@ const ORDER_STEPS: StepMeta[] = [
     en: 'Weaver Accepted',
     kn: 'ನೇಕಾರರಿಂದ ಸ್ವೀಕೃತಿ',
     hi: 'बुनकर ने स्वीकार किया',
+    ta: 'நெசவாளர் ஏற்றுக்கொண்டார்',
     icon: Clock,
     defaultDescEn: 'Weaver acknowledged order and initiated final handloom preparation.',
     defaultDescKn: 'ನೇಕಾರರು ಸೀರೆಯ ಅಂತಿಮ ಪರಿಶೀಲನೆಗೆ ಸಿದ್ಧತೆ ಆರಂಭಿಸಿದ್ದಾರೆ.',
     defaultDescHi: 'बुनकर ने तैयारी शुरू कर दी है।',
+    defaultDescTa: 'நெசவாளர் ஆர்டரை ஏற்று இறுதி கைத்தறி தயாரிப்பைத் தொடங்கினார்.',
     stageTag: 'Preparation'
   },
   {
@@ -63,10 +69,12 @@ const ORDER_STEPS: StepMeta[] = [
     en: 'Weaver Quality Checked',
     kn: 'ಗುಣಮಟ್ಟ ಪರಿಶೀಲನೆ (QC)',
     hi: 'गुणवत्ता परीक्षण (QC)',
+    ta: 'தர சோதனை (QC)',
     icon: ShieldCheck,
     defaultDescEn: 'Pre-dispatch QC verified: loose threads trimmed, zari inspected & photograph locked.',
     defaultDescKn: 'ಕೈಮಗ್ಗದ ಎಳೆಗಳನ್ನು ಕತ್ತರಿಸಿ, ಜರಿ ಗುಣಮಟ್ಟ ಹಾಗೂ ಅಳತೆಗಳನ್ನು ನಿಖರವಾಗಿ ಪರಿಶೀಲಿಸಲಾಗಿದೆ.',
     defaultDescHi: 'धागों की छंटाई और जरी की जांच पूर्ण, गुणवत्ता प्रमाणित।',
+    defaultDescTa: 'அனுப்பும் முன் QC சரிபார்க்கப்பட்டது: தளர்வான நூல்கள் வெட்டப்பட்டு, ஜரி பரிசோதிக்கப்பட்டு புகைப்படம் பதிவு செய்யப்பட்டது.',
     stageTag: 'QC Certified'
   },
   {
@@ -74,10 +82,12 @@ const ORDER_STEPS: StepMeta[] = [
     en: 'Pickup Arranged',
     kn: 'ಪಿಕಪ್ ನಿಯೋಜಿಸಲಾಗಿದೆ',
     hi: 'पिकअप निर्धारित',
+    ta: 'பிக்அப் ஏற்பாடு செய்யப்பட்டது',
     icon: Package,
     defaultDescEn: 'KalaSetu Rural Logistics box packaged for direct artisan doorstep collection.',
     defaultDescKn: 'ನೇಕಾರರ ಮನೆಯಿಂದ ಪಾರ್ಸೆಲ್ ಸಂಗ್ರಹಿಸಲು ಬಾಕ್ಸ್ ಸಿದ್ಧಪಡಿಸಲಾಗಿದೆ.',
     defaultDescHi: 'बुनकर के घर से सुरक्षित पार्सल पिकअप तय किया गया।',
+    defaultDescTa: 'நெசவாளர் வீட்டிலிருந்து பார்சலை சேகரிக்க பெட்டி தயார் செய்யப்பட்டது.',
     stageTag: 'Packaging'
   },
   {
@@ -85,10 +95,12 @@ const ORDER_STEPS: StepMeta[] = [
     en: 'Dispatched & Shipped',
     kn: 'ರವಾನಿಸಲಾಗಿದೆ',
     hi: 'डिस्पैच / रवाना',
+    ta: 'அனுப்பப்பட்டது',
     icon: Truck,
     defaultDescEn: 'In transit via direct Speed Network with real-time rural post tracking.',
     defaultDescKn: 'ಸ್ಪೀಡ್ ಪೋಸ್ಟ್ / ಕೊರಿಯರ್ ಮೂಲಕ ನಿಮ್ಮ ವಿಳಾಸಕ್ಕೆ ಹೊರಟಿದೆ.',
     defaultDescHi: 'सुरक्षित कूरियर से आपके पते के लिए रवाना हो चुका है।',
+    defaultDescTa: 'நேரடி ஸ்பீட் நெட்வொர்க் மூலம் நேரடி கிராமப்புற தபால் கண்காணிப்புடன் அனுப்பப்படுகிறது.',
     stageTag: 'In Transit'
   },
   {
@@ -96,10 +108,12 @@ const ORDER_STEPS: StepMeta[] = [
     en: 'Delivered to Buyer',
     kn: 'ತಲುಪಿಸಲಾಗಿದೆ',
     hi: 'डिलीवर हुआ',
+    ta: 'வாங்குபவருக்கு டெலிவரி செய்யப்பட்டது',
     icon: Home,
     defaultDescEn: 'Delivered to doorstep. 24-hour verification window active for artisan settlement.',
     defaultDescKn: 'ಗ್ರಾಹಕರ ಮನೆಗೆ ತಲುಪಿಸಲಾಗಿದೆ. ೨೪ ಗಂಟೆಗಳ ಪರಿಶೀಲನಾ ಅವಧಿ ಚಾಲ್ತಿಯಲ್ಲಿದೆ.',
     defaultDescHi: 'सफलतापूर्वक सुपुर्दगी। 24 घंटे का सत्यापन समय सक्रिय है।',
+    defaultDescTa: 'வீட்டு வாசலுக்கு டெலிவரி செய்யப்பட்டது. நெசவாளர் தீர்வுக்கான 24 மணி நேர சரிபார்ப்பு காலம் செயலில் உள்ளது.',
     stageTag: 'Doorstep'
   },
   {
@@ -107,10 +121,12 @@ const ORDER_STEPS: StepMeta[] = [
     en: 'Weaver Payout Settled',
     kn: 'ನೇಕಾರರಿಗೆ ಹಣ ಸಂದಾಯ',
     hi: 'बुनकर को भुगतान',
+    ta: 'நெசவாளருக்கு பணம் செலுத்தப்பட்டது',
     icon: Coins,
     defaultDescEn: 'Full 100% fair-share amount credited directly to weaver bank account!',
     defaultDescKn: 'ಪೂರ್ಣ ಮೊತ್ತ ನೇರವಾಗಿ ನೇಕಾರರ ಬ್ಯಾಂಕ್ ಖಾತೆಗೆ ಜಮಾ ಆಗಿದೆ!',
     defaultDescHi: 'पूरी राशि सीधे बुनकर के बैंक खाते में स्थानांतरित की गई!',
+    defaultDescTa: 'முழு 100% நியாயமான பங்கு தொகை நேரடியாக நெசவாளர் வங்கிக் கணக்கில் வரவு வைக்கப்பட்டது!',
     stageTag: 'Fair Share Done'
   }
 ];
@@ -139,7 +155,7 @@ export const OrderTrackingProgressBar: React.FC<OrderTrackingProgressBarProps> =
     ? order.trackingHistory[order.trackingHistory.length - 1]
     : null;
 
-  const currentDesc = latestHistory?.description || currentStepMeta[`defaultDesc${language === 'kn' ? 'Kn' : language === 'hi' ? 'Hi' : 'En'}`];
+  const currentDesc = latestHistory?.description || currentStepMeta[`defaultDesc${language === 'kn' ? 'Kn' : language === 'hi' ? 'Hi' : language === 'ta' ? 'Ta' : 'En'}`];
 
   return (
     <div 
@@ -149,13 +165,13 @@ export const OrderTrackingProgressBar: React.FC<OrderTrackingProgressBarProps> =
       {/* 1. HORIZONTAL PROGRESS BAR WITH SMOOTH ANIMATION */}
       <div 
         id={`order-horizontal-bar-card-${order.id}`}
-        className="bg-white rounded-2xl p-4 sm:p-5 border border-cream-border shadow-xs space-y-3.5 relative overflow-hidden"
+        className="bg-white rounded-2xl p-5 sm:p-6 border border-cream-border shadow-xs space-y-4 relative overflow-hidden"
       >
         {/* Top summary row: Current Status & Percentage Badge */}
         <div className="flex items-center justify-between gap-2">
           <div className="space-y-0.5">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-gray-600 block">
-              {language === 'kn' ? 'ಪ್ರಸ್ತುತ ಹಂತ' : language === 'hi' ? 'वर्तमान स्थिति' : 'Current Stage'}
+              {language === 'kn' ? 'ಪ್ರಸ್ತುತ ಹಂತ' : language === 'hi' ? 'वर्तमान स्थिति' : language === 'ta' ? 'தற்போதைய நிலை' : 'Current Stage'}
             </span>
             <AnimatePresence mode="wait">
               <motion.div
@@ -263,7 +279,7 @@ export const OrderTrackingProgressBar: React.FC<OrderTrackingProgressBarProps> =
             </div>
             <div className="space-y-0.5 flex-1">
               <span className="font-bold text-[11px] text-indigo-custom block">
-                {language === 'kn' ? 'ಇತ್ತೀಚಿನ ನವೀಕರಣ:' : language === 'hi' ? 'नवीनतम अपडेट:' : 'Latest Milestone:'}
+                {language === 'kn' ? 'ಇತ್ತೀಚಿನ ನವೀಕರಣ:' : language === 'hi' ? 'नवीनतम अपडेट:' : language === 'ta' ? 'சமீபத்திய மைல்கல்:' : 'Latest Milestone:'}
               </span>
               <p className="text-[11px] text-gray-700 leading-relaxed font-serif italic">
                 "{currentDesc}"
@@ -276,7 +292,7 @@ export const OrderTrackingProgressBar: React.FC<OrderTrackingProgressBarProps> =
         {showSimulateTrigger && onAdvanceStatus && (
           <div className="pt-2 border-t border-cream-border/70 flex items-center justify-between gap-3">
             <span className="text-[10px] text-gray-500 font-medium">
-              {language === 'kn' ? 'ಸ್ಥಿತಿಯನ್ನು ಮುಂದಿನ ಹಂತಕ್ಕೆ ನವೀಕರಿಸಿ' : language === 'hi' ? 'अगले चरण पर जाएं' : 'Advance to next lifecycle step'}
+              {language === 'kn' ? 'ಸ್ಥಿತಿಯನ್ನು ಮುಂದಿನ ಹಂತಕ್ಕೆ ನವೀಕರಿಸಿ' : language === 'hi' ? 'अगले चरण पर जाएं' : language === 'ta' ? 'அடுத்த கட்டத்திற்கு முன்னேற்றவும்' : 'Advance to next lifecycle step'}
             </span>
             <button
               id={`advance-status-btn-${order.id}`}
@@ -286,8 +302,8 @@ export const OrderTrackingProgressBar: React.FC<OrderTrackingProgressBarProps> =
               <Sparkles className="w-3.5 h-3.5 text-mustard" />
               <span>
                 {currentStepIndex >= totalSteps - 1
-                  ? (language === 'kn' ? 'ಮರುಹೊಂದಿಸಿ' : language === 'hi' ? 'रीसेट करें' : 'Reset Flow')
-                  : (language === 'kn' ? 'ಮುಂದಿನ ಹಂತ' : language === 'hi' ? 'अगला चरण' : 'Simulate Next Step')}
+                  ? (language === 'kn' ? 'ಮರುಹೊಂದಿಸಿ' : language === 'hi' ? 'रीसेट करें' : language === 'ta' ? 'மீட்டமை' : 'Reset Flow')
+                  : (language === 'kn' ? 'ಮುಂದಿನ ಹಂತ' : language === 'hi' ? 'अगला चरण' : language === 'ta' ? 'அடுத்த கட்டத்தை உருவகப்படுத்து' : 'Simulate Next Step')}
               </span>
             </button>
           </div>
@@ -298,12 +314,12 @@ export const OrderTrackingProgressBar: React.FC<OrderTrackingProgressBarProps> =
       {variant === 'full' && (
         <div 
           id={`order-vertical-milestones-${order.id}`}
-          className="bg-white rounded-2xl p-5 border border-cream-border space-y-4 shadow-xs"
+          className="bg-white rounded-2xl p-5 sm:p-6 border border-cream-border space-y-5 shadow-xs"
         >
           <div className="flex items-center justify-between border-b border-cream-border pb-3">
             <h3 className="font-serif font-bold text-sm text-charcoal flex items-center gap-2">
               <Clock className="w-4 h-4 text-terracotta" />
-              <span>{language === 'kn' ? 'ಹಂತ-ಹಂತದ ಟ್ರ್ಯಾಕಿಂಗ್ ವಿವರ' : language === 'hi' ? 'चरण-दर-चरण ट्रैकिंग विवरण' : 'Detailed Dispatch & QC Milestones'}</span>
+              <span>{language === 'kn' ? 'ಹಂತ-ಹಂತದ ಟ್ರ್ಯಾಕಿಂಗ್ ವಿವರ' : language === 'hi' ? 'चरण-दर-चरण ट्रैकिंग विवरण' : language === 'ta' ? 'விரிவான அனுப்புகை & QC மைல்கற்கள்' : 'Detailed Dispatch & QC Milestones'}</span>
             </h3>
             <span className="text-[10px] font-mono font-bold text-gray-400">
               {currentStepIndex + 1} of {totalSteps} Completed
@@ -334,7 +350,7 @@ export const OrderTrackingProgressBar: React.FC<OrderTrackingProgressBarProps> =
               
               // Look up recorded timestamp & description from order history if available
               const recordedEntry = order.trackingHistory?.find(h => h.status === stepMeta.key);
-              const stepDescription = recordedEntry?.description || stepMeta[`defaultDesc${language === 'kn' ? 'Kn' : language === 'hi' ? 'Hi' : 'En'}`];
+              const stepDescription = recordedEntry?.description || stepMeta[`defaultDesc${language === 'kn' ? 'Kn' : language === 'hi' ? 'Hi' : language === 'ta' ? 'Ta' : 'En'}`];
               const stepTime = recordedEntry?.timestamp;
 
               return (
@@ -408,7 +424,7 @@ export const OrderTrackingProgressBar: React.FC<OrderTrackingProgressBarProps> =
 
                     {/* Special QC inspection badge when viewing Quality Checked step */}
                     {stepMeta.key === 'Quality Checked' && (isPast || isCurrent) && order.qualityCheck && (
-                      <div className="mt-2 bg-white/90 border border-emerald-300 rounded-lg p-2 text-[10px] text-emerald-900 space-y-1">
+                      <div className="mt-2 bg-white/90 border border-emerald-300 rounded-xl p-2 text-[10px] text-emerald-900 space-y-1">
                         <div className="flex items-center gap-1 font-bold text-emerald-800">
                           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                           <span>Weaver Verified Checklist:</span>

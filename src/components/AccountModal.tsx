@@ -271,6 +271,62 @@ export const AccountModal: React.FC<AccountModalProps> = ({
       offlineQRNotice: "बिना इंटरनेट के भी काम करता है। एन्क्रिप्टेड भुगतान डिवाइस पर सुरक्षित रहता है।",
       closeQR: "वापस जाएं",
       copied: "कॉपी किया गया!"
+    },
+    ta: {
+      title: "எனது கலாசேது அடையாளம்",
+      subtitle: "சரிபார்க்கப்பட்ட கைவினைஞர் பாஸ்போர்ட்",
+      weaverCardTitle: "சரிபார்க்கப்பட்ட முதன்மை கைவினைஞர் ஐடி",
+      buyerCardTitle: "சரிபார்க்கப்பட்ட கைத்தறி வாடிக்கையாளர் ஐடி",
+      name: "பெயர்",
+      location: "பகுதி",
+      exp: "கைவினை அனுபவம்",
+      coop: "கூட்டுறவு சங்கம்",
+      shipping: "டெலிவரி முகவரி",
+      phone: "மொபைல் எண்",
+      relaunchOnboarding: "ஆன்போர்டிங் சுற்றுலாவை மீண்டும் தொடங்கு",
+      close: "சுயவிவரத்தை மூடு",
+      traceId: "பரவலாக்கப்பட்ட டிரேஸ் ஐடி",
+      trustShield: "கலாசேது சான்றளிக்கப்பட்ட நேரடி இணைப்பு",
+      statusText: "சரிபார்க்கப்பட்ட செயலில்",
+      dataSaverTitle: "டேட்டா சேவர் (கிராமப்புற உகந்தமயமாக்கப்பட்டது)",
+      dataSaverDesc: "பலவீனமான செல்லுலார் இணைப்புகளைப் பாதுகாக்க அத்தியாவசியமற்ற அனிமேஷன்களை முடக்கி நேரடி ஒத்திசைவு போலிங்கைக் குறைக்கிறது.",
+      offlineArchiveTitle: "ஆஃப்லைன் ஆர்டர் காப்பகம்",
+      offlineArchiveSubtitle: "நெட்வொர்க் இல்லாமல் அணுகக்கூடிய படிக்க-மட்டும் உள்ளூர் தேக்ககம்",
+      viewOfflineArchive: "ஆஃப்லைன் காப்பகத்தைப் பார்",
+      hideOfflineArchive: "காப்பகத்தை மறை",
+      cachedOrdersCount: "தேக்ககத்தில் உள்ள ஆர்டர்கள்",
+      availableOfflineDesc: "அனைத்து ஆர்டர் வரலாறுகள், துணி பாஸ்போர்ட்கள் மற்றும் ரசீதுகள் கிராமப்புற அணுகலுக்காக உங்கள் சாதனத்தில் உள்ளூரில் சேமிக்கப்பட்டுள்ளன.",
+      cachedBadge: "உள்ளூர் சாதன தேக்ககம்",
+      noCachedOrders: "உள்ளூர் சேமிப்பில் தேக்ககப்படுத்தப்பட்ட ஆர்டர்கள் எதுவும் இல்லை.",
+      receiptTitle: "கலாசேது சரிபார்க்கப்பட்ட டிஜிட்டல் ரசீது",
+      directWeaverBenefit: "100% நேரடி கைவினைஞர் பலன் தீர்க்கப்பட்டது",
+      closeReceipt: "ரசீதை மூடு",
+      viewReceipt: "ரசீது / சீட்டைப் பார்",
+      deliveredLabel: "டெலிவரி செய்யப்பட்டது",
+      paymentSettledLabel: "பணம் தீர்க்கப்பட்டது",
+      orderIdLabel: "ஆர்டர் ஐடி",
+      weaverLabel: "முதன்மை கைவினைஞர்",
+      buyerLabel: "வாடிக்கையாளர் / வாங்குபவர்",
+      amountPaid: "தீர்க்கப்பட்ட தொகை",
+      offlineNotice: "படிக்க-மட்டும் ஆஃப்லைன் ஸ்னாப்ஷாட் — கலாசேது ஸ்மார்ட் லெட்ஜரால் சரிபார்க்கப்பட்டது",
+      itemDetails: "கைவினைப் பொருள் விவரங்கள்",
+      financialBreakdown: "நிதி தீர்வு விவரம்",
+      customerPrice: "வாடிக்கையாளர் செலுத்திய மொத்தம்",
+      weaverDirectEarn: "கைவினைஞர் நேரடி பங்கு (91%)",
+      logisticsCost: "நேரடி கிராமப்புற கூரியர்",
+      platformFee: "கலாசேது தள சேவை (3%)",
+      trackingHistoryTitle: "பதிவுசெய்யப்பட்ட கண்காணிப்பு மைல்கற்கள்",
+      showPaymentQR: "பணம் செலுத்தும் QR-ஐக் காட்டு",
+      offlinePaymentQRTitle: "ஆஃப்லைன் கைவினைஞர் பணம் QR",
+      offlinePaymentQRSubtitle: "நேரடி UPI & பணமில்லா தீர்வு",
+      scanToPay: "எந்த UPI ஆப்பிலும் ஸ்கேன் செய்யவும்",
+      weaverUPIHandle: "சரிபார்க்கப்பட்ட கைவினைஞர் UPI ஐடி",
+      collectionAmount: "கைவினைஞருக்கு நேரடியாக செலுத்த வேண்டியது",
+      simulatePaymentBtn: "ஆஃப்லைன் பணம் பெறப்பட்டதை உருவகப்படுத்து",
+      simulatedSuccess: "பணம் உறுதி செய்யப்பட்டது! கிரிப்டோகிராஃபிக் ஆதாரம் பதிவு செய்யப்பட்டது",
+      offlineQRNotice: "செயலில் உள்ள இணையம் இல்லாமல் வேலை செய்கிறது. என்க்ரிப்ட் செய்யப்பட்ட பரிவர்த்தனை தரவு சாதனத்திலேயே உடனடியாக சரிபார்க்கப்படுகிறது.",
+      closeQR: "ஆர்டருக்குத் திரும்பு",
+      copied: "நகலெடுக்கப்பட்டது!"
     }
   };
 
@@ -281,23 +337,23 @@ export const AccountModal: React.FC<AccountModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-charcoal/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       
-      <div 
+      <div
         id="account-modal-container"
-        className="bg-cream border-2 border-terracotta rounded-3xl p-4 sm:p-5 text-left max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative space-y-4 sm:space-y-6 my-auto"
+        className="bg-white border border-cream-border rounded-3xl p-5 sm:p-7 text-left max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl relative space-y-5 sm:space-y-7 my-auto"
       >
         {/* Header Close Trigger */}
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start gap-3">
           <BackButton language={language} onBack={onClose} />
-          <div>
-            <h3 className="font-serif text-lg font-bold text-charcoal">{t.title}</h3>
-            <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{t.subtitle}</p>
+          <div className="text-center flex-1">
+            <h3 className="font-serif text-xl font-bold text-charcoal">{t.title}</h3>
+            <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mt-1">{t.subtitle}</p>
           </div>
           <button
             onClick={() => {
               playSyntheticChime('click');
               onClose();
             }}
-            className="text-gray-400 hover:text-black font-extrabold text-sm p-1.5 bg-white rounded-full border border-cream-border shadow-xs"
+            className="text-gray-400 hover:text-black font-extrabold text-sm p-1.5 bg-white rounded-full border border-cream-border shadow-xs shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
@@ -308,7 +364,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
           className={`rounded-2xl p-5 text-cream relative overflow-hidden shadow-xl border border-white/20 ${
             isWeaver 
               ? 'bg-gradient-to-br from-indigo-custom to-indigo-light' 
-              : 'bg-gradient-to-br from-terracotta to-[#8C3C26]'
+              : 'bg-gradient-to-br from-terracotta to-terracotta-dark'
           }`}
         >
           {/* Subtle background weave design */}
@@ -377,8 +433,15 @@ export const AccountModal: React.FC<AccountModalProps> = ({
         </div>
 
         {/* Detailed Address or Society view info */}
-        <div className="bg-white rounded-2xl border border-cream-border p-4 space-y-3.5 text-xs">
-          
+        <div className="space-y-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-custom/10 text-indigo-custom flex items-center justify-center shrink-0">
+              <User className="w-4 h-4" />
+            </div>
+            <h4 className="font-serif font-bold text-sm text-charcoal">Profile Details</h4>
+          </div>
+          <div className="bg-white rounded-2xl border border-cream-border p-4 sm:p-5 space-y-4 text-xs shadow-xs">
+
           <div className="flex items-start gap-3">
             <MapPin className="w-4 h-4 text-terracotta shrink-0 mt-0.5" />
             <div>
@@ -405,28 +468,28 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 pt-3 border-t border-cream-dark bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/60">
-                <Package className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 pt-3 border-t border-cream-dark bg-mustard/10 p-2.5 rounded-xl border border-mustard/30">
+                <Package className="w-4 h-4 text-mustard shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-[10px] uppercase font-bold text-amber-900 tracking-wider">
+                    <span className="text-[10px] uppercase font-bold text-charcoal tracking-wider">
                       Stated Production Capacity Limits
                     </span>
-                    <span className="text-[9px] bg-amber-200/80 text-amber-900 font-bold px-1.5 py-0.5 rounded">
+                    <span className="text-[9px] bg-mustard/30 text-charcoal font-bold px-1.5 py-0.5 rounded-full">
                       {profile.producerType === 'cooperative_society' ? 'Cooperative Society' : profile.producerType === 'shg_ngo' ? 'SHG / NGO' : 'Solo Artisan'}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-charcoal text-[11px] font-semibold my-1">
-                    <div className="bg-white p-2 rounded-lg border border-amber-200">
+                    <div className="bg-white p-2 rounded-lg border border-mustard/30">
                       <span className="text-[9px] text-gray-500 block uppercase font-bold">Weekly Cap</span>
                       <span>{profile.capacityPerWeek ? `${profile.capacityPerWeek} units / week` : '3 units / week (Default)'}</span>
                     </div>
-                    <div className="bg-white p-2 rounded-lg border border-amber-200">
+                    <div className="bg-white p-2 rounded-lg border border-mustard/30">
                       <span className="text-[9px] text-gray-500 block uppercase font-bold">Monthly Cap</span>
                       <span>{profile.capacityPerMonth ? `${profile.capacityPerMonth} units / month` : '12 units / month (Default)'}</span>
                     </div>
                   </div>
-                  <p className="text-[10px] text-amber-800 leading-tight italic mt-1">
+                  <p className="text-[10px] text-medium-beige leading-tight italic mt-1">
                     * Helper Note: Capacity limits protect fair working hours and handmade quality. Fully producer-defined and scalable.
                   </p>
                 </div>
@@ -446,17 +509,18 @@ export const AccountModal: React.FC<AccountModalProps> = ({
             </div>
           )}
 
+          </div>
         </div>
 
         {/* Offline Order Archive Section */}
-        <div 
+        <div
           id="offline-order-archive-card"
           className="bg-white rounded-2xl border border-cream-border overflow-hidden shadow-xs"
         >
           {/* Archive Header / Toggle Trigger */}
-          <div className="p-4 flex items-center justify-between gap-3 bg-cream/40 border-b border-cream-border">
+          <div className="p-4 sm:p-5 flex items-center justify-between gap-3 bg-cream/40 border-b border-cream-border">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-mustard/20 text-mustard flex items-center justify-center shrink-0">
                 <Archive className="w-4 h-4" />
               </div>
               <div>
@@ -492,8 +556,8 @@ export const AccountModal: React.FC<AccountModalProps> = ({
           {/* Expanded Archive List */}
           {showOfflineArchive && (
             <div className="p-4 space-y-3 bg-cream/20">
-              <div className="flex items-center gap-2 text-[10px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200/60 font-medium">
-                <WifiOff className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <div className="flex items-center gap-2 text-[10px] text-charcoal bg-mustard/10 p-2.5 rounded-xl border border-mustard/30 font-medium">
+                <WifiOff className="w-3.5 h-3.5 text-mustard shrink-0" />
                 <span>{t.availableOfflineDesc}</span>
               </div>
 
@@ -503,7 +567,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                   {t.noCachedOrders}
                 </div>
               ) : (
-                <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
                   {cachedOrders.map((order) => {
                     const isDelivered = order.status === 'Delivered' || order.status === 'Payment Settled';
                     const formattedDate = new Date(order.orderDate).toLocaleDateString('en-IN', {
@@ -516,7 +580,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                       <div 
                         key={order.id}
                         id={`offline-order-item-${order.id}`}
-                        className="bg-white p-3 rounded-xl border border-cream-border hover:border-terracotta/40 transition shadow-2xs space-y-2 text-left"
+                        className="bg-white p-3.5 rounded-xl border border-cream-border hover:border-terracotta/40 transition shadow-2xs space-y-2.5 text-left"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2.5">
@@ -574,7 +638,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                               }}
                               className="bg-charcoal hover:bg-black text-white text-[11px] font-bold py-1.5 px-2.5 rounded-lg flex items-center gap-1.5 transition shadow-2xs"
                             >
-                              <QrCode className="w-3.5 h-3.5 text-amber-400" />
+                              <QrCode className="w-3.5 h-3.5 text-mustard" />
                               <span>{t.showPaymentQR}</span>
                             </button>
 
@@ -601,7 +665,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
         </div>
 
         {/* Data Saver Mode Toggle Block */}
-        <div className="bg-white rounded-2xl border border-cream-border p-4 space-y-2 text-xs">
+        <div className="bg-white rounded-2xl border border-cream-border p-4 sm:p-5 space-y-2.5 text-xs shadow-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Wifi className={`w-4 h-4 ${dataSaver ? 'text-emerald-500' : 'text-terracotta'}`} />
@@ -631,7 +695,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
         </div>
 
         {/* Settings Buttons */}
-        <div className="space-y-2.5 pt-1">
+        <div className="space-y-2.5 pt-2">
           {onOpenLogin && (
             <button
               id="open-admin-login-modal-btn"
@@ -640,9 +704,9 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                 if (typeof onClose === 'function') onClose();
                 if (typeof onOpenLogin === 'function') onOpenLogin();
               }}
-              className="w-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 transition"
+              className="w-full bg-mustard/10 hover:bg-mustard/20 text-charcoal border border-mustard/40 font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 transition"
             >
-              <Landmark className="w-3.5 h-3.5 text-amber-700" />
+              <Landmark className="w-3.5 h-3.5 text-mustard" />
               <span>Sign In as Admin / Switch Account</span>
             </button>
           )}
@@ -665,7 +729,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
               playSyntheticChime('click');
               if (typeof onClose === 'function') onClose();
             }}
-            className="w-full bg-[#2D2926] hover:bg-black text-white font-bold py-3.5 px-4 rounded-xl text-xs text-center transition"
+            className="w-full bg-charcoal hover:bg-black text-white font-bold py-3.5 px-4 rounded-xl text-xs text-center transition"
           >
             {t.close}
           </button>
@@ -797,7 +861,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                 }}
                 className="w-full bg-charcoal hover:bg-black text-white font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm"
               >
-                <QrCode className="w-4 h-4 text-amber-400" />
+                <QrCode className="w-4 h-4 text-mustard" />
                 <span>{t.showPaymentQR}</span>
               </button>
 
@@ -830,7 +894,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
             {/* Header */}
             <div className="flex justify-between items-start pb-3 border-b border-cream-border">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-mustard/20 text-charcoal flex items-center justify-center shrink-0">
                   <QrCode className="w-5 h-5 text-charcoal" />
                 </div>
                 <div>
@@ -934,7 +998,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                 }}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-md"
               >
-                <Zap className="w-4 h-4 text-amber-300" />
+                <Zap className="w-4 h-4 text-mustard" />
                 <span>{t.simulatePaymentBtn}</span>
               </button>
             ) : (

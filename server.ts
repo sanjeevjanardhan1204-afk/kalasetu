@@ -9,6 +9,14 @@ import {
   TransactionHistoryEntry,
   OrderMilestone
 } from "./src/types";
+import {
+  upsertProduct, deleteProduct, loadAllProducts,
+  upsertOrder, loadAllOrders,
+  upsertTransaction, loadAllTransactions,
+  upsertGiRecord,
+  findAccountByEmail, seedDemoAccountsIfEmpty
+} from "./src/db/database";
+import { verifyPassword, issueSessionToken, attachSession, requireAuth, requireRole } from "./src/auth";
 
 // In-Memory Server State with Persistent Seed
 interface ServerProduct {
@@ -533,6 +541,39 @@ let serverOrders: ServerOrder[] = [
 
 let serverConflictLogs: ServerConflictLog[] = [];
 
+// --- Real SQLite persistence bootstrap ---
+// On first run (empty database) the hardcoded arrays above become the seed data written into
+// SQLite. On every run thereafter (including restarts), the in-memory arrays actually used by
+// the API routes below are re-hydrated FROM the database, so data survives a restart; every
+// mutating route writes back through upsert*() immediately after mutating the in-memory array
+// (see the persist* calls throughout this file). Note: on Vercel's serverless environment the
+// filesystem is ephemeral per cold start, so this DB does not durably persist across deployments
+// there - it is fully durable for local dev and any standalone host (Cloud Run, a VM, etc.).
+if (loadAllProducts().length === 0) {
+  serverProducts.forEach(p => upsertProduct(p));
+} else {
+  serverProducts = loadAllProducts<ServerProduct>();
+}
+if (loadAllOrders().length === 0) {
+  serverOrders.forEach(o => upsertOrder(o));
+} else {
+  serverOrders = loadAllOrders<ServerOrder>();
+}
+if (loadAllTransactions().length === 0) {
+  serverTransactions.forEach(t => upsertTransaction({ id: t.id, orderId: t.orderId, type: t.type, amount: t.amount, ...t }));
+} else {
+  serverTransactions = loadAllTransactions<TransactionHistoryEntry>();
+}
+
+const seededAdmin = seedDemoAccountsIfEmpty();
+if (seededAdmin) {
+  console.log('\n[KalaSetu] First run detected - seeded demo accounts in data/kalasetu.db:');
+  console.log(`  Admin  -> email: ${seededAdmin.adminEmail}  password: ${seededAdmin.adminPassword}`);
+  console.log('  Artisan -> email: weaver@kalasetu.demo  password: Weaver@123');
+  console.log('  Buyer   -> email: buyer@kalasetu.demo   password: Buyer@123');
+  console.log('[KalaSetu] Change these passwords before any real deployment.\n');
+}
+
 // Builds and configures the Express app with every API route registered, but does not bind a
 // port or wire up static/SPA serving. Used both by the standalone server (Cloud Run/local dev)
 // and by the Vercel serverless function entrypoint (api/index.ts), which invokes this directly
@@ -542,6 +583,7 @@ export async function createApp() {
 
   // JSON Body Parser for REST Endpoints
   app.use(express.json({ limit: "10mb" }));
+  app.use(attachSession);
 
   // ==========================================
   // REST API Endpoints
@@ -560,65 +602,47 @@ export async function createApp() {
     });
   });
 
-  // 1b. Authentication Endpoint (Demo & Standard Roles)
+  // 1b. Authentication Endpoint - real accounts, bcrypt-verified, JWT session issued on success.
   app.post("/api/auth/login", (req, res) => {
     try {
       const { email, password } = req.body;
-      if (!email) {
-        return res.status(400).json({ success: false, error: "Email is required" });
+      if (!email || !password) {
+        return res.status(400).json({ success: false, error: "Email and password are required" });
       }
 
-      const normalizedEmail = email.trim().toLowerCase();
-
-      // Admin Authentication Check
-      if (normalizedEmail === "admin@tantulink.demo") {
-        if (password && password !== "Admin@123") {
-          return res.status(401).json({ success: false, error: "Invalid password for admin account. Use: Admin@123" });
-        }
-        return res.json({
-          success: true,
-          user: {
-            id: "admin-1",
-            email: "admin@tantulink.demo",
-            name: "TantuLink Administrator",
-            role: "ADMIN",
-            region: "National Handloom Registry Center, New Delhi",
-            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"
-          }
-        });
+      const account = findAccountByEmail(String(email));
+      if (!account || !verifyPassword(String(password), account.password_hash)) {
+        return res.status(401).json({ success: false, error: "Invalid email or password" });
       }
 
-      // Weaver Demo Authentication
-      if (normalizedEmail === "weaver@tantulink.demo" || normalizedEmail.includes("weaver")) {
-        return res.json({
-          success: true,
-          user: {
-            id: "wev-1",
-            email: normalizedEmail,
-            name: "Annaiah Devanga",
-            role: "WEAVER",
-            region: "Gudikal, Bagalkot, Karnataka",
-            experience: "20",
-            cooperative: "Gudikal Weaver Co-op Society"
-          }
-        });
-      }
+      const token = issueSessionToken(account);
+      // Legacy client role vocabulary (ADMIN/WEAVER/BUYER) preserved so existing frontend role
+      // routing logic (App.tsx / LoginModal.tsx) does not need to change.
+      const legacyRole = account.role === 'admin' ? 'ADMIN' : account.role === 'artisan' ? 'WEAVER' : 'BUYER';
 
-      // Buyer Demo / Standard Authentication
       return res.json({
         success: true,
+        token,
         user: {
-          id: "byr-1",
-          email: normalizedEmail,
-          name: "Jagadish B.",
-          role: "BUYER",
-          shippingAddress: "Indiranagar, Bengaluru, Karnataka - 560038",
-          phone: "+91 98765 43210"
+          id: account.id,
+          email: account.email,
+          name: account.name,
+          role: legacyRole,
+          region: account.region || undefined,
+          phone: account.phone || undefined
         }
       });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });
     }
+  });
+
+  // 1c. Logout - JWTs are stateless, so there is no server-side session to invalidate; the real
+  // logout is the client discarding its stored token (see App.tsx). This endpoint exists so the
+  // client has a consistent server round-trip to call, and so a future server-side denylist
+  // (if ever needed) has a natural place to live.
+  app.post("/api/auth/logout", (_req, res) => {
+    res.json({ success: true });
   });
 
   // 3. Products Endpoints (GET & POST)
@@ -663,9 +687,11 @@ export async function createApp() {
         const existing = serverProducts[existingIdx];
         if (clientTime >= existing.updatedAt) {
           serverProducts[existingIdx] = { ...newProduct, version: existing.version + 1 };
+          upsertProduct(serverProducts[existingIdx]);
         }
       } else {
         serverProducts.unshift(newProduct);
+        upsertProduct(newProduct);
       }
 
       res.status(201).json({ success: true, product: newProduct });
@@ -713,6 +739,7 @@ export async function createApp() {
       };
 
       serverOrders.unshift(newOrder);
+      upsertOrder(newOrder);
       res.status(201).json({ success: true, order: newOrder });
     } catch (err: any) {
       res.status(400).json({ success: false, error: err.message });
@@ -749,6 +776,7 @@ export async function createApp() {
             }
           ]
         };
+        upsertOrder(serverOrders[existingIdx]);
 
         return res.json({
           success: true,
@@ -802,6 +830,8 @@ export async function createApp() {
         updatedAt: Date.now(),
         version: serverProducts[prodIdx].version + 1
       };
+      upsertProduct(serverProducts[prodIdx]);
+      upsertGiRecord(productId, giInfo);
 
       res.json({ success: true, product: { ...serverProducts[prodIdx], id: productId } });
     } catch (err: any) {
@@ -809,8 +839,8 @@ export async function createApp() {
     }
   });
 
-  // 4b. Admin GI Verification / Rejection
-  app.put("/api/products/:id/gi/verify", (req, res) => {
+  // 4b. Admin GI Verification / Rejection - server-verified admin session required.
+  app.put("/api/products/:id/gi/verify", requireRole('admin'), (req, res) => {
     try {
       const productId = req.params.id;
       const { status, verificationSource, verificationDate, verifiedBy, notes } = req.body;
@@ -844,6 +874,8 @@ export async function createApp() {
         updatedAt: Date.now(),
         version: serverProducts[prodIdx].version + 1
       };
+      upsertProduct(serverProducts[prodIdx]);
+      upsertGiRecord(productId, updatedGi);
 
       res.json({ success: true, product: { ...serverProducts[prodIdx], id: productId } });
     } catch (err: any) {
@@ -910,7 +942,7 @@ export async function createApp() {
   });
 
   // 4d. Milestone Payment Release
-  app.post("/api/orders/:id/milestones/release", (req, res) => {
+  app.post("/api/orders/:id/milestones/release", requireRole('admin'), (req, res) => {
     try {
       const orderId = req.params.id;
       const { milestoneId, milestoneName } = req.body;
@@ -985,6 +1017,7 @@ export async function createApp() {
       };
 
       serverTransactions.unshift(newTxn);
+      upsertTransaction({ id: newTxn.id, orderId: newTxn.orderId, type: newTxn.type, amount: newTxn.amount, ...newTxn });
 
       serverOrders[orderIdx] = {
         ...order,
@@ -993,6 +1026,7 @@ export async function createApp() {
         updatedAt: Date.now(),
         version: order.version + 1
       };
+      upsertOrder(serverOrders[orderIdx]);
 
       res.json({
         success: true,
@@ -1043,6 +1077,7 @@ export async function createApp() {
         updatedAt: Date.now(),
         version: order.version + 1
       };
+      upsertOrder(serverOrders[orderIdx]);
 
       res.status(201).json({ success: true, dispute: newDispute, order: serverOrders[orderIdx] });
     } catch (err: any) {
@@ -1087,6 +1122,7 @@ export async function createApp() {
         updatedAt: Date.now(),
         version: order.version + 1
       };
+      upsertOrder(serverOrders[orderIdx]);
 
       res.json({ success: true, dispute: updatedDispute, order: serverOrders[orderIdx] });
     } catch (err: any) {
@@ -1094,8 +1130,8 @@ export async function createApp() {
     }
   });
 
-  // 4g. Resolve Dispute (Admin Flow)
-  app.post("/api/orders/:id/disputes/resolve", (req, res) => {
+  // 4g. Resolve Dispute (Admin Flow) - server-verified admin session required.
+  app.post("/api/orders/:id/disputes/resolve", requireRole('admin'), (req, res) => {
     try {
       const orderId = req.params.id;
       const { action, amount, notes } = req.body;
@@ -1229,6 +1265,8 @@ export async function createApp() {
         updatedAt: Date.now(),
         version: order.version + 1
       };
+      upsertOrder(serverOrders[orderIdx]);
+      newTransactions.forEach(t => upsertTransaction({ id: t.id, orderId: t.orderId, type: t.type, amount: t.amount, ...t }));
 
       res.json({
         success: true,
@@ -1240,8 +1278,8 @@ export async function createApp() {
     }
   });
 
-  // 4h. Transaction History Endpoint (All Sandbox / Demo records)
-  app.get("/api/transactions", (req, res) => {
+  // 4h. Transaction History Endpoint (All Sandbox / Demo records) - admin only.
+  app.get("/api/transactions", requireRole('admin'), (req, res) => {
     res.json({
       success: true,
       count: serverTransactions.length,
@@ -1288,12 +1326,14 @@ export async function createApp() {
           if (existingIdx !== -1) {
             if (clientTime >= serverProducts[existingIdx].updatedAt) {
               serverProducts[existingIdx] = { ...newProd, version: serverProducts[existingIdx].version + 1 };
+              upsertProduct(serverProducts[existingIdx]);
               syncedCount++;
             } else {
               conflictCount++;
             }
           } else {
             serverProducts.unshift(newProd);
+            upsertProduct(newProd);
             syncedCount++;
           }
           results.push({ id: item.id, status: "synced" });
@@ -1321,6 +1361,7 @@ export async function createApp() {
                   }
                 ]
               };
+              upsertOrder(serverOrders[existingIdx]);
               syncedCount++;
 
               const conflictLog: ServerConflictLog = {
@@ -1359,6 +1400,7 @@ export async function createApp() {
             version: 1
           };
           serverOrders.unshift(newOrder);
+          upsertOrder(newOrder);
           syncedCount++;
           results.push({ id: item.id, status: "synced" });
         }
@@ -1396,7 +1438,7 @@ export async function createApp() {
         return res.status(400).send("Text is required");
       }
       
-      const shortLang = lang === "kn" ? "kn" : lang === "hi" ? "hi" : "en";
+      const shortLang = lang === "kn" ? "kn" : lang === "hi" ? "hi" : lang === "ta" ? "ta" : "en";
       
       const splitTextIntoChunks = (raw: string, maxLen = 130): string[] => {
         const clean = raw.trim();

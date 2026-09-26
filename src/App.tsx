@@ -8,12 +8,14 @@ import {
 } from 'lucide-react';
 import { Language, Product, Order, NetworkSimulationMode, OfflineOutboxItem } from './types';
 import { MOCK_PRODUCTS, MOCK_ORDERS, TRANSLATIONS, playSyntheticChime, SAMPLE_PRODUCT_IMAGES } from './data';
+import { clearSessionToken } from './utils/authClient';
 import { WeaverView } from './components/WeaverView';
 import { BuyerView } from './components/BuyerView';
 import { AdminDashboard } from './components/AdminDashboard';
 import { LoginModal } from './components/LoginModal';
 import { VoiceHelper, speakText, stopSpeaking } from './components/VoiceHelper';
 import { OnboardingFlow } from './components/OnboardingFlow';
+import { LandingPage } from './components/LandingPage';
 import { AccountModal } from './components/AccountModal';
 import { DataSaverToast } from './components/DataSaverToast';
 import { OfflineSimulationLab } from './components/OfflineSimulationLab';
@@ -114,6 +116,13 @@ export default function App() {
     } catch (e) {}
     return localStorage.getItem('taana_onboarding_done') === 'true';
   });
+  const [hasSeenLanding, setHasSeenLanding] = useState<boolean>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('role') === 'admin') return true;
+    } catch (e) {}
+    return localStorage.getItem('taana_onboarding_done') === 'true' || localStorage.getItem('taana_seen_landing') === 'true';
+  });
   const [profile, setProfile] = useState<any>(() => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -144,26 +153,10 @@ export default function App() {
     };
   });
 
-  // Keep ?role=admin synchronized with state on load
-  useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('role') === 'admin') {
-        const adminProfile = {
-          id: 'admin-1',
-          name: 'TantuLink Administrator',
-          email: 'admin@tantulink.demo',
-          role: 'admin' as const,
-          region: 'National Handloom Registry Center, New Delhi'
-        };
-        setProfile(adminProfile);
-        setCurrentMode('admin');
-        setOnboardingCompleted(true);
-        localStorage.setItem('taana_profile', JSON.stringify(adminProfile));
-        localStorage.setItem('taana_onboarding_done', 'true');
-      }
-    } catch (e) {}
-  }, []);
+  // The ?role=admin URL trust that used to grant admin here has been removed entirely: admin
+  // access now only ever comes from LoginModal's real POST /api/auth/login flow, which the
+  // server verifies against the accounts table and only then issues a signed session token
+  // (see server.ts and src/auth.ts). There is deliberately no client-side way to become admin.
   const [showAccountModal, setShowAccountModal] = useState<boolean>(false);
   const [dataSaver, setDataSaver] = useState<boolean>(() => {
     return localStorage.getItem('taana_data_saver') === 'true';
@@ -264,7 +257,7 @@ export default function App() {
     if (actionType === 'NEW_PRODUCT') {
       const newMockProduct: Product = {
         id: 'p-off-' + Math.floor(100 + Math.random() * 900),
-        title: language === 'kn' ? 'ಖಂಡುಆ ರೇಷ್ಮೆ ಸೀರೆ (ಆಫ್‌ಲೈನ್)' : language === 'hi' ? 'खंडुआ सिल्क साड़ी (ऑफलाइन)' : 'Khandua Silk Heritage Saree (Offline Added)',
+        title: language === 'kn' ? 'ಖಂಡುಆ ರೇಷ್ಮೆ ಸೀರೆ (ಆಫ್‌ಲೈನ್)' : language === 'hi' ? 'खंडुआ सिल्क साड़ी (ऑफलाइन)' : language === 'ta' ? 'கண்டுஆ பட்டு புடவை (ஆஃப்லைன் சேர்க்கப்பட்டது)' : 'Khandua Silk Heritage Saree (Offline Added)',
         weaverName: profile?.name || 'Annaiah Devanga',
         weaverBio: 'Traditional handloom weaver preserving natural dye formulas.',
         weaverRegion: 'Guledgudda, Bagalkot',
@@ -481,6 +474,8 @@ export default function App() {
         welcomeText = `ಸುಸ್ವಾಗತ ${profile?.name || ''}. ಕಲಾಸೇತು ಧ್ವನಿ ಆಧಾರಿತ ಮಾರುಕಟ್ಟೆಗೆ ಧನ್ಯವಾದಗಳು.`;
       } else if (language === 'hi') {
         welcomeText = `स्वागत है ${profile?.name || ''}। कलासेतु डायरेक्ट मार्केटप्लेस में आपका धन्यवाद।`;
+      } else if (language === 'ta') {
+        welcomeText = `மீண்டும் வரவேற்கிறோம் ${profile?.name || ''}. கலாசேதுவுடன் இணைந்ததற்கு நன்றி.`;
       } else {
         welcomeText = `Welcome back ${profile?.name || ''}. Thank you for connecting with KalaSetu.`;
       }
@@ -504,6 +499,8 @@ export default function App() {
       testMsg = "ನಮಸ್ಕಾರ, ಕಲಾಸೇತು ಧ್ವನಿ ಸಹಾಯಕಿ ಸಕ್ರಿಯವಾಗಿದೆ ಮತ್ತು ಸರಿಯಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತಿದೆ.";
     } else if (language === 'hi') {
       testMsg = "नमस्ते, कलासेतु आवाज सहायक सक्रिय है और ठीक से काम कर रहा है।";
+    } else if (language === 'ta') {
+      testMsg = "வணக்கம், கலாசேது குரல் உதவியாளர் செயலில் உள்ளது மற்றும் சரியாக வேலை செய்கிறது.";
     } else {
       testMsg = "Hello, the KalaSetu voice assistant is active and working correctly.";
     }
@@ -526,16 +523,24 @@ export default function App() {
     localStorage.setItem('taana_onboarding_done', 'true');
   };
 
+  const handleEnterApp = () => {
+    playSyntheticChime('click');
+    setHasSeenLanding(true);
+    try { localStorage.setItem('taana_seen_landing', 'true'); } catch (e) {}
+  };
+
   const handleResetOnboarding = () => {
     setOnboardingCompleted(false);
     setShowAccountModal(false);
     localStorage.removeItem('taana_onboarding_done');
     localStorage.removeItem('taana_profile');
+    clearSessionToken();
+    fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
     playSyntheticChime('click');
   };
 
   return (
-    <div className="min-h-screen bg-[#FDF8F1] font-sans text-charcoal relative flex flex-col">
+    <div className="min-h-screen bg-cream font-sans text-charcoal relative flex flex-col">
       
       {/* Background patterns representing weft and warp handloom threads */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
@@ -550,8 +555,18 @@ export default function App() {
         className="w-full max-w-7xl mx-auto bg-cream flex flex-col min-h-screen relative shadow-md border-x border-cream-border"
       >
 
-        {!onboardingCompleted ? (
-          <OnboardingFlow 
+        {!hasSeenLanding ? (
+          <LandingPage
+            language={language}
+            setLanguage={handleLanguageChange}
+            products={products}
+            orders={orders}
+            onStartShopping={handleEnterApp}
+            onBecomeArtisan={handleEnterApp}
+            onSignIn={() => setShowLoginModal(true)}
+          />
+        ) : !onboardingCompleted ? (
+          <OnboardingFlow
             language={language}
             setLanguage={handleLanguageChange}
             onComplete={handleOnboardingComplete}
@@ -571,18 +586,22 @@ export default function App() {
                     </div>
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0 text-left">
                       <span className="font-bold text-[11px] sm:text-xs text-amber-100">
-                        {language === 'kn' 
+                        {language === 'kn'
                           ? 'ಆಫ್‌ಲೈನ್ ಮೋಡ್ ಸಕ್ರಿಯ'
                           : language === 'hi'
                           ? 'ऑफलाइन मोड सक्रिय'
+                          : language === 'ta'
+                          ? 'ஆஃப்லைன் பயன்முறை செயலில்'
                           : 'Offline Cache Mode'}
                       </span>
                       <span className="text-amber-400/50 hidden xs:inline">•</span>
                       <span className="text-amber-200/90 text-[11px] sm:text-xs">
-                        {language === 'kn' 
+                        {language === 'kn'
                           ? `ಸ್ಥಳೀಯ ಕ್ಯಾಶ್‌ನಿಂದ ಉತ್ಪನ್ನಗಳು (${products.length}) ಲಭ್ಯವಿದೆ`
                           : language === 'hi'
                           ? `स्थानीय कैश से उत्पाद (${products.length}) उपलब्ध हैं`
+                          : language === 'ta'
+                          ? `உள்ளூர் தேக்ககத்திலிருந்து பொருட்கள் (${products.length}) கிடைக்கின்றன`
                           : `Local snapshot active (${products.length} handlooms cached)`}
                       </span>
                     </div>
@@ -605,12 +624,12 @@ export default function App() {
                       <span>
                         <span className="text-amber-300/80 font-sans font-medium text-[10px]">
                           {isSyncing 
-                            ? (language === 'kn' ? 'ಸಿಂಕ್ ಆಗುತ್ತಿದೆ...' : language === 'hi' ? 'सिंक हो रहा है...' : 'Syncing...') 
-                            : (language === 'kn' ? 'ಕೊನೆಯ ಸಿಂಕ್:' : language === 'hi' ? 'पिछला सिंक:' : 'Last Synced:')}
+                            ? (language === 'kn' ? 'ಸಿಂಕ್ ಆಗುತ್ತಿದೆ...' : language === 'hi' ? 'सिंक हो रहा है...' : language === 'ta' ? 'ஒத்திசைக்கிறது...' : 'Syncing...') 
+                            : (language === 'kn' ? 'ಕೊನೆಯ ಸಿಂಕ್:' : language === 'hi' ? 'पिछला सिंक:' : language === 'ta' ? 'கடைசியாக ஒத்திசைக்கப்பட்டது:' : 'Last Synced:')}
                         </span>{' '}
                         <strong className="text-white font-bold">
                           {isSyncing 
-                            ? (language === 'kn' ? 'ಬ್ಯಾಕ್‌ಗ್ರೌಂಡ್' : language === 'hi' ? 'सक्रिय' : 'Refreshing...') 
+                            ? (language === 'kn' ? 'ಬ್ಯಾಕ್‌ಗ್ರೌಂಡ್' : language === 'hi' ? 'सक्रिय' : language === 'ta' ? 'புதுப்பிக்கிறது...' : 'Refreshing...') 
                             : formatSyncTime(lastSyncTimestamp, language)}
                         </strong>
                       </span>
@@ -623,7 +642,7 @@ export default function App() {
                         className="text-[10px] uppercase font-bold tracking-wider bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 px-2 py-1 rounded-lg font-mono flex items-center gap-1 shadow-2xs"
                       >
                         <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
-                        <span>{language === 'kn' ? 'ಕ್ಯಾಶ್ ಸುರಕ್ಷಿತ' : language === 'hi' ? 'कैश सुरक्षित' : 'Cache Valid'}</span>
+                        <span>{language === 'kn' ? 'ಕ್ಯಾಶ್ ಸುರಕ್ಷಿತ' : language === 'hi' ? 'कैश सुरक्षित' : language === 'ta' ? 'தேக்ககம் செல்லுபடியாகும்' : 'Cache Valid'}</span>
                       </span>
 
                       {/* Re-sync / Retry Action */}
@@ -634,7 +653,7 @@ export default function App() {
                         title="Re-check network connection & update sync"
                       >
                         <RefreshCw className={`w-3 h-3 text-amber-300 ${isSyncing ? 'animate-spin' : ''}`} />
-                        <span>{language === 'kn' ? 'ಸಿಂಕ್ ಪರಿಶೀಲಿಸಿ' : language === 'hi' ? 'सिंक जांचें' : 'Sync Now'}</span>
+                        <span>{language === 'kn' ? 'ಸಿಂಕ್ ಪರಿಶೀಲಿಸಿ' : language === 'hi' ? 'सिंक जांचें' : language === 'ta' ? 'இப்போது ஒத்திசை' : 'Sync Now'}</span>
                       </button>
                     </div>
                   </div>
@@ -695,14 +714,14 @@ export default function App() {
                   <div className="flex items-center gap-1 leading-none text-left">
                     <span className="font-sans font-medium text-[10px] text-gray-500">
                       {isSyncing 
-                        ? (language === 'kn' ? 'ಸಿಂಕ್ ಆಗುತ್ತಿದೆ:' : language === 'hi' ? 'सिंक हो रहा है:' : 'Syncing:') 
+                        ? (language === 'kn' ? 'ಸಿಂಕ್ ಆಗುತ್ತಿದೆ:' : language === 'hi' ? 'सिंक हो रहा है:' : language === 'ta' ? 'ஒத்திசைக்கிறது:' : 'Syncing:') 
                         : isOffline
-                        ? (language === 'kn' ? 'ಕ್ಯಾಶ್ ಸಿಂಕ್:' : language === 'hi' ? 'कैश सिंक:' : 'Offline Sync:')
-                        : (language === 'kn' ? 'ಸಿಂಕ್:' : language === 'hi' ? 'सिंक:' : 'Synced:')}
+                        ? (language === 'kn' ? 'ಕ್ಯಾಶ್ ಸಿಂಕ್:' : language === 'hi' ? 'कैश सिंक:' : language === 'ta' ? 'ஆஃப்லைன் ஒத்திசைவு:' : 'Offline Sync:')
+                        : (language === 'kn' ? 'ಸಿಂಕ್:' : language === 'hi' ? 'सिंक:' : language === 'ta' ? 'ஒத்திசைக்கப்பட்டது:' : 'Synced:')}
                     </span>
                     <strong className={`font-bold text-[10px] ${isSyncing ? 'text-amber-900 font-extrabold' : isOffline ? 'text-amber-950' : 'text-charcoal'}`}>
                       {isSyncing 
-                        ? (language === 'kn' ? 'ಪ್ರಸ್ತುತಪಡಿಸಲಾಗುತ್ತಿದೆ' : language === 'hi' ? 'ताज़ा हो रहा है' : 'Refreshing...') 
+                        ? (language === 'kn' ? 'ಪ್ರಸ್ತುತಪಡಿಸಲಾಗುತ್ತಿದೆ' : language === 'hi' ? 'ताज़ा हो रहा है' : language === 'ta' ? 'புதுப்பிக்கிறது...' : 'Refreshing...') 
                         : formatSyncTime(lastSyncTimestamp, language)}
                     </strong>
                   </div>
@@ -738,12 +757,12 @@ export default function App() {
                   <button
                     id="test-voice-button"
                     onClick={testVoiceAssistant}
-                    title={language === 'kn' ? 'ಧ್ವನಿ ಪರೀಕ್ಷೆ' : language === 'hi' ? 'आवाज़ जाँच' : 'Test voice assistant'}
+                    title={language === 'kn' ? 'ಧ್ವನಿ ಪರೀಕ್ಷೆ' : language === 'hi' ? 'आवाज़ जाँच' : language === 'ta' ? 'குரல் சோதனை' : 'Test voice assistant'}
                     className="p-1.5 sm:p-2 rounded-xl bg-cream-dark hover:bg-cream-border border border-cream-border text-terracotta transition shadow-xs flex items-center gap-1 text-[10px] font-bold min-h-[36px]"
                   >
                     <Volume2 className="w-3.5 h-3.5" />
                     <span className="hidden xs:inline sm:inline">
-                      {language === 'kn' ? 'ಧ್ವನಿ' : language === 'hi' ? 'आवाज़' : 'Hear Voice'}
+                      {language === 'kn' ? 'ಧ್ವನಿ' : language === 'hi' ? 'आवाज़' : language === 'ta' ? 'குரல்' : 'Hear Voice'}
                     </span>
                   </button>
 
@@ -768,6 +787,13 @@ export default function App() {
                       className={`text-[10px] px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition-all ${language === 'hi' ? 'bg-white shadow-sm font-bold text-terracotta' : 'text-gray-beige font-medium hover:text-charcoal'}`}
                     >
                       हिन्दी
+                    </button>
+                    <button
+                      id="lang-btn-ta"
+                      onClick={() => handleLanguageChange('ta')}
+                      className={`text-[10px] px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition-all ${language === 'ta' ? 'bg-white shadow-sm font-bold text-terracotta' : 'text-gray-beige font-medium hover:text-charcoal'}`}
+                    >
+                      தமிழ்
                     </button>
                   </div>
                 </div>
@@ -845,7 +871,7 @@ export default function App() {
                       onSwitchMode={(mode) => toggleMode(mode)}
                       onLogout={() => {
                         playSyntheticChime('click');
-                        setCurrentMode('weaver');
+                        handleResetOnboarding();
                       }}
                     />
                   </motion.div>

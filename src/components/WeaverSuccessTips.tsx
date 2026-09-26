@@ -31,6 +31,12 @@ interface TipData {
     impactLabel: string;
     actionLabel: string;
   };
+  ta?: {
+    title: string;
+    description: string;
+    impactLabel: string;
+    actionLabel: string;
+  };
 }
 
 const WEAVER_TIPS: TipData[] = [
@@ -56,6 +62,12 @@ const WEAVER_TIPS: TipData[] = [
       description: 'सटीक फैब्रिक विवरण जोड़ें (जैसे "80s काउंट शुद्ध शहतूत रेशम जरी के साथ") जिससे 25% अधिक खरीदार आपके उत्पाद देखेंगे।',
       impactLabel: '+25% अधिक व्यूज',
       actionLabel: 'विवरण जोड़ें'
+    },
+    ta: {
+      title: 'விரிவான துணி & நூல் எண்ணிக்கை விவரம்',
+      description: 'துணி மற்றும் நூலின் விரிவான விவரத்தை சேர்க்கவும் (எ.கா: "80s கவுண்ட் தூய முல்பெரி பட்டு ஜரியுடன்") - 25% அதிக வாங்குபவர் பார்வைகளுக்கு.',
+      impactLabel: '+25% அதிக பார்வைகள்',
+      actionLabel: 'பட்டியலில் சேர்'
     }
   },
   {
@@ -80,6 +92,12 @@ const WEAVER_TIPS: TipData[] = [
       description: 'सुबह की प्राकृतिक धूप में पल्लू और बॉर्डर की क्लोज-अप तस्वीर अपलोड करें, इससे खरीदारों का विश्वास 30% बढ़ता है।',
       impactLabel: '+30% खरीदार रुचि',
       actionLabel: 'फोटो अपलोड करें'
+    },
+    ta: {
+      title: 'இயற்கை பகல் வெளிச்சத்தில் ஜரி க்ளோஸ்-அப்',
+      description: 'மென்மையான காலை வெளிச்சத்தில் பல்லு மற்றும் பார்டரின் க்ளோஸ்-அப் புகைப்படங்களை எடுத்து வாங்குபவர் நம்பிக்கையை 30% அதிகரிக்கவும்.',
+      impactLabel: '+30% வாங்குபவர் விசாரணைகள்',
+      actionLabel: 'புகைப்படம் பதிவேற்று'
     }
   },
   {
@@ -104,6 +122,12 @@ const WEAVER_TIPS: TipData[] = [
       description: 'अपने जिले की पारंपरिक हथकरघा विरासत और जीआई पहचान का उल्लेख करें, इससे 20% बेहतर मूल्य प्राप्त होता है।',
       impactLabel: '+20% प्रीमियम मूल्य',
       actionLabel: 'विरासत जोड़ें'
+    },
+    ta: {
+      title: 'GI குறியீடு & மாவட்ட பாரம்பரியத்தை முன்னிலைப்படுத்து',
+      description: 'உங்கள் மாவட்ட பாரம்பரியம் மற்றும் GI கைவினை வம்சாவளியை (எ.கா: பாகல்கோட் பாரம்பரிய கைத்தறி) குறிப்பிடவும் - 20% அதிக மதிப்புக்கு.',
+      impactLabel: '+20% கைவினைஞர் மதிப்பு',
+      actionLabel: 'பாரம்பரியம் சேர்'
     }
   },
   {
@@ -128,6 +152,12 @@ const WEAVER_TIPS: TipData[] = [
       description: 'स्पष्ट बताएं कि बिना सिला ब्लाउज पीस शामिल है या नहीं (5.5 मी साड़ी + 0.8 मी ब्लाउज), इससे बिक्री में 35% तेजी आती है।',
       impactLabel: '+35% त्वरित ऑर्डर',
       actionLabel: 'माप दर्ज करें'
+    },
+    ta: {
+      title: 'சரியான அளவுகள் & பிளவுஸ் பீஸ் தெளிவு',
+      description: 'தைக்கப்படாத பிளவுஸ் பீஸ் சேர்க்கப்பட்டுள்ளதா என்பதை தெளிவாகக் குறிப்பிடவும் (5.5மீ புடவை + 0.8மீ பிளவுஸ்) - 35% வேகமான ஆர்டர்களுக்கு.',
+      impactLabel: '+35% வேகமான ஆர்டர்கள்',
+      actionLabel: 'அளவை புதுப்பி'
     }
   }
 ];
@@ -183,37 +213,39 @@ export const WeaverSuccessTips: React.FC<WeaverSuccessTipsProps> = ({
   const headerTitle = {
     en: 'Weaver Success Tip',
     kn: 'ನೇಕಾರರ ಯಶಸ್ಸಿನ ಸಲಹೆ',
-    hi: 'बुनकर सफलता सुझाव'
+    hi: 'बुनकर सफलता सुझाव',
+    ta: 'நெசவாளர் வெற்றி குறிப்பு'
   }[language] || 'Weaver Success Tip';
 
   const subtitle = {
     en: 'Actionable insight to boost your product visibility',
     kn: 'ನಿಮ್ಮ ಉತ್ಪನ್ನಗಳ ಮಾರಾಟ ಮತ್ತು ನೋಟವನ್ನು ಹೆಚ್ಚಿಸುವ ಉಪಯುಕ್ತ ಸಲಹೆ',
-    hi: 'अपने उत्पादों की दृश्यता और बिक्री बढ़ाने के लिए उपयोगी सुझाव'
+    hi: 'अपने उत्पादों की दृश्यता और बिक्री बढ़ाने के लिए उपयोगी सुझाव',
+    ta: 'உங்கள் தயாரிப்பு தெரிவுநிலையை அதிகரிக்க செயல்படுத்தக்கூடிய நுண்ணறிவு'
   }[language] || 'Actionable insight to boost your product visibility';
 
   return (
     <div 
       id="weaver-success-tips-card"
-      className="bg-linear-to-br from-[#FFF9F2] to-[#FFF3E3] border-2 border-mustard/40 rounded-2xl p-4 sm:p-5 shadow-xs relative overflow-hidden space-y-3.5 transition-all duration-300"
+      className="bg-linear-to-br from-mustard-light/25 to-mustard/15 border-2 border-mustard/40 rounded-2xl p-5 sm:p-6 shadow-xs relative overflow-hidden space-y-4 transition-all duration-300"
     >
       {/* Subtle decorative background watermark */}
       <div className="absolute -right-8 -top-8 w-28 h-28 bg-mustard/10 rounded-full blur-xl pointer-events-none"></div>
 
       {/* Header bar */}
-      <div className="flex items-center justify-between gap-2 border-b border-mustard/20 pb-2.5">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-mustard/25 text-charcoal flex items-center justify-center shrink-0 border border-mustard/40 shadow-3xs">
-            <Lightbulb className="w-4 h-4 text-terracotta" />
+      <div className="flex items-center justify-between gap-2 border-b border-mustard/20 pb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-mustard/25 text-charcoal flex items-center justify-center shrink-0 border border-mustard/40 shadow-3xs">
+            <Lightbulb className="w-5 h-5 text-terracotta" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <h4 className="font-serif text-sm font-bold text-charcoal">{headerTitle}</h4>
+              <h4 className="font-serif text-base font-bold text-charcoal">{headerTitle}</h4>
               <span className="bg-terracotta/10 text-terracotta text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full font-mono">
                 {tipContent.impactLabel}
               </span>
             </div>
-            <p className="text-[10px] text-gray-600 font-medium line-clamp-1">{subtitle}</p>
+            <p className="text-xs text-gray-600 font-medium line-clamp-1 mt-0.5">{subtitle}</p>
           </div>
         </div>
 
@@ -222,7 +254,7 @@ export const WeaverSuccessTips: React.FC<WeaverSuccessTipsProps> = ({
           <button
             id="prev-weaver-tip-btn"
             onClick={handlePrevTip}
-            className="p-1.5 rounded-lg bg-white/80 hover:bg-white text-gray-700 hover:text-charcoal border border-mustard/30 transition shadow-3xs"
+            className="p-1.5 rounded-xl bg-white/80 hover:bg-white text-gray-700 hover:text-charcoal border border-mustard/30 transition shadow-3xs"
             title="Previous Tip"
             aria-label="Previous Tip"
           >
@@ -234,7 +266,7 @@ export const WeaverSuccessTips: React.FC<WeaverSuccessTipsProps> = ({
           <button
             id="next-weaver-tip-btn"
             onClick={handleNextTip}
-            className="p-1.5 rounded-lg bg-white/80 hover:bg-white text-gray-700 hover:text-charcoal border border-mustard/30 transition shadow-3xs"
+            className="p-1.5 rounded-xl bg-white/80 hover:bg-white text-gray-700 hover:text-charcoal border border-mustard/30 transition shadow-3xs"
             title="Next Tip"
             aria-label="Next Tip"
           >
@@ -245,10 +277,10 @@ export const WeaverSuccessTips: React.FC<WeaverSuccessTipsProps> = ({
 
       {/* Main Tip Body */}
       <div className="space-y-2">
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-start gap-3">
           <div className="w-2 h-2 rounded-full bg-terracotta shrink-0 mt-1.5 animate-pulse"></div>
-          <div className="space-y-1">
-            <h5 className="text-xs font-bold text-charcoal font-serif flex items-center gap-1.5">
+          <div className="space-y-1.5">
+            <h5 className="text-sm font-bold text-charcoal font-serif flex items-center gap-1.5">
               {tipContent.title}
             </h5>
             <p className="text-xs text-gray-700 leading-relaxed font-medium">
@@ -259,7 +291,7 @@ export const WeaverSuccessTips: React.FC<WeaverSuccessTipsProps> = ({
       </div>
 
       {/* Action Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
         {/* Listen Aloud Button (Empathy design for rural artisans) */}
         <button
           id="listen-weaver-tip-btn"
@@ -274,12 +306,12 @@ export const WeaverSuccessTips: React.FC<WeaverSuccessTipsProps> = ({
           {isSpeaking ? (
             <>
               <VolumeX className="w-3.5 h-3.5 text-amber-100" />
-              <span>{language === 'kn' ? 'ನಿಲ್ಲಿಸಿ' : language === 'hi' ? 'रोकें' : 'Stop Audio'}</span>
+              <span>{language === 'kn' ? 'ನಿಲ್ಲಿಸಿ' : language === 'hi' ? 'रोकें' : language === 'ta' ? 'ஒலியை நிறுத்து' : 'Stop Audio'}</span>
             </>
           ) : (
             <>
               <Volume2 className="w-3.5 h-3.5 text-terracotta" />
-              <span>{language === 'kn' ? 'ಸಲಹೆ ಆಲಿಸಿ' : language === 'hi' ? 'सुझाव सुनें' : 'Listen Tip'}</span>
+              <span>{language === 'kn' ? 'ಸಲಹೆ ಆಲಿಸಿ' : language === 'hi' ? 'सुझाव सुनें' : language === 'ta' ? 'குறிப்பைக் கேளுங்கள்' : 'Listen Tip'}</span>
             </>
           )}
         </button>

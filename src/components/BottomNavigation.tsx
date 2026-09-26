@@ -117,9 +117,9 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
     <nav
       id="taana-pwa-bottom-navigation"
       aria-label="Mobile Navigation"
-      className="fixed bottom-0 left-0 right-0 z-50 bg-[#FDF8F1]/95 backdrop-blur-md border-t border-cream-border/80 shadow-[0_-4px_20px_rgba(45,41,38,0.08)] pb-safe md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-cream/95 backdrop-blur-md border-t border-cream-border shadow-[0_-4px_20px_rgba(45,41,38,0.08)] pb-safe md:hidden"
     >
-      <div className="max-w-md mx-auto px-2 py-1.5 flex items-center justify-around">
+      <div className="max-w-md mx-auto px-2 py-2 flex items-center justify-around">
 
         {activeRole === 'buyer' && (
           <button
@@ -128,12 +128,10 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
               playSyntheticChime('click');
               handleOpenOrders();
             }}
-            className="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all text-gray-beige hover:text-charcoal cursor-pointer"
+            className="flex flex-col items-center justify-center gap-1 flex-1 py-1.5 px-1 rounded-xl transition-all text-gray-500 hover:text-terracotta hover:bg-terracotta/5 active:scale-95 cursor-pointer"
           >
-            <div className="p-1 rounded-lg">
-              <ClipboardList className="w-5 h-5" />
-            </div>
-            <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">
+            <ClipboardList className="w-5 h-5" />
+            <span className="text-[10px] font-bold tracking-tight whitespace-nowrap">
               {language === 'kn' ? 'ಆರ್ಡರ್‌ಗಳು' : language === 'hi' ? 'ऑर्डर' : 'Orders'}
             </span>
           </button>
@@ -162,21 +160,21 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             playSyntheticChime('click');
             handleOpenOfflineLab();
           }}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all relative text-gray-beige hover:text-charcoal cursor-pointer"
+          className="flex flex-col items-center justify-center gap-1 flex-1 py-1.5 px-1 rounded-xl transition-all relative text-gray-500 hover:text-terracotta hover:bg-terracotta/5 active:scale-95 cursor-pointer"
         >
-          <div className="p-1 rounded-lg relative">
+          <div className="relative">
             {isSyncing ? (
               <RefreshCw className="w-5 h-5 text-mustard animate-spin" />
             ) : (
-              <Zap className={`w-5 h-5 ${networkMode === 'offline' ? 'text-amber-600 animate-pulse' : ''}`} />
+              <Zap className={`w-5 h-5 ${networkMode === 'offline' ? 'text-mustard animate-pulse' : ''}`} />
             )}
             {outboxCount > 0 && (
-              <span className="absolute -top-1 -right-1.5 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full font-mono shadow-xs animate-bounce">
+              <span className="absolute -top-1 -right-1.5 bg-mustard text-charcoal text-[9px] font-bold px-1.5 py-0.2 rounded-full font-mono shadow-xs animate-bounce">
                 {outboxCount}
               </span>
             )}
           </div>
-          <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">
+          <span className="text-[10px] font-bold tracking-tight whitespace-nowrap">
             {networkMode === 'offline' ? 'Offline Lab' : 'Sync / Lab'}
           </span>
         </button>
@@ -188,12 +186,10 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             playSyntheticChime('click');
             handleOpenAccount();
           }}
-          className="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition-all text-gray-beige hover:text-charcoal cursor-pointer"
+          className="flex flex-col items-center justify-center gap-1 flex-1 py-1.5 px-1 rounded-xl transition-all text-gray-500 hover:text-terracotta hover:bg-terracotta/5 active:scale-95 cursor-pointer"
         >
-          <div className="p-1 rounded-lg">
-            <User className="w-5 h-5" />
-          </div>
-          <span className="text-[10px] tracking-tight mt-0.5 whitespace-nowrap">
+          <User className="w-5 h-5" />
+          <span className="text-[10px] font-bold tracking-tight whitespace-nowrap">
             {language === 'kn' ? 'ಖಾತೆ' : language === 'hi' ? 'खाता' : 'Account'}
           </span>
         </button>
