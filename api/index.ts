@@ -7,6 +7,15 @@ import { createApp } from "../server";
 const appPromise = createApp();
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
-  const app = await appPromise;
-  app(req as any, res as any);
+  try {
+    const app = await appPromise;
+    app(req as any, res as any);
+  } catch (err: any) {
+    // Surface the real error instead of Vercel's opaque FUNCTION_INVOCATION_FAILED page,
+    // so a future startup failure is diagnosable from the response body alone.
+    console.error('[api] createApp() failed:', err);
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ success: false, error: 'Server failed to start', detail: err?.message || String(err) }));
+  }
 }

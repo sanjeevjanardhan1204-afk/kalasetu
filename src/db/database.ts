@@ -20,15 +20,32 @@ import bcrypt from 'bcryptjs';
 // different region/instance), which is a real limitation for a demo needing durable state
 // on Vercel - flagged here rather than silently accepted.
 const DATA_DIR = process.env.VERCEL ? '/tmp/data' : path.resolve(process.cwd(), 'data');
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+
+// Defensive: any filesystem failure here (read-only path, permissions, locked/corrupt file,
+// a serverless platform quirk we haven't seen) must NOT crash every /api/* route, since this
+// module is imported before any route handler runs. Fall back to a pure in-memory database
+// rather than taking the whole app down - a demo staying up without persistence beats a demo
+// that is completely offline.
+let dbInstance: InstanceType<typeof Database>;
+let usingFallbackMemoryDb = false;
+let isNewDatabase = true;
+try {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+  const dbPath = path.join(DATA_DIR, 'kalasetu.db');
+  isNewDatabase = !fs.existsSync(dbPath);
+  dbInstance = new Database(dbPath);
+  dbInstance.pragma('journal_mode = WAL');
+} catch (e) {
+  console.error('[db] Falling back to in-memory-only database - persistence disabled for this run:', e);
+  dbInstance = new Database(':memory:');
+  usingFallbackMemoryDb = true;
+  isNewDatabase = true;
 }
 
-const DB_PATH = path.join(DATA_DIR, 'kalasetu.db');
-const isNewDatabase = !fs.existsSync(DB_PATH);
-
-export const db = new Database(DB_PATH);
-db.pragma('journal_mode = WAL');
+export const db = dbInstance;
+export { usingFallbackMemoryDb };
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS accounts (
